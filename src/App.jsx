@@ -8,6 +8,7 @@ import Sales from './pages/Sales';
 import Debts from './pages/Debts';
 import POS from './pages/POS';
 import Login from './pages/Login';
+import { Toaster } from './components/ui/sonner';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -59,6 +60,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Router />
+      <Toaster position="top-right" richColors />
     </BrowserRouter>
   );
 }

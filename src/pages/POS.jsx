@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const TAX_RATE = 0.05;
 
@@ -13,7 +16,6 @@ export default function POS() {
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   const [customerSearch, setCustomerSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -92,25 +94,19 @@ export default function POS() {
         })),
       });
       setCart([]);
-      setSuccessMsg(`Vente confirmée ! Total: ${total.toFixed(2)} DH`);
-      setTimeout(() => setSuccessMsg(''), 4000);
+      toast.success(`Vente confirmée ! Total: ${total.toFixed(2)} DH`);
 
       const prods = await api.products.list();
       setProducts(prods);
     } catch (err) {
-      alert('Erreur lors de la validation de la vente: ' + err.message);
+      toast.error('Erreur lors de la validation de la vente: ' + err.message);
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-12 gap-gutter h-full overflow-hidden relative">
-      {successMsg && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 bg-primary text-on-primary px-6 py-3 rounded-xl shadow-xl font-bold text-body-md animate-pulse">
-          {successMsg}
-        </div>
-      )}
+    <div className="grid grid-cols-12 gap-gutter h-full overflow-hidden">
 
       <div className="col-span-3 flex flex-col gap-gutter h-full overflow-hidden">
         <section className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 relative">
@@ -218,49 +214,43 @@ export default function POS() {
           </h2>
         </div>
         {loading ? (
-          <div className="grid grid-cols-3 gap-5">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm border border-outline-variant/20 animate-pulse">
-                <div className="h-32 mb-4 rounded-2xl bg-surface-container" />
-                <div className="h-3 w-16 bg-surface-container mb-2 rounded" />
-                <div className="h-5 w-24 bg-surface-container mb-2 rounded" />
-                <div className="h-6 w-20 bg-surface-container rounded" />
+          <div className="grid grid-cols-4 gap-3">
+            {[1,2,3,4,5,6,7,8].map(i => (
+              <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse aspect-[4/5] flex flex-col">
+                <div className="flex-1 mb-2 rounded-xl bg-surface-container" />
+                <div className="h-2 w-12 bg-surface-container mx-auto mb-1 rounded" />
+                <div className="h-3 w-16 bg-surface-container mx-auto rounded" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-5 overflow-y-auto pr-2 pb-6">
+          <div className="grid grid-cols-4 gap-3 overflow-y-auto pr-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
-                className="group bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all border border-outline-variant/20 relative overflow-hidden cursor-pointer active:scale-[0.97]"
+                className="group bg-surface-container-lowest rounded-2xl p-3 shadow-sm hover:shadow-lg transition-all border border-outline-variant/20 relative overflow-hidden cursor-pointer active:scale-[0.97] aspect-[4/5] flex flex-col"
               >
                 {p.stock > 0 && (
-                  <div className="absolute top-3 right-3 z-10">
-                    <span className="bg-primary-container/20 text-on-primary-container px-2 py-1 rounded-full text-[10px] font-bold">
-                      {p.stock} en stock
-                    </span>
+                  <div className="absolute top-1.5 right-1.5 z-10">
+                    <Badge variant="default" className="text-[9px] px-1.5 py-0.5">{p.stock}</Badge>
                   </div>
                 )}
                 {p.stock <= 0 && (
-                  <div className="absolute inset-0 z-10 bg-surface-container-lowest/60 flex items-center justify-center">
-                    <span className="bg-error/10 text-error px-4 py-2 rounded-full text-label-md font-bold">Rupture</span>
+                  <div className="absolute inset-0 z-10 bg-surface-container-lowest/60 flex items-center justify-center rounded-2xl">
+                    <Badge variant="destructive" className="text-[10px] px-3 py-1">Rupture</Badge>
                   </div>
                 )}
-                <div className="h-32 mb-4 rounded-2xl overflow-hidden bg-surface-container flex items-center justify-center">
-                  <span className="material-symbols-outlined text-5xl text-primary/30">inventory_2</span>
+                <div className="flex-1 mb-2 rounded-xl overflow-hidden bg-surface-container flex items-center justify-center">
+                  <span className="material-symbols-outlined text-4xl text-primary/30">inventory_2</span>
                 </div>
-                <p className="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">{p.category}</p>
-                <h3 className="font-bold text-body-lg text-on-surface mb-2 truncate">{p.name}</h3>
-                <div className="flex justify-between items-end">
-                  <div>
-                    <p className="text-primary font-bold text-headline-sm">{p.price.toFixed(2)} DH</p>
-                    <p className="text-[10px] text-on-surface-variant">par {p.unit}</p>
-                  </div>
+                <p className="text-[9px] text-on-surface-variant uppercase tracking-wider text-center truncate">{p.category}</p>
+                <h3 className="font-bold text-xs text-on-surface text-center truncate">{p.name}</h3>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-primary font-bold text-xs">{p.price.toFixed(2)} <span className="text-[8px]">DH</span></p>
                   <button
                     onClick={(e) => { e.stopPropagation(); addToCart(p); }}
-                    className="bg-primary-container text-on-primary w-10 h-10 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+                    className="bg-primary-container text-on-primary w-8 h-8 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform"
                   >
                     <span className="material-symbols-outlined">add</span>
                   </button>
@@ -348,14 +338,10 @@ export default function POS() {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={confirmSale}
               disabled={cart.length === 0 || submitting}
-              className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg transition-all ${
-                cart.length === 0
-                  ? 'bg-surface-container-highest text-on-surface-variant cursor-not-allowed'
-                  : 'bg-primary text-on-primary shadow-primary/20 hover:scale-[1.02] active:scale-95'
-              }`}
+              className="w-full h-auto py-4 rounded-2xl text-base"
             >
               {submitting ? (
                 <>
@@ -368,7 +354,7 @@ export default function POS() {
                   Confirmer la vente
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

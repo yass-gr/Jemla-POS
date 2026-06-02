@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from '@/components/ui/table';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -35,27 +42,27 @@ export default function Products() {
           <p className="text-body-md text-on-surface-variant mt-1">Gérez votre catalogue, vos stocks et vos prix.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="bg-surface border border-outline-variant text-on-surface px-4 py-2.5 rounded-xl font-label-md text-label-md flex items-center hover:bg-surface-container-high transition-colors">
-            <span className="material-symbols-outlined mr-2 text-sm">file_download</span>
+          <Button variant="outline" size="sm">
+            <span className="material-symbols-outlined text-sm">file_download</span>
             Export CSV
-          </button>
-          <button className="bg-primary-container text-on-primary px-6 py-2.5 rounded-xl font-bold flex items-center hover:shadow-lg transition-all active:scale-95 shadow-md">
-            <span className="material-symbols-outlined mr-2">add_circle</span>
+          </Button>
+          <Button variant="secondary">
+            <span className="material-symbols-outlined">add_circle</span>
             + Ajouter un produit
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-        <div className="md:col-span-8 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-wrap items-center gap-6">
+        <Card className="md:col-span-8 p-6 flex flex-wrap items-center gap-6">
           <div className="relative flex-1 min-w-[200px]">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-            <input
+            <Input
               type="text"
               placeholder="Rechercher un produit..."
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-surface-container rounded-xl pl-10 pr-4 py-2.5 text-body-md outline-none focus:ring-2 focus:ring-primary"
+              className="pl-10"
             />
           </div>
           <div className="flex items-center bg-surface-container p-1 rounded-xl">
@@ -63,7 +70,7 @@ export default function Products() {
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-1.5 rounded-lg text-label-md ${filter === cat ? 'bg-white shadow-sm text-primary font-bold' : 'text-on-secondary-container hover:bg-white/50'}`}
+                className={`px-4 py-1.5 rounded-lg text-label-md transition-colors ${filter === cat ? 'bg-white shadow-sm text-primary font-bold' : 'text-on-secondary-container hover:bg-white/50'}`}
               >
                 {cat === 'all' ? 'Tous' : cat}
               </button>
@@ -80,35 +87,35 @@ export default function Products() {
             <div className="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-error" />
             <span className="ml-3 font-label-md text-label-md text-on-surface-variant">Stock Faible Uniquement</span>
           </label>
-        </div>
+        </Card>
         <div className="md:col-span-4 grid grid-cols-2 gap-4">
-          <div className="bg-primary/5 border border-primary/20 p-6 rounded-2xl">
+          <Card className="bg-primary/5 border-primary/20 p-6">
             <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Total Produits</p>
             <p className="text-headline-md font-headline-md text-primary">{products.length}</p>
-          </div>
-          <div className="bg-error/5 border border-error/20 p-6 rounded-2xl">
+          </Card>
+          <Card className="bg-error/5 border-error/20 p-6">
             <p className="text-[10px] uppercase tracking-widest font-bold text-error">Stock Faible</p>
             <p className="text-headline-md font-headline-md text-error">{lowStockCount}</p>
-          </div>
+          </Card>
         </div>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/30 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-surface-container/50 border-b border-outline-variant/30">
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Produit</th>
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Catégorie</th>
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Unité</th>
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Prix</th>
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Stock</th>
-              <th className="px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-outline-variant/30">
+      <Card className="overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Produit</TableHead>
+              <TableHead>Catégorie</TableHead>
+              <TableHead className="text-center">Unité</TableHead>
+              <TableHead className="text-right">Prix</TableHead>
+              <TableHead>Stock</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {paginated.map((p) => (
-              <tr key={p.id} className="group hover:bg-surface-container-low transition-colors">
-                <td className="px-8 py-5">
+              <TableRow key={p.id} className="group">
+                <TableCell>
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-surface-variant overflow-hidden flex-shrink-0 border border-outline-variant/20 flex items-center justify-center text-primary">
                       <span className="material-symbols-outlined text-2xl">inventory_2</span>
@@ -117,17 +124,13 @@ export default function Products() {
                       <p className="font-headline-sm text-headline-sm text-on-surface">{p.name}</p>
                     </div>
                   </div>
-                </td>
-                <td className="px-8 py-5">
-                  <span className={`px-3 py-1 rounded-full font-label-md text-label-md ${
-                    p.category === 'Fruits' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-                  }`}>
-                    {p.category}
-                  </span>
-                </td>
-                <td className="px-8 py-5 text-center text-body-md text-on-surface-variant">{p.unit}</td>
-                <td className="px-8 py-5 text-right font-headline-sm text-headline-sm text-primary">{p.price.toFixed(2)} DH</td>
-                <td className="px-8 py-5">
+                </TableCell>
+                <TableCell>
+                  <Badge variant={p.category === 'Fruits' ? 'default' : 'success'}>{p.category}</Badge>
+                </TableCell>
+                <TableCell className="text-center text-body-md text-on-surface-variant">{p.unit}</TableCell>
+                <TableCell className="text-right font-headline-sm text-headline-sm text-primary">{p.price.toFixed(2)} DH</TableCell>
+                <TableCell>
                   <div className="flex flex-col gap-1">
                     <div className="w-40 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
                       <div className={`h-full rounded-full ${p.stock < 10 ? 'bg-error' : 'bg-primary-container'}`}
@@ -137,24 +140,24 @@ export default function Products() {
                       {p.stock} {p.unit}{p.stock < 10 ? ' (Stock Faible)' : ' en stock'}
                     </p>
                   </div>
-                </td>
-                <td className="px-8 py-5 text-right">
+                </TableCell>
+                <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 hover:bg-surface-container-high rounded-lg text-primary">
+                    <Button variant="ghost" size="icon" className="text-primary">
                       <span className="material-symbols-outlined">edit</span>
-                    </button>
-                    <button className="p-2 hover:bg-surface-container-high rounded-lg text-error">
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-error">
                       <span className="material-symbols-outlined">delete</span>
-                    </button>
+                    </Button>
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
             {paginated.length === 0 && !loading && (
-              <tr><td colSpan="6" className="text-center py-8 text-on-surface-variant">Aucun produit trouvé</td></tr>
+              <TableRow><TableCell colSpan="6" className="text-center py-8 text-on-surface-variant">Aucun produit trouvé</TableCell></TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
         <div className="px-8 py-5 bg-surface-container/30 border-t border-outline-variant/30 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">
             {filtered.length > 0
@@ -163,35 +166,35 @@ export default function Products() {
           </p>
           {totalPages > 1 && (
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="ghost" size="icon"
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <span className="material-symbols-outlined">chevron_left</span>
-              </button>
+              </Button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <button
+                <Button
                   key={p}
+                  variant={p === page ? 'default' : 'ghost'}
+                  size="icon"
                   onClick={() => setPage(p)}
-                  className={`w-9 h-9 rounded-lg text-label-md font-bold transition-colors ${
-                    p === page ? 'bg-primary text-on-primary' : 'hover:bg-surface-container-high text-on-surface-variant'
-                  }`}
+                  className={p === page ? '' : 'text-on-surface-variant'}
                 >
                   {p}
-                </button>
+                </Button>
               ))}
-              <button
+              <Button
+                variant="ghost" size="icon"
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <span className="material-symbols-outlined">chevron_right</span>
-              </button>
+              </Button>
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
