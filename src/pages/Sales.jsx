@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from '@/components/ui/select';
+import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 
@@ -87,6 +90,7 @@ export default function Sales() {
   const [sales, setSales] = useState([]);
   const [stats, setStats] = useState(null);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
   const [selectedSaleId, setSelectedSaleId] = useState(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -102,12 +106,15 @@ export default function Sales() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const filtered = search
+  let filtered = search
     ? sales.filter(s =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.invoice.toLowerCase().includes(search.toLowerCase())
       )
     : sales;
+  if (filter !== 'all') {
+    filtered = filtered.filter(s => s.payment_status === filter);
+  }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -153,15 +160,26 @@ export default function Sales() {
         </Card>
       </div>
 
-      <div className="relative max-w-sm">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-        <Input
-          type="text"
-          placeholder="Rechercher une vente..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <Input
+            type="text"
+            placeholder="Rechercher une vente..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="paid">Payé</SelectItem>
+            <SelectItem value="partial">Partiel</SelectItem>
+            <SelectItem value="unpaid">Impayé</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Card className="overflow-hidden">

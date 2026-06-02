@@ -4,6 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from '@/components/ui/select';
+import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 
@@ -12,6 +15,7 @@ export default function Inventory() {
   const [log, setLog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     Promise.all([
@@ -23,12 +27,19 @@ export default function Inventory() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const filtered = search
+  let filtered = search
     ? products.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.category.toLowerCase().includes(search.toLowerCase())
       )
     : products;
+  if (filter === 'low') {
+    filtered = filtered.filter(p => p.stock < 10);
+  } else if (filter === 'medium') {
+    filtered = filtered.filter(p => p.stock >= 10 && p.stock < 30);
+  } else if (filter === 'good') {
+    filtered = filtered.filter(p => p.stock >= 30);
+  }
 
   const totalStock = products.reduce((s, p) => s + p.stock, 0);
   const lowStock = products.filter(p => p.stock < 10).length;
@@ -70,14 +81,25 @@ export default function Inventory() {
         </Card>
       </div>
 
-      <div className="relative max-w-sm">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-        <Input
-          type="text" placeholder="Rechercher un produit..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <Input
+            type="text" placeholder="Rechercher un produit..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="low">Faible (&lt;10)</SelectItem>
+            <SelectItem value="medium">Moyen (10-30)</SelectItem>
+            <SelectItem value="good">Bon (&gt;30)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">

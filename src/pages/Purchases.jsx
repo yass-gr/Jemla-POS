@@ -19,6 +19,7 @@ export default function Purchases() {
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -42,12 +43,15 @@ export default function Purchases() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const filtered = search
+  let filtered = search
     ? purchases.filter(p =>
         p.product_name?.toLowerCase().includes(search.toLowerCase()) ||
         (p.supplier && p.supplier.toLowerCase().includes(search.toLowerCase()))
       )
     : purchases;
+  if (filter !== 'all') {
+    filtered = filtered.filter(p => filter === 'with_supplier' ? p.supplier : !p.supplier);
+  }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -135,14 +139,24 @@ export default function Purchases() {
         </Card>
       </div>
 
-      <div className="relative max-w-sm">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-        <Input
-          type="text" placeholder="Rechercher un achat..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <Input
+            type="text" placeholder="Rechercher un achat..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="with_supplier">Avec fournisseur</SelectItem>
+            <SelectItem value="without_supplier">Sans fournisseur</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Card className="overflow-hidden">

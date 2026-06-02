@@ -6,12 +6,16 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from '@/components/ui/select';
+import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [loading, setLoading] = useState(true);
@@ -25,9 +29,14 @@ export default function Customers() {
   const totalDebt = customers.reduce((sum, c) => sum + c.debt_balance, 0);
   const activeDebt = customers.filter(c => c.debt_balance > 0).length;
 
-  const filtered = search
+  let filtered = search
     ? customers.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || (c.phone && c.phone.includes(search)))
     : customers;
+  if (filter === 'with_debt') {
+    filtered = filtered.filter(c => c.debt_balance > 0);
+  } else if (filter === 'without_debt') {
+    filtered = filtered.filter(c => c.debt_balance === 0);
+  }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -69,15 +78,25 @@ export default function Customers() {
         </Card>
       </div>
 
-      <div className="relative max-w-sm">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-        <Input
-          type="text"
-          placeholder="Rechercher un client..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <Input
+            type="text"
+            placeholder="Rechercher un client..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="with_debt">Avec dette</SelectItem>
+            <SelectItem value="without_debt">Sans dette</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Card className="overflow-hidden">

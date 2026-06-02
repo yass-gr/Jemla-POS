@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from '@/components/ui/select';
+import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 
@@ -13,6 +16,7 @@ export default function Debts() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     api.customers.list().then(data => {
@@ -20,12 +24,19 @@ export default function Debts() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const filtered = search
+  let filtered = search
     ? customers.filter(c =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         (c.phone && c.phone.includes(search))
       )
     : customers;
+  if (filter === 'high') {
+    filtered = filtered.filter(c => c.debt_balance > 5000);
+  } else if (filter === 'medium') {
+    filtered = filtered.filter(c => c.debt_balance >= 1000 && c.debt_balance <= 5000);
+  } else if (filter === 'low') {
+    filtered = filtered.filter(c => c.debt_balance < 1000);
+  }
 
   const totalDebts = filtered.reduce((sum, c) => sum + c.debt_balance, 0);
 
@@ -78,7 +89,15 @@ export default function Debts() {
             className="pl-10"
           />
         </div>
-        <Badge variant="secondary" className="rounded-full shrink-0">Trié par: Montant</Badge>
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="high">Élevée (&gt;5000 DH)</SelectItem>
+            <SelectItem value="medium">Moyenne (1000-5000)</SelectItem>
+            <SelectItem value="low">Faible (&lt;1000 DH)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Card className="overflow-hidden">
