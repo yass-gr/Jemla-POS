@@ -1,29 +1,58 @@
-import { useState, useEffect } from 'react';
-import { api } from '@/services/api';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { api } from "@/services/api";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
-} from '@/components/ui/table';
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 
-function KpiCard({ title, value, trend, trendUp, icon, color, barColor, barWidth, loading }) {
+function KpiCard({
+  title,
+  value,
+  trend,
+  trendUp,
+  icon,
+  color,
+  barColor,
+  barWidth,
+  loading,
+}) {
   return (
     <Card className="p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden group">
       <div className="z-10">
-        <p className="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-2">{title}</p>
+        <p className="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-2">
+          {title}
+        </p>
         {loading ? (
           <div className="h-10 w-28 bg-surface-container-highest rounded animate-pulse mb-2" />
         ) : (
-          <h3 className={`text-headline-md sm:text-headline-lg font-headline-lg ${color}`}>{value}</h3>
+          <h3
+            className={`text-headline-md sm:text-headline-lg font-headline-lg ${color}`}
+          >
+            {value}
+          </h3>
         )}
-        <div className={`flex items-center gap-1 mt-4 ${trendUp ? 'text-primary' : 'text-on-surface-variant'} font-bold`}>
-          <span className="material-symbols-outlined text-sm">{trendUp ? 'trending_up' : 'warning'}</span>
+        <div
+          className={`flex items-center gap-1 mt-4 ${trendUp ? "text-primary" : "text-on-surface-variant"} font-bold`}
+        >
+          <span className="material-symbols-outlined text-sm">
+            {trendUp ? "trending_up" : "warning"}
+          </span>
           <span className="text-label-sm sm:text-label-md">{trend}</span>
         </div>
       </div>
       <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-        <span className={`material-symbols-outlined text-[80px] sm:text-[120px] ${color}`}>{icon}</span>
+        <span
+          className={`material-symbols-outlined text-[80px] sm:text-[120px] ${color}`}
+        >
+          {icon}
+        </span>
       </div>
       <div className="h-1.5 w-full bg-surface-container absolute bottom-0 left-0">
         <div className={`h-full ${barColor} ${barWidth}`} />
@@ -45,54 +74,72 @@ export default function Dashboard() {
       api.dashboard.salesTrend(),
       api.dashboard.topProducts(),
       api.dashboard.recentTransactions(),
-    ]).then(([s, t, p, r]) => {
-      setStats(s);
-      setSalesTrend(t);
-      setTopProducts(p);
-      setRecentTx(r);
-    }).catch(console.error).finally(() => setLoading(false));
+    ])
+      .then(([s, t, p, r]) => {
+        setStats(s);
+        setSalesTrend(t);
+        setTopProducts(p);
+        setRecentTx(r);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
   const kpiCards = [
     {
       title: "Today's Sales",
-      value: stats ? `${stats.todaySales.toFixed(2)} DH` : '0 DH',
-      trend: stats ? `${stats.todayTransactions} transactions today` : 'No data yet',
+      value: stats ? `${stats.todaySales.toFixed(2)} DH` : "0 DH",
+      trend: stats
+        ? `${stats.todayTransactions} transactions today`
+        : "No data yet",
       trendUp: true,
-      icon: 'payments',
-      color: 'text-primary',
-      barColor: 'bg-primary-container',
-      barWidth: 'w-3/4',
+      icon: "payments",
+      color: "text-primary",
+      barColor: "bg-primary-container",
+      barWidth: "w-3/4",
     },
     {
-      title: 'Pending Debts',
-      value: stats ? `${stats.pendingDebts.toFixed(2)} DH` : '0 DH',
-      trend: stats ? `${stats.overdueAccounts} accounts with debt` : 'No data yet',
+      title: "Pending Debts",
+      value: stats ? `${stats.pendingDebts.toFixed(2)} DH` : "0 DH",
+      trend: stats
+        ? `${stats.overdueAccounts} accounts with debt`
+        : "No data yet",
       trendUp: false,
-      icon: 'account_balance_wallet',
-      color: 'text-error',
-      barColor: 'bg-error',
-      barWidth: stats ? `${Math.min(stats.overdueAccounts * 10, 100)}%` : 'w-1/2',
+      icon: "account_balance_wallet",
+      color: "text-error",
+      barColor: "bg-error",
+      barWidth: stats
+        ? `${Math.min(stats.overdueAccounts * 10, 100)}%`
+        : "w-1/2",
     },
     {
-      title: 'Low Stock Alerts',
-      value: stats ? `${stats.lowStockItems} Items` : '0 Items',
-      trend: stats && stats.lowStockItems > 0 ? 'Restock required now' : 'All stocked up',
+      title: "Low Stock Alerts",
+      value: stats ? `${stats.lowStockItems} Items` : "0 Items",
+      trend:
+        stats && stats.lowStockItems > 0
+          ? "Restock required now"
+          : "All stocked up",
       trendUp: stats ? stats.lowStockItems === 0 : true,
-      icon: 'inventory_2',
-      color: stats && stats.lowStockItems > 0 ? 'text-tertiary' : 'text-primary',
-      barColor: stats && stats.lowStockItems > 0 ? 'bg-tertiary' : 'bg-primary-container',
-      barWidth: stats ? `${Math.min(stats.lowStockItems * 10, 100)}%` : 'w-2/3',
+      icon: "inventory_2",
+      color:
+        stats && stats.lowStockItems > 0 ? "text-tertiary" : "text-primary",
+      barColor:
+        stats && stats.lowStockItems > 0
+          ? "bg-tertiary"
+          : "bg-primary-container",
+      barWidth: stats ? `${Math.min(stats.lowStockItems * 10, 100)}%` : "w-2/3",
     },
   ];
 
-  const maxTrend = Math.max(...salesTrend.map(d => d.value), 1);
+  const maxTrend = Math.max(...salesTrend.map((d) => d.value), 1);
   const CHART_TOP = 32;
   const CHART_BOT = 28;
 
   return (
     <div className="space-y-4 sm:space-y-gutter pb-xl">
-      <h2 className="font-headline-lg text-headline-lg text-on-surface">Dashboard</h2>
+      <h2 className="font-headline-lg text-headline-lg text-on-surface">
+        Dashboard
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-gutter">
         {kpiCards.map((card) => (
           <KpiCard key={card.title} {...card} loading={loading} />
@@ -101,25 +148,57 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-gutter">
         <Card className="lg:col-span-2 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <h4 className="text-headline-sm font-headline-sm">Sales Revenue Trend</h4>
+            <h4 className="text-headline-sm font-headline-sm">
+              Sales Revenue Trend
+            </h4>
             <div className="flex gap-2">
-              <Button variant="secondary" size="sm" className="rounded-full text-xs sm:text-sm">Weekly</Button>
-              <Button variant="outline" size="sm" className="rounded-full text-xs sm:text-sm">Monthly</Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="rounded-full text-xs sm:text-sm"
+              >
+                Weekly
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full text-xs sm:text-sm"
+              >
+                Monthly
+              </Button>
             </div>
           </div>
-          <div className="relative w-full" style={{ height: 'clamp(180px, 40vw, 300px)' }}>
-            <div className="absolute inset-0 flex justify-between px-1 sm:px-2" style={{ paddingTop: CHART_TOP }}>
+          <div
+            className="relative w-full"
+            style={{ height: "clamp(180px, 40vw, 300px)" }}
+          >
+            <div
+              className="absolute inset-0 flex justify-between px-1 sm:px-2"
+              style={{ paddingTop: CHART_TOP }}
+            >
               {salesTrend.map((d) => {
-                const barH = Math.max((d.value / maxTrend) * (300 - CHART_TOP - CHART_BOT), 2);
+                const barH = Math.max(
+                  (d.value / maxTrend) * (300 - CHART_TOP - CHART_BOT),
+                  2,
+                );
                 return (
-                  <div key={d.day} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer justify-end" style={{ height: '100%' }}>
+                  <div
+                    key={d.day}
+                    className="flex-1 flex flex-col items-center gap-1 group cursor-pointer justify-end"
+                    style={{ height: "100%" }}
+                  >
                     <div className="flex-1" />
-                    <div className="w-[60%] sm:w-[70%] bg-primary-container rounded-t-lg relative transition-all hover:opacity-80" style={{ height: barH }}>
+                    <div
+                      className="w-[60%] sm:w-[70%] bg-primary-container rounded-t-lg relative transition-all hover:opacity-80"
+                      style={{ height: barH }}
+                    >
                       <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
                         {d.value} DH
                       </div>
                     </div>
-                    <span className="text-[10px] sm:text-label-md text-on-surface-variant">{d.day}</span>
+                    <span className="text-[10px] sm:text-label-md text-on-surface-variant">
+                      {d.day}
+                    </span>
                   </div>
                 );
               })}
@@ -129,34 +208,55 @@ export default function Dashboard() {
         <Card className="p-4 sm:p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-headline-sm font-headline-sm">Top Products</h4>
-            <a href="/products" className="text-primary font-bold text-label-md hover:underline">View All</a>
+            <a
+              href="/products"
+              className="text-primary font-bold text-label-md hover:underline"
+            >
+              View All
+            </a>
           </div>
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-3">
             {topProducts.map((p) => (
-              <div key={p.name} className="flex items-center gap-4 p-2 hover:bg-surface-container rounded-xl transition-all">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-surface-container rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">inventory_2</span>
+              <div
+                key={p.name}
+                className="flex items-center gap-3 p-1.5 hover:bg-surface-container rounded-lg transition-all"
+              >
+                <div className="w-8 h-8 bg-surface-container rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-lg">inventory_2</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-body-md text-on-surface truncate">{p.name}</p>
-                  <p className="text-label-md text-on-surface-variant">{p.sales} sales</p>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm text-on-surface truncate">
+                    {p.name}
+                  </p>
+                  <p className="text-xs text-on-surface-variant">
+                    {p.sales} sales
+                  </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-bold text-primary">{Number(p.price).toFixed(2)} DH</p>
+                  <p className="font-bold text-xs text-primary">
+                    {Number(p.price).toFixed(2)} DH
+                  </p>
                 </div>
               </div>
             ))}
             {topProducts.length === 0 && !loading && (
-              <p className="text-on-surface-variant text-body-md text-center py-8">No product data yet</p>
+              <p className="text-on-surface-variant text-body-md text-center py-8">
+                No product data yet
+              </p>
             )}
           </div>
         </Card>
       </div>
       <Card className="overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-outline-variant/30 flex justify-between items-center">
-          <h4 className="text-headline-sm font-headline-sm">Recent Transactions</h4>
+          <h4 className="text-headline-sm font-headline-sm">
+            Recent Transactions
+          </h4>
           <Button variant="outline" size="sm">
-            <span className="material-symbols-outlined text-sm">filter_list</span> Filter
+            <span className="material-symbols-outlined text-sm">
+              filter_list
+            </span>{" "}
+            Filter
           </Button>
         </div>
         <div className="overflow-x-auto">
@@ -174,23 +274,45 @@ export default function Dashboard() {
             <TableBody>
               {recentTx.map((tx) => (
                 <TableRow key={tx.id} className="cursor-pointer">
-                  <TableCell className="font-bold text-primary whitespace-nowrap">{tx.invoice}</TableCell>
-                  <TableCell className="text-body-md whitespace-nowrap">{tx.customer}</TableCell>
-                  <TableCell className="text-on-surface-variant text-body-md whitespace-nowrap">{tx.date}</TableCell>
-                  <TableCell className="text-body-md whitespace-nowrap">{tx.items} Items</TableCell>
+                  <TableCell className="font-bold text-primary whitespace-nowrap">
+                    {tx.invoice}
+                  </TableCell>
+                  <TableCell className="text-body-md whitespace-nowrap">
+                    {tx.customer}
+                  </TableCell>
+                  <TableCell className="text-on-surface-variant text-body-md whitespace-nowrap">
+                    {tx.date}
+                  </TableCell>
+                  <TableCell className="text-body-md whitespace-nowrap">
+                    {tx.items} Items
+                  </TableCell>
                   <TableCell>
-                    <Badge variant={
-                      tx.status === 'completed' ? 'success' :
-                      tx.status === 'held' ? 'secondary' : 'destructive'
-                    }>
+                    <Badge
+                      variant={
+                        tx.status === "completed"
+                          ? "success"
+                          : tx.status === "held"
+                            ? "secondary"
+                            : "destructive"
+                      }
+                    >
                       {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-bold text-body-md whitespace-nowrap">{tx.total.toFixed(2)} DH</TableCell>
+                  <TableCell className="font-bold text-body-md whitespace-nowrap">
+                    {tx.total.toFixed(2)} DH
+                  </TableCell>
                 </TableRow>
               ))}
               {recentTx.length === 0 && !loading && (
-                <TableRow><TableCell colSpan="6" className="text-center py-8 text-on-surface-variant">No recent transactions</TableCell></TableRow>
+                <TableRow>
+                  <TableCell
+                    colSpan="6"
+                    className="text-center py-8 text-on-surface-variant"
+                  >
+                    No recent transactions
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
