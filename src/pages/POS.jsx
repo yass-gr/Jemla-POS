@@ -71,6 +71,12 @@ export default function POS() {
     });
   }
 
+  function updatePrice(productId, newPrice) {
+    setCart(prev => prev.map(item =>
+      item.product_id === productId ? { ...item, price: Math.max(0, parseFloat(newPrice) || 0) } : item
+    ));
+  }
+
   function clearCart() {
     setCart([]);
   }
@@ -297,6 +303,7 @@ export default function POS() {
           total={total}
           submitting={submitting}
           onUpdateQty={updateQty}
+          onUpdatePrice={updatePrice}
           onClear={clearCart}
           onConfirm={confirmSale}
           selectedCustomer={selectedCustomer}
@@ -346,7 +353,17 @@ export default function POS() {
                   <div className="flex justify-between items-start mb-2">
                     <div className="min-w-0 flex-1">
                       <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
-                      <p className="text-[10px] text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
+                      <div className="flex items-center gap-0.5">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={item.price}
+                          onChange={e => updatePrice(item.product_id, e.target.value)}
+                          className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right outline-none focus:ring-1 focus:ring-primary"
+                        />
+                        <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
+                      </div>
                     </div>
                     <button
                       onClick={() => updateQty(item.product_id, -item.qty)}
@@ -420,7 +437,7 @@ export default function POS() {
   );
 }
 
-function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch }) {
+function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch }) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
       <div className="p-3 border-b border-outline-variant/30 space-y-2">
@@ -511,7 +528,17 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
               <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
-                  <p className="text-[10px] text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
+                  <div className="flex items-center gap-0.5">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={item.price}
+                      onChange={e => onUpdatePrice(item.product_id, e.target.value)}
+                      className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right outline-none focus:ring-1 focus:ring-primary"
+                    />
+                    <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
+                  </div>
                 </div>
                 <button
                   onClick={() => onUpdateQty(item.product_id, -item.qty)}
