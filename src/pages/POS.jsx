@@ -312,13 +312,13 @@ export default function POS() {
 
       {/* Mobile cart button + drawer */}
       {cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-4 bg-surface border-t border-outline-variant/30 shadow-2xl">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-surface border-t border-outline-variant/30 shadow-2xl">
           <Button
             onClick={() => setShowCartMobile(true)}
-            className="w-full h-auto py-4 rounded-2xl text-base"
+            className="w-full h-auto py-2.5 rounded-xl text-sm"
           >
-            <span className="material-symbols-outlined">shopping_cart</span>
-            Voir le panier ({totalItems} article{totalItems > 1 ? 's' : ''}) — {total.toFixed(2)} DH
+            <span className="material-symbols-outlined text-sm">shopping_cart</span>
+            Panier ({totalItems}) — {total.toFixed(2)} DH
           </Button>
         </div>
       )}
@@ -335,43 +335,43 @@ export default function POS() {
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {cart.length === 0 ? (
-              <p className="text-on-surface-variant text-body-md text-center py-12">
+              <p className="text-on-surface-variant text-xs text-center py-8">
                 Ajoutez des produits depuis la liste
               </p>
             ) : (
               cart.map((item) => (
-                <div key={item.product_id} className="bg-surface-container rounded-xl p-4">
-                  <div className="flex justify-between items-start mb-3">
+                <div key={item.product_id} className="bg-surface-container rounded-lg p-2.5">
+                  <div className="flex justify-between items-start mb-2">
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-body-md text-on-surface truncate">{item.product_name}</h4>
-                      <p className="text-label-md text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
+                      <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
+                      <p className="text-[10px] text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
                     </div>
                     <button
                       onClick={() => updateQty(item.product_id, -item.qty)}
-                      className="text-error hover:bg-error-container/20 p-1 rounded-lg ml-2 shrink-0"
+                      className="text-error hover:bg-error-container/20 p-0.5 rounded ml-1 shrink-0"
                     >
-                      <span className="material-symbols-outlined text-lg">delete</span>
+                      <span className="material-symbols-outlined text-sm">delete</span>
                     </button>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 bg-surface-container-lowest rounded-lg p-1">
+                    <div className="flex items-center gap-1.5 bg-surface-container-lowest rounded-md p-0.5">
                       <button
                         onClick={() => updateQty(item.product_id, -1)}
-                        className="w-9 h-9 rounded-md bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90"
+                        className="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90"
                       >
-                        <span className="material-symbols-outlined text-lg">remove</span>
+                        <span className="material-symbols-outlined text-sm">remove</span>
                       </button>
-                      <span className="font-bold text-body-lg text-on-surface min-w-[3ch] text-center">{item.qty}</span>
+                      <span className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</span>
                       <button
                         onClick={() => updateQty(item.product_id, 1)}
-                        className="w-9 h-9 rounded-md bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"
+                        className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"
                       >
-                        <span className="material-symbols-outlined text-lg">add</span>
+                        <span className="material-symbols-outlined text-sm">add</span>
                       </button>
                     </div>
-                    <p className="font-bold text-body-lg text-primary">
+                    <p className="font-bold text-xs text-primary">
                       {(item.price * item.qty).toFixed(2)} DH
                     </p>
                   </div>
@@ -380,32 +380,32 @@ export default function POS() {
             )}
           </div>
           <div className="p-4 bg-surface-container-low border-t border-outline-variant/30">
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-body-md">
+            <div className="space-y-1 mb-3">
+              <div className="flex justify-between text-xs">
                 <span className="text-on-surface-variant">Sous-total</span>
-                <span className="font-bold text-on-surface">{subtotal.toFixed(2)} DH</span>
+                <span className="font-semibold text-on-surface">{subtotal.toFixed(2)} DH</span>
               </div>
-              <div className="flex justify-between text-body-md">
+              <div className="flex justify-between text-xs">
                 <span className="text-on-surface-variant">TVA (5%)</span>
-                <span className="font-bold text-on-surface">{tax.toFixed(2)} DH</span>
+                <span className="font-semibold text-on-surface">{tax.toFixed(2)} DH</span>
               </div>
-              <div className="flex justify-between items-center pt-2 mt-2 border-t border-outline-variant/20">
-                <span className="font-bold text-headline-sm text-on-surface">Total</span>
-                <span className="font-bold text-headline-sm text-primary">{total.toFixed(2)} DH</span>
+              <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-outline-variant/20">
+                <span className="font-bold text-sm text-on-surface">Total</span>
+                <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
               </div>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={clearCart} className="flex-1 py-3 rounded-2xl">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={clearCart} className="flex-1 py-2 rounded-xl text-sm">
                 Vider
               </Button>
               <Button
                 onClick={confirmSale}
                 disabled={cart.length === 0 || submitting}
-                className="flex-1 py-3 rounded-2xl"
+                className="flex-1 py-2 rounded-xl text-sm"
               >
                 {submitting ? (
                   <>
-                    <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                    <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
                     ...
                   </>
                 ) : (
@@ -423,36 +423,30 @@ export default function POS() {
 function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch }) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
-      <div className="p-4 sm:p-6 border-b border-outline-variant/30 space-y-3">
+      <div className="p-3 border-b border-outline-variant/30 space-y-2">
         <div className="flex justify-between items-center">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Panier</h2>
+          <h2 className="font-bold text-sm text-on-surface">Panier</h2>
           {cart.length > 0 && (
-            <button onClick={onClear} className="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
-              <span className="material-symbols-outlined">delete_sweep</span>
+            <button onClick={onClear} className="text-error hover:bg-error-container/20 p-1 rounded-lg transition-colors">
+              <span className="material-symbols-outlined text-sm">delete_sweep</span>
             </button>
           )}
         </div>
 
-        {/* Customer picker inside cart */}
         <div className="relative">
           <div
-            className="flex items-center gap-2 bg-surface-container p-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
+            className="flex items-center gap-1.5 bg-surface-container p-1.5 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
             onClick={onToggleCustomer}
           >
-            <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-sm text-secondary">person</span>
+            <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-xs text-secondary">person</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-sm text-on-surface truncate">
+              <p className="font-semibold text-xs text-on-surface truncate leading-tight">
                 {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
               </p>
-              <p className="text-[10px] text-on-surface-variant truncate">
-                {selectedCustomer
-                  ? `${selectedCustomer.debt_balance.toFixed(2)} DH dû`
-                  : 'Vente sans compte'}
-              </p>
             </div>
-            <span className="material-symbols-outlined text-sm text-on-surface-variant shrink-0">
+            <span className="material-symbols-outlined text-xs text-on-surface-variant shrink-0">
               {showCustomerDropdown ? 'expand_less' : 'expand_more'}
             </span>
           </div>
@@ -464,39 +458,39 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
                   placeholder="Rechercher un client..."
                   value={customerSearch}
                   onChange={e => onCustomerSearch(e.target.value)}
-                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
                   autoFocus
                 />
               </div>
               <div className="max-h-40 overflow-y-auto">
                 <button
                   onClick={onClearCustomer}
-                  className="w-full text-left px-4 py-2.5 hover:bg-surface-container flex items-center gap-3"
+                  className="w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2"
                 >
-                  <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center">
-                    <span className="material-symbols-outlined text-sm">person_off</span>
+                  <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
+                    <span className="material-symbols-outlined text-xs">person_off</span>
                   </div>
                   <div>
-                    <p className="font-bold text-sm">Client Libre</p>
-                    <p className="text-label-md text-on-surface-variant">Vente sans compte</p>
+                    <p className="font-semibold text-xs">Client Libre</p>
+                    <p className="text-[10px] text-on-surface-variant">Vente sans compte</p>
                   </div>
                 </button>
                 {filteredCustomers.map(c => (
                   <button
                     key={c.id}
                     onClick={() => onSelectCustomer(c)}
-                    className={`w-full text-left px-4 py-2.5 hover:bg-surface-container flex items-center gap-3 ${
+                    className={`w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2 ${
                       selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
                     }`}
                   >
-                    <div className="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                      <span className="text-label-md font-bold text-secondary">
+                    <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-secondary">
                         {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-sm truncate">{c.name}</p>
-                      <p className="text-label-md text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                      <p className="font-semibold text-xs truncate">{c.name}</p>
+                      <p className="text-[10px] text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
                     </div>
                   </button>
                 ))}
@@ -506,43 +500,43 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {cart.length === 0 ? (
-          <p className="text-on-surface-variant text-body-md text-center py-12">
+          <p className="text-on-surface-variant text-xs text-center py-8">
             Ajoutez des produits depuis la liste
           </p>
         ) : (
           cart.map((item) => (
-            <div key={item.product_id} className="bg-surface-container rounded-xl p-4">
-              <div className="flex justify-between items-start mb-3">
+            <div key={item.product_id} className="bg-surface-container rounded-lg p-2.5">
+              <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 flex-1">
-                  <h4 className="font-bold text-body-md text-on-surface truncate">{item.product_name}</h4>
-                  <p className="text-label-md text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
+                  <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
+                  <p className="text-[10px] text-on-surface-variant">{item.price.toFixed(2)} DH / {item.unit}</p>
                 </div>
                 <button
                   onClick={() => onUpdateQty(item.product_id, -item.qty)}
-                  className="text-error hover:bg-error-container/20 p-1 rounded-lg ml-2 shrink-0"
+                  className="text-error hover:bg-error-container/20 p-0.5 rounded ml-1 shrink-0"
                 >
-                  <span className="material-symbols-outlined text-lg">delete</span>
+                  <span className="material-symbols-outlined text-sm">delete</span>
                 </button>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 bg-surface-container-lowest rounded-lg p-1">
+                <div className="flex items-center gap-1.5 bg-surface-container-lowest rounded-md p-0.5">
                   <button
                     onClick={() => onUpdateQty(item.product_id, -1)}
-                    className="w-9 h-9 rounded-md bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90"
+                    className="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90"
                   >
-                    <span className="material-symbols-outlined text-lg">remove</span>
+                    <span className="material-symbols-outlined text-sm">remove</span>
                   </button>
-                  <span className="font-bold text-body-lg text-on-surface min-w-[3ch] text-center">{item.qty}</span>
+                  <span className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</span>
                   <button
                     onClick={() => onUpdateQty(item.product_id, 1)}
-                    className="w-9 h-9 rounded-md bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"
+                    className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"
                   >
-                    <span className="material-symbols-outlined text-lg">add</span>
+                    <span className="material-symbols-outlined text-sm">add</span>
                   </button>
                 </div>
-                <p className="font-bold text-body-lg text-primary">
+                <p className="font-bold text-xs text-primary">
                   {(item.price * item.qty).toFixed(2)} DH
                 </p>
               </div>
@@ -551,35 +545,35 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
         )}
       </div>
 
-      <div className="p-6 sm:p-8 bg-surface-container-low rounded-b-2xl border-t border-outline-variant/30">
-        <div className="space-y-2 mb-6">
-          <div className="flex justify-between text-body-md">
+      <div className="p-4 bg-surface-container-low rounded-b-2xl border-t border-outline-variant/30">
+        <div className="space-y-1 mb-3">
+          <div className="flex justify-between text-xs">
             <span className="text-on-surface-variant">Sous-total</span>
-            <span className="font-bold text-on-surface">{subtotal.toFixed(2)} DH</span>
+            <span className="font-semibold text-on-surface">{subtotal.toFixed(2)} DH</span>
           </div>
-          <div className="flex justify-between text-body-md">
+          <div className="flex justify-between text-xs">
             <span className="text-on-surface-variant">TVA (5%)</span>
-            <span className="font-bold text-on-surface">{tax.toFixed(2)} DH</span>
+            <span className="font-semibold text-on-surface">{tax.toFixed(2)} DH</span>
           </div>
-          <div className="flex justify-between items-center pt-2 mt-2 border-t border-outline-variant/20">
-            <span className="font-bold text-headline-sm text-on-surface">Total</span>
-            <span className="font-bold text-headline-sm text-primary">{total.toFixed(2)} DH</span>
+          <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-outline-variant/20">
+            <span className="font-bold text-sm text-on-surface">Total</span>
+            <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
           </div>
         </div>
 
         <Button
           onClick={onConfirm}
           disabled={cart.length === 0 || submitting}
-          className="w-full h-auto py-4 rounded-2xl text-base"
+          className="w-full h-auto py-2.5 rounded-xl text-sm"
         >
           {submitting ? (
             <>
-              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
               Traitement...
             </>
           ) : (
             <>
-              <span className="material-symbols-outlined">payments</span>
+              <span className="material-symbols-outlined text-sm">payments</span>
               Confirmer la vente
             </>
           )}
