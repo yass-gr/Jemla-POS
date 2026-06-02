@@ -23,8 +23,6 @@ function KpiCard({
   trendUp,
   icon,
   color,
-  barColor,
-  barWidth,
   loading,
 }) {
   return (
@@ -57,9 +55,6 @@ function KpiCard({
         >
           {icon}
         </span>
-      </div>
-      <div className="h-1.5 w-full bg-surface-container absolute bottom-0 left-0">
-        <div className={`h-full ${barColor} ${barWidth}`} />
       </div>
     </Card>
   );
@@ -100,8 +95,6 @@ export default function Dashboard() {
       trendUp: true,
       icon: "payments",
       color: "text-primary",
-      barColor: "bg-primary-container",
-      barWidth: "w-3/4",
     },
     {
       title: "Pending Debts",
@@ -112,10 +105,6 @@ export default function Dashboard() {
       trendUp: false,
       icon: "account_balance_wallet",
       color: "text-error",
-      barColor: "bg-error",
-      barWidth: stats
-        ? `${Math.min(stats.overdueAccounts * 10, 100)}%`
-        : "w-1/2",
     },
     {
       title: "Low Stock Alerts",
@@ -128,11 +117,6 @@ export default function Dashboard() {
       icon: "inventory_2",
       color:
         stats && stats.lowStockItems > 0 ? "text-tertiary" : "text-primary",
-      barColor:
-        stats && stats.lowStockItems > 0
-          ? "bg-tertiary"
-          : "bg-primary-container",
-      barWidth: stats ? `${Math.min(stats.lowStockItems * 10, 100)}%` : "w-2/3",
     },
   ];
 
