@@ -244,16 +244,6 @@ export default function POS() {
           <h2 className="font-headline-md text-headline-md text-on-surface">
             Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
           </h2>
-          <div className="relative shrink-0 ml-4">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              value={productSearch}
-              onChange={e => setProductSearch(e.target.value)}
-              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
-            />
-          </div>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-3 shrink-0">
           {categories.map((cat) => (
@@ -272,6 +262,16 @@ export default function POS() {
               <span className="text-label-md whitespace-nowrap">{cat}</span>
             </button>
           ))}
+          <div className="relative shrink-0 ml-auto sticky right-0">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={productSearch}
+              onChange={e => setProductSearch(e.target.value)}
+              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+            />
+          </div>
         </div>
         {loading ? (
           <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3">
