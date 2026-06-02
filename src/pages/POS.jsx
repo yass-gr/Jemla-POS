@@ -242,7 +242,7 @@ export default function POS() {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {[1,2,3,4,5,6,7,8,9,10].map(i => (
-              <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse aspect-[4/5] flex flex-col">
+              <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse aspect-square flex flex-col">
                 <div className="flex-1 mb-2 rounded-xl bg-surface-container" />
                 <div className="h-2 w-12 bg-surface-container mx-auto mb-1 rounded" />
                 <div className="h-3 w-16 bg-surface-container mx-auto rounded" />
@@ -255,7 +255,7 @@ export default function POS() {
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
-                className="group bg-surface-container-lowest rounded-2xl p-3 shadow-sm hover:shadow-lg transition-all border border-outline-variant/20 relative overflow-hidden cursor-pointer active:scale-[0.97] aspect-[4/5] flex flex-col"
+                className="group bg-surface-container-lowest rounded-2xl p-3 shadow-sm hover:shadow-lg transition-all border border-outline-variant/20 relative overflow-hidden cursor-pointer active:scale-[0.97] aspect-square flex flex-col"
               >
                 {p.stock > 0 && (
                   <div className="absolute top-1.5 right-1.5 z-10">
