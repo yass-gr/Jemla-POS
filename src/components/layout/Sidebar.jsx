@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose }) {
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 lg:group-hover:px-4 lg:group-hover:mx-2 rounded-xl transition-all whitespace-nowrap ${
+                `flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 rounded-xl transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20'
                     : 'text-on-secondary-container hover:bg-primary-container/20 hover:text-on-primary'
@@ -66,7 +66,7 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             to="/login"
             onClick={onClose}
-            className="flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 lg:group-hover:px-4 lg:group-hover:mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
+            className="flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined shrink-0">logout</span>
             <span className="font-label-md text-label-md hidden lg:group-hover:inline">Logout</span>
