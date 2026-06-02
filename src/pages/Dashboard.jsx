@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "@/services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,7 @@ function KpiCard({
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [salesTrend, setSalesTrend] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -146,6 +148,54 @@ export default function Dashboard() {
           <KpiCard key={card.title} {...card} loading={loading} />
         ))}
       </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-gutter">
+        <button onClick={() => navigate('/pos')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">point_of_sale</span>
+            </div>
+            <div>
+              <p className="font-headline-sm text-headline-sm text-on-surface">Nouvelle Vente</p>
+              <p className="text-label-md text-on-surface-variant mt-0.5">Ouvrir le POS</p>
+            </div>
+          </div>
+        </button>
+        <button onClick={() => navigate('/products')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">add_box</span>
+            </div>
+            <div>
+              <p className="font-headline-sm text-headline-sm text-on-surface">Ajouter Produit</p>
+              <p className="text-label-md text-on-surface-variant mt-0.5">Nouveau stock</p>
+            </div>
+          </div>
+        </button>
+        <button onClick={() => navigate('/purchases')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-secondary/30 transition-all text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center text-tertiary shrink-0 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">shopping_cart</span>
+            </div>
+            <div>
+              <p className="font-headline-sm text-headline-sm text-on-surface">Enregistrer Achat</p>
+              <p className="text-label-md text-on-surface-variant mt-0.5">Approvisionnement</p>
+            </div>
+          </div>
+        </button>
+        <button onClick={() => navigate('/reports')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-tertiary/30 transition-all text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">bar_chart</span>
+            </div>
+            <div>
+              <p className="font-headline-sm text-headline-sm text-on-surface">Rapports</p>
+              <p className="text-label-md text-on-surface-variant mt-0.5">Analytiques</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-gutter">
         <Card className="lg:col-span-2 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
