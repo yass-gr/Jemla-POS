@@ -38,7 +38,7 @@ export default function Sidebar({ open, onClose }) {
           <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-on-primary text-headline-sm">storefront</span>
           </div>
-          <div className="hidden lg:group-hover:block overflow-hidden">
+          <div className="lg:hidden lg:group-hover:block overflow-hidden">
             <h1 className="text-headline-md font-bold text-primary-fixed leading-tight whitespace-nowrap">Simi Shop</h1>
             <p className="text-label-md text-on-secondary-container/60 whitespace-nowrap">Retail Management</p>
           </div>
@@ -58,7 +58,7 @@ export default function Sidebar({ open, onClose }) {
               }
             >
               <span className="material-symbols-outlined shrink-0">{item.icon}</span>
-              <span className="font-label-md text-label-md hidden lg:group-hover:inline truncate">{item.label}</span>
+              <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline truncate">{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -69,7 +69,7 @@ export default function Sidebar({ open, onClose }) {
             className="flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined shrink-0">logout</span>
-            <span className="font-label-md text-label-md hidden lg:group-hover:inline">Logout</span>
+            <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline">Logout</span>
           </NavLink>
         </div>
       </aside>
