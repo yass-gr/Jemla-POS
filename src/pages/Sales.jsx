@@ -153,19 +153,18 @@ export default function Sales() {
         </Card>
       </div>
 
+      <div className="relative max-w-sm">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+        <Input
+          type="text"
+          placeholder="Rechercher une vente..."
+          value={search}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          className="pl-10"
+        />
+      </div>
+
       <Card className="overflow-hidden">
-        <div className="px-4 py-3 border-b border-outline-variant/20 flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-            <Input
-              type="text"
-              placeholder="Rechercher une vente..."
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="pl-10"
-            />
-          </div>
-        </div>
         <Table>
           <TableHeader>
             <TableRow>

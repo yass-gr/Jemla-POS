@@ -70,19 +70,18 @@ export default function Inventory() {
         </Card>
       </div>
 
+      <div className="relative max-w-sm">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+        <Input
+          type="text" placeholder="Rechercher un produit..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
         <Card className="lg:col-span-2 overflow-hidden">
-          <div className="px-4 py-3 border-b border-outline-variant/20">
-            <div className="relative max-w-xs">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-              <Input
-                type="text" placeholder="Rechercher un produit..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
           <Table>
             <TableHeader>
               <TableRow>

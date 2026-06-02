@@ -68,19 +68,20 @@ export default function Debts() {
         </Card>
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="px-4 py-3 border-b border-outline-variant/30 flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-            <Input
-              type="text" placeholder="Rechercher un client..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Badge variant="secondary" className="rounded-full shrink-0">Trié par: Montant</Badge>
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <Input
+            type="text" placeholder="Rechercher un client..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-10"
+          />
         </div>
+        <Badge variant="secondary" className="rounded-full shrink-0">Trié par: Montant</Badge>
+      </div>
+
+      <Card className="overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
