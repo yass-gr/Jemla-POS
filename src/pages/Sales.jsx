@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import SaleDetail from '@/components/SaleDetail';
 
 export default function Sales() {
   const [sales, setSales] = useState([]);
   const [stats, setStats] = useState(null);
   const [search, setSearch] = useState('');
+  const [selectedSaleId, setSelectedSaleId] = useState(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ export default function Sales() {
           </thead>
           <tbody className="divide-y divide-outline-variant/30">
             {paginated.map((s) => (
-              <tr key={s.id} className="hover:bg-surface-container-low/50 transition-colors group">
+              <tr key={s.id} className="hover:bg-surface-container-low/50 transition-colors group cursor-pointer" onClick={() => setSelectedSaleId(s.id)}>
                 <td className="px-8 py-6">
                   <span className="text-body-md font-bold text-primary">{s.invoice}</span>
                 </td>
@@ -192,6 +194,9 @@ export default function Sales() {
           )}
         </div>
       </div>
+      {selectedSaleId && (
+        <SaleDetail saleId={selectedSaleId} onClose={() => setSelectedSaleId(null)} />
+      )}
     </div>
   );
 }

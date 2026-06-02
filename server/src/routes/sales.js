@@ -67,6 +67,22 @@ router.post('/', ensureAuthenticated, (req, res) => {
   res.status(201).json(sale);
 });
 
+router.get('/:id', ensureAuthenticated, (req, res) => {
+  const sale = queryOne(`
+    SELECT s.*, COALESCE(c.name, 'Walk-in') as customer_name, c.phone as customer_phone
+    FROM sales s
+    LEFT JOIN customers c ON s.customer_id = c.id
+    WHERE s.id = ?
+  `, [req.params.id]);
+
+  if (!sale) return res.status(404).json({ error: 'Sale not found' });
+
+  const items = queryAll('SELECT * FROM sale_items WHERE sale_id = ?', [req.params.id]);
+  sale.items = items;
+
+  res.json(sale);
+});
+
 router.get('/', ensureAuthenticated, (req, res) => {
   const sales = queryAll(`
     SELECT s.id, s.total, s.tax, s.status, s.created_at,
@@ -89,7 +105,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
       initials,
       name: s.customer_name,
       items: `${Math.ceil(totalItems)} Items`,
-      total: `$${s.total.toFixed(2)}`,
+      total: `${s.total.toFixed(2)} DH`,
       status: s.customer_id > 0 && s.total > 0 ? 'Debt' : 'Paid',
       statusColor: s.customer_id > 0 && s.total > 0 ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary',
     };
