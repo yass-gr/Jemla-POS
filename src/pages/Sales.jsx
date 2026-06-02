@@ -154,39 +154,19 @@ export default function Sales() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="rounded-full">
-            <span className="material-symbols-outlined text-lg">calendar_today</span>
-            Ce Mois
-            <span className="material-symbols-outlined text-lg">expand_more</span>
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            <span className="material-symbols-outlined text-lg">filter_list</span>
-            Statut: Tous
-          </Button>
-        </div>
-        <div className="relative flex-1 max-w-sm min-w-[200px]">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-          <Input
-            type="text"
-            placeholder="Rechercher une vente..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <span className="material-symbols-outlined">download</span>
-          </Button>
-          <Button variant="ghost" size="icon">
-            <span className="material-symbols-outlined">print</span>
-          </Button>
-        </div>
-      </div>
-
       <Card className="overflow-hidden">
+        <div className="px-4 py-3 border-b border-outline-variant/20 flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+            <Input
+              type="text"
+              placeholder="Rechercher une vente..."
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1); }}
+              className="pl-10"
+            />
+          </div>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>

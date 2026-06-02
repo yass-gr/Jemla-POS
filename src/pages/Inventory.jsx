@@ -30,42 +30,57 @@ export default function Inventory() {
       )
     : products;
 
-  const totalStock = filtered.reduce((s, p) => s + p.stock, 0);
-  const lowStock = filtered.filter(p => p.stock < 10).length;
+  const totalStock = products.reduce((s, p) => s + p.stock, 0);
+  const lowStock = products.filter(p => p.stock < 10).length;
 
   return (
     <div className="space-y-gutter pb-xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Inventaire</h2>
-          <p className="text-body-md text-on-surface-variant mt-1">Suivez vos niveaux de stock.</p>
-        </div>
-        <div className="flex gap-4">
-          <Card className="px-5 py-2.5 border-outline-variant/30">
-            <p className="text-label-md text-on-surface-variant">Stock total</p>
-            <p className="font-bold text-headline-sm text-primary">{totalStock} {products.length > 0 ? products[0].unit : 'u'}</p>
-          </Card>
-          <Card className="px-5 py-2.5 border-outline-variant/30">
-            <p className="text-label-md text-on-surface-variant">Stock faible</p>
-            <p className="font-bold text-headline-sm text-error">{lowStock} produits</p>
-          </Card>
-        </div>
+      <div>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface">Inventaire</h2>
+        <p className="text-body-md text-on-surface-variant mt-1">Suivez vos niveaux de stock.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">inventory_2</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Stock Total</p>
+            <p className="text-headline-sm font-bold text-primary">{totalStock} {products.length > 0 ? products[0].unit : 'u'}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0">
+            <span className="material-symbols-outlined">warning</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Stock Faible</p>
+            <p className="text-headline-sm font-bold text-error">{lowStock} produits</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">category</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Catégories</p>
+            <p className="text-headline-sm font-bold text-on-surface">{new Set(products.map(p => p.category)).size}</p>
+          </div>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
         <Card className="lg:col-span-2 overflow-hidden">
-          <div className="p-6 border-b border-outline-variant/30">
-            <div className="flex items-center justify-between">
-              <h3 className="font-headline-sm">Niveaux de Stock</h3>
-              <div className="relative max-w-xs">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-                <Input
-                  type="text" placeholder="Rechercher un produit..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+          <div className="px-4 py-3 border-b border-outline-variant/20">
+            <div className="relative max-w-xs">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+              <Input
+                type="text" placeholder="Rechercher un produit..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </div>
           <Table>
@@ -100,19 +115,19 @@ export default function Inventory() {
         </Card>
 
         <Card className="overflow-hidden">
-          <div className="p-6 border-b border-outline-variant/30">
+          <div className="p-4 py-3 border-b border-outline-variant/20">
             <h3 className="font-headline-sm">Activité Récente</h3>
           </div>
           <div className="divide-y divide-outline-variant/20 max-h-[500px] overflow-y-auto">
             {log.map(entry => (
-              <div key={entry.id} className="px-6 py-4 hover:bg-surface-container/30 transition-colors">
+              <div key={entry.id} className="px-4 py-3 hover:bg-surface-container/30 transition-colors">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-bold text-body-md text-on-surface truncate">{entry.product_name}</p>
+                  <p className="font-bold text-sm text-on-surface truncate">{entry.product_name}</p>
                   <Badge variant={entry.change_qty > 0 ? 'success' : 'destructive'} className="text-label-md">
                     {entry.change_qty > 0 ? '+' : ''}{entry.change_qty}
                   </Badge>
                 </div>
-                <p className="text-label-md text-on-surface-variant">{entry.reason}</p>
+                <p className="text-xs text-on-surface-variant">{entry.reason}</p>
                 <p className="text-[10px] text-on-surface-variant mt-0.5">{new Date(entry.created_at).toLocaleString()}</p>
               </div>
             ))}

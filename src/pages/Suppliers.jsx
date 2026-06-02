@@ -3,7 +3,6 @@ import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
@@ -81,16 +80,40 @@ export default function Suppliers() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Fournisseurs</h2>
           <p className="text-body-md text-on-surface-variant mt-1">Gérez vos fournisseurs de produits.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Card className="px-5 py-2.5 border-outline-variant/30">
-            <p className="text-label-md text-on-surface-variant">Total</p>
-            <p className="font-bold text-headline-sm text-primary">{suppliers.length}</p>
-          </Card>
-          <Button className="rounded-xl" onClick={openAdd}>
-            <span className="material-symbols-outlined">add_circle</span>
-            + Ajouter
-          </Button>
-        </div>
+        <Button className="rounded-xl" onClick={openAdd}>
+          <span className="material-symbols-outlined">add_circle</span>
+          + Ajouter
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">business</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Total Fournisseurs</p>
+            <p className="text-headline-sm font-bold text-primary">{suppliers.length}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">contact_phone</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Avec téléphone</p>
+            <p className="text-headline-sm font-bold text-on-surface">{suppliers.filter(s => s.phone).length}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center text-tertiary shrink-0">
+            <span className="material-symbols-outlined">email</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Avec email</p>
+            <p className="text-headline-sm font-bold text-on-surface">{suppliers.filter(s => s.email).length}</p>
+          </div>
+        </Card>
       </div>
 
       <Card className="overflow-hidden">

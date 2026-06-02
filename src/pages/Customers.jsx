@@ -34,47 +34,44 @@ export default function Customers() {
 
   return (
     <div className="space-y-gutter pb-xl">
+      <div>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface">Clients</h2>
+        <p className="text-body-md text-on-surface-variant mt-1">Gestion des comptes et des soldes.</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-        <Card className="p-6 flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-2xl">
-              <span className="material-symbols-outlined">group</span>
-            </div>
-            <span className="text-primary font-bold text-label-md">{customers.length} total</span>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">group</span>
           </div>
           <div>
-            <p className="text-on-surface-variant text-label-md">Total Clients</p>
-            <h3 className="text-headline-md font-headline-md">{customers.length}</h3>
+            <p className="text-label-md text-on-surface-variant">Total Clients</p>
+            <p className="text-headline-sm font-bold text-primary">{customers.length}</p>
           </div>
         </Card>
-        <Card className="p-6 flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl">
-              <span className="material-symbols-outlined">account_balance_wallet</span>
-            </div>
-            <span className="text-error font-bold text-label-md">{activeDebt} avec dettes</span>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0">
+            <span className="material-symbols-outlined">account_balance_wallet</span>
           </div>
           <div>
-            <p className="text-on-surface-variant text-label-md">Dettes Impayées</p>
-            <h3 className="text-headline-md font-headline-md text-error">{totalDebt.toFixed(2)} DH</h3>
+            <p className="text-label-md text-on-surface-variant">Dettes Impayées</p>
+            <p className="text-headline-sm font-bold text-error">{totalDebt.toFixed(2)} DH</p>
           </div>
         </Card>
-        <Card className="bg-primary border-0 p-6 flex flex-col justify-center items-center text-on-primary group cursor-pointer hover:scale-[1.02] transition-all">
-          <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-3xl">person_add</span>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">warning</span>
           </div>
-          <h4 className="font-bold text-headline-sm">Nouveau Client</h4>
-          <p className="text-on-primary/70 text-label-md">Ajouter à la base de données</p>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Comptes avec dettes</p>
+            <p className="text-headline-sm font-bold text-on-surface">{activeDebt}</p>
+          </div>
         </Card>
       </div>
 
       <Card className="overflow-hidden">
-        <div className="px-8 py-6 flex flex-wrap items-center gap-4 border-b border-outline-variant/20">
-          <div className="flex-1 min-w-[200px]">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface">Répertoire des Clients</h3>
-            <p className="text-body-md text-on-surface-variant">Gestion des comptes et des soldes</p>
-          </div>
-          <div className="relative flex-1 min-w-[200px]">
+        <div className="px-4 py-3 border-b border-outline-variant/20 flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
             <Input
               type="text"
@@ -83,14 +80,6 @@ export default function Customers() {
               onChange={e => { setSearch(e.target.value); setPage(1); }}
               className="pl-10"
             />
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <span className="material-symbols-outlined text-sm">filter_list</span> Filtrer
-            </Button>
-            <Button variant="outline" size="sm">
-              <span className="material-symbols-outlined text-sm">file_download</span> Exporter
-            </Button>
           </div>
         </div>
 

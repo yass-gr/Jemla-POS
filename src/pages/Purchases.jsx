@@ -51,7 +51,7 @@ export default function Purchases() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
-  const totalSpent = filtered.reduce((s, p) => s + p.total, 0);
+  const totalSpent = purchases.reduce((s, p) => s + p.total, 0);
 
   function openAdd() {
     setForm({ product_id: products[0]?.id || '', supplier: '', qty: 1, unit_price: 0 });
@@ -99,16 +99,40 @@ export default function Purchases() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Achats</h2>
           <p className="text-body-md text-on-surface-variant mt-1">Suivez vos approvisionnements au marché de gros.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Card className="px-5 py-2.5 border-outline-variant/30">
-            <p className="text-label-md text-on-surface-variant">Total dépensé</p>
-            <p className="font-bold text-headline-sm text-primary">{totalSpent.toFixed(2)} DH</p>
-          </Card>
-          <Button className="rounded-xl" onClick={openAdd}>
-            <span className="material-symbols-outlined">add_circle</span>
-            + Achat
-          </Button>
-        </div>
+        <Button className="rounded-xl" onClick={openAdd}>
+          <span className="material-symbols-outlined">add_circle</span>
+          + Achat
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">shopping_cart</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Total Dépensé</p>
+            <p className="text-headline-sm font-bold text-primary">{totalSpent.toFixed(2)} DH</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">receipt_long</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Total Achats</p>
+            <p className="text-headline-sm font-bold text-on-surface">{purchases.length}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center text-tertiary shrink-0">
+            <span className="material-symbols-outlined">inventory_2</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Produits distincts</p>
+            <p className="text-headline-sm font-bold text-on-surface">{new Set(purchases.map(p => p.product_name)).size}</p>
+          </div>
+        </Card>
       </div>
 
       <Card className="overflow-hidden">

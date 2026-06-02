@@ -51,7 +51,7 @@ export default function Returns() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
-  const totalReturned = paginated.reduce((s, r) => s + r.qty, 0);
+  const totalReturned = returns.reduce((s, r) => s + r.qty, 0);
 
   function openAdd() {
     setForm({ product_id: products[0]?.id || '', qty: 1, reason: '', sale_id: '' });
@@ -105,16 +105,40 @@ export default function Returns() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Retours</h2>
           <p className="text-body-md text-on-surface-variant mt-1">Gérez les produits retournés par les clients.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Card className="px-5 py-2.5 border-outline-variant/30">
+        <Button className="rounded-xl" onClick={openAdd}>
+          <span className="material-symbols-outlined">add_circle</span>
+          + Retour
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0">
+            <span className="material-symbols-outlined">assignment_return</span>
+          </div>
+          <div>
             <p className="text-label-md text-on-surface-variant">Quantité retournée</p>
-            <p className="font-bold text-headline-sm text-error">{filtered.reduce((s, r) => s + r.qty, 0)} unités</p>
-          </Card>
-          <Button className="rounded-xl" onClick={openAdd}>
-            <span className="material-symbols-outlined">add_circle</span>
-            + Retour
-          </Button>
-        </div>
+            <p className="text-headline-sm font-bold text-error">{totalReturned} unités</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">receipt_long</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Total Retours</p>
+            <p className="text-headline-sm font-bold text-on-surface">{returns.length}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">inventory_2</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Produits concernés</p>
+            <p className="text-headline-sm font-bold text-on-surface">{new Set(returns.map(r => r.product_name)).size}</p>
+          </div>
+        </Card>
       </div>
 
       <Card className="overflow-hidden">
