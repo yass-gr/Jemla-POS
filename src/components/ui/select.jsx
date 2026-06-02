@@ -16,7 +16,7 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-oklch(0.922 0 0) bg-oklch(1 0 0) px-3 py-2 text-sm ring-offset-oklch(1 0 0) data-[placeholder]:text-oklch(0.556 0 0) focus:outline-none focus:ring-2 focus:ring-oklch(0.708 0 0) focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:border-oklch(1 0 0 / 10%) dark:border-oklch(1 0 0 / 15%) dark:bg-oklch(0.145 0 0) dark:ring-offset-oklch(0.145 0 0) dark:data-[placeholder]:text-oklch(0.708 0 0) dark:focus:ring-oklch(0.556 0 0)",
+      "flex h-10 w-full items-center justify-between rounded-md border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm ring-offset-surface-container-lowest data-[placeholder]:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:border-white/10 dark:border-white/15 dark:bg-surface-dim dark:ring-offset-surface-dim dark:data-[placeholder]:text-on-surface-variant dark:focus:ring-primary/80",
       className
     )}
     {...props}>
@@ -53,8 +53,8 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
-      className={cn(
-        "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border border-oklch(0.922 0 0) bg-oklch(1 0 0) text-oklch(0.145 0 0) shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin] dark:border-oklch(1 0 0 / 10%) dark:bg-oklch(0.205 0 0) dark:text-oklch(0.985 0 0)",
+    className={cn(
+      "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border border-outline-variant/30 bg-surface-container-lowest text-on-surface shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin] dark:border-white/10 dark:bg-surface-dim dark:text-on-surface",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -85,7 +85,7 @@ const SelectItem = React.forwardRef(({ className, children, ...props }, ref) => 
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-oklch(0.97 0 0) focus:text-oklch(0.205 0 0) data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-oklch(0.269 0 0) dark:focus:text-oklch(0.985 0 0)",
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none bg-surface-container-lowest focus:bg-surface-container-high focus:text-on-surface data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-surface-container-highest dark:focus:text-on-surface",
       className
     )}
     {...props}>
@@ -103,7 +103,7 @@ SelectItem.displayName = SelectPrimitive.Item.displayName
 const SelectSeparator = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-oklch(0.97 0 0) dark:bg-oklch(0.269 0 0)", className)}
+    className={cn("-mx-1 my-1 h-px bg-surface-container-high dark:bg-surface-container-highest", className)}
     {...props} />
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
