@@ -23,9 +23,10 @@ router.post('/', ensureAuthenticated, (req, res) => {
     'INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)',
     [name, phone || null, email || null, address || null]
   );
+  const customerId = getLastInsertId();
   saveDb();
 
-  const customer = queryOne('SELECT * FROM customers WHERE id = ?', [getLastInsertId()]);
+  const customer = queryOne('SELECT * FROM customers WHERE id = ?', [customerId]);
   res.status(201).json(customer);
 });
 

@@ -74,7 +74,7 @@ function lastId() { return db.exec('SELECT last_insert_rowid() as id')[0].values
 
 function createTables() {
   exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL DEFAULT \'cashier\' CHECK(role IN (\'admin\', \'cashier\')), created_at TEXT DEFAULT (datetime(\'now\')))');
-  exec('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, unit TEXT NOT NULL, stock REAL NOT NULL DEFAULT 0, image_url TEXT, created_at TEXT DEFAULT (datetime(\'now\')), updated_at TEXT DEFAULT (datetime(\'now\')))');
+  exec('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, unit TEXT NOT NULL, stock REAL NOT NULL DEFAULT 0, image_url TEXT, barcode TEXT, price_wholesale REAL, wholesale_min_qty REAL DEFAULT 0, created_at TEXT DEFAULT (datetime(\'now\')), updated_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS customers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT, email TEXT, address TEXT, debt_balance REAL NOT NULL DEFAULT 0, created_at TEXT DEFAULT (datetime(\'now\')), updated_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS sales (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER REFERENCES customers(id), user_id INTEGER NOT NULL REFERENCES users(id), total REAL NOT NULL, tax REAL NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT \'completed\' CHECK(status IN (\'completed\', \'held\', \'cancelled\')), created_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS sale_items (id INTEGER PRIMARY KEY AUTOINCREMENT, sale_id INTEGER NOT NULL REFERENCES sales(id) ON DELETE CASCADE, product_id INTEGER REFERENCES products(id), product_name TEXT NOT NULL, price REAL NOT NULL, qty REAL NOT NULL, unit TEXT NOT NULL)');
@@ -101,8 +101,8 @@ async function seed() {
   exec('INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)', ['cashier', cashierHash, 'Cashier', 'cashier']);
 
   for (const p of products) {
-    exec('INSERT INTO products (name, category, price, unit, stock, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-      [p.name, p.category, p.price, p.unit, p.stock, p.image_url || null]);
+    exec('INSERT INTO products (name, category, price, unit, stock, image_url, barcode, price_wholesale, wholesale_min_qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [p.name, p.category, p.price, p.unit, p.stock, p.image_url || null, p.barcode || null, p.price_wholesale ?? null, p.wholesale_min_qty ?? 0]);
   }
 
   const customerIds = [];

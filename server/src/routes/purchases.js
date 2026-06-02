@@ -25,8 +25,9 @@ router.post('/', ensureAuthenticated, (req, res) => {
   execute('UPDATE products SET stock = stock + ?, updated_at = datetime(\'now\') WHERE id = ?', [qty, product_id]);
   execute('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)', [product_id, qty, 'Achat fournisseur']);
 
+  const purchaseId = getLastInsertId();
   saveDb();
-  const p = queryOne('SELECT * FROM purchases WHERE id = ?', [getLastInsertId()]);
+  const p = queryOne('SELECT * FROM purchases WHERE id = ?', [purchaseId]);
   const pr = queryOne('SELECT name FROM products WHERE id = ?', [product_id]);
   res.status(201).json({ ...p, product_name: pr?.name });
 });

@@ -19,8 +19,9 @@ router.post('/', ensureAuthenticated, (req, res) => {
   if (!name) return res.status(400).json({ error: 'name is required' });
   execute('INSERT INTO suppliers (name, phone, email, address) VALUES (?, ?, ?, ?)',
     [name, phone || null, email || null, address || null]);
+  const supplierId = getLastInsertId();
   saveDb();
-  res.status(201).json(queryOne('SELECT * FROM suppliers WHERE id = ?', [getLastInsertId()]));
+  res.status(201).json(queryOne('SELECT * FROM suppliers WHERE id = ?', [supplierId]));
 });
 
 router.put('/:id', ensureAuthenticated, (req, res) => {

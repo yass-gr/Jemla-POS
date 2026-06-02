@@ -19,6 +19,7 @@ export default function SaleDetail({ saleId, onClose }) {
   }, [saleId]);
 
   const subtotal = sale ? sale.items.reduce((s, i) => s + i.price * i.qty, 0) : 0;
+  const totalDiscount = sale ? (sale.discount_total || 0) + sale.items.reduce((s, i) => s + (i.discount || 0), 0) : 0;
 
   return (
     <Dialog open={!!saleId} onOpenChange={open => !open && onClose()}>
@@ -52,15 +53,31 @@ export default function SaleDetail({ saleId, onClose }) {
                 <span className="font-bold text-body-md">{sale.customer_name}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-label-md text-on-surface-variant">Paiement</span>
+                <Badge variant="secondary" className="capitalize">{sale.payment_method || 'cash'}</Badge>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-label-md text-on-surface-variant">Statut</span>
-                <Badge variant={sale.customer_id ? 'destructive' : 'success'}>
-                  {sale.customer_id ? 'À crédit' : 'Payé'}
+                <Badge variant={sale.payment_status === 'paid' ? 'success' : sale.payment_status === 'partial' ? 'warning' : 'destructive'} className="capitalize">
+                  {sale.payment_status === 'paid' ? 'Payé' : sale.payment_status === 'partial' ? 'Partiel' : 'Impayé'}
                 </Badge>
               </div>
               {sale.customer_phone && (
                 <div className="flex justify-between">
                   <span className="text-label-md text-on-surface-variant">Téléphone</span>
                   <span className="font-bold text-body-md">{sale.customer_phone}</span>
+                </div>
+              )}
+              {sale.amount_paid > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-label-md text-on-surface-variant">Montant payé</span>
+                  <span className="font-bold text-body-md">{sale.amount_paid.toFixed(2)} DH</span>
+                </div>
+              )}
+              {sale.note && (
+                <div className="flex justify-between">
+                  <span className="text-label-md text-on-surface-variant">Note</span>
+                  <span className="font-bold text-body-md text-right max-w-[200px]">{sale.note}</span>
                 </div>
               )}
             </div>
@@ -72,7 +89,10 @@ export default function SaleDetail({ saleId, onClose }) {
                   <div key={item.id || i} className="flex items-center justify-between bg-surface-container rounded-xl p-4">
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-body-md text-on-surface truncate">{item.product_name}</p>
-                      <p className="text-label-md text-on-surface-variant">{item.price.toFixed(2)} DH × {item.qty} {item.unit}</p>
+                      <p className="text-label-md text-on-surface-variant">
+                        {item.price.toFixed(2)} DH × {item.qty} {item.unit}
+                        {item.discount > 0 && <span className="text-error ml-2">-{item.discount} DH</span>}
+                      </p>
                     </div>
                     <p className="font-bold text-body-lg text-primary ml-4">
                       {(item.price * item.qty).toFixed(2)} DH
@@ -87,6 +107,12 @@ export default function SaleDetail({ saleId, onClose }) {
                 <span className="text-on-surface-variant">Sous-total</span>
                 <span className="font-bold text-on-surface">{subtotal.toFixed(2)} DH</span>
               </div>
+              {totalDiscount > 0 && (
+                <div className="flex justify-between text-body-md">
+                  <span className="text-error">Remise</span>
+                  <span className="font-bold text-error">-{totalDiscount.toFixed(2)} DH</span>
+                </div>
+              )}
               <div className="flex justify-between text-body-md">
                 <span className="text-on-surface-variant">TVA (5%)</span>
                 <span className="font-bold text-on-surface">{sale.tax.toFixed(2)} DH</span>
