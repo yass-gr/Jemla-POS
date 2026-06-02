@@ -6,6 +6,8 @@ import { initDb } from './db.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
 import customerRoutes from './routes/customers.js';
+import dashboardRoutes from './routes/dashboard.js';
+import salesRoutes from './routes/sales.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,6 +33,8 @@ app.use(passport.session());
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/sales', salesRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -1,69 +1,16 @@
-const kpiCards = [
-  {
-    title: "Today's Sales",
-    value: '$14,284.50',
-    trend: '+12.5% from yesterday',
-    trendUp: true,
-    icon: 'payments',
-    color: 'text-primary',
-    bg: 'bg-primary/10',
-    barColor: 'bg-primary-container',
-    barWidth: 'w-3/4',
-  },
-  {
-    title: 'Pending Debts',
-    value: '$3,120.00',
-    trend: '8 overdue accounts',
-    trendUp: false,
-    icon: 'account_balance_wallet',
-    color: 'text-error',
-    bg: 'bg-error/10',
-    barColor: 'bg-error',
-    barWidth: 'w-1/2',
-  },
-  {
-    title: 'Low Stock Alerts',
-    value: '24 Items',
-    trend: 'Restock required now',
-    trendUp: true,
-    icon: 'inventory_2',
-    color: 'text-tertiary',
-    bg: 'bg-tertiary/10',
-    barColor: 'bg-tertiary',
-    barWidth: 'w-2/3',
-  },
-];
+import { useState, useEffect } from 'react';
+import { api } from '@/services/api';
 
-const weeklyData = [
-  { day: 'Mon', value: 2.1, height: 'h-2/3' },
-  { day: 'Tue', value: 1.8, height: 'h-1/2' },
-  { day: 'Wed', value: 2.9, height: 'h-3/4' },
-  { day: 'Thu', value: 2.2, height: 'h-2/3' },
-  { day: 'Fri', value: 3.5, height: 'h-5/6' },
-  { day: 'Sat', value: 4.2, height: 'h-full' },
-  { day: 'Sun', value: 3.2, height: 'h-4/5' },
-];
-
-const topProducts = [
-  { name: 'Organic Strawberries', sales: '248 sales this week', price: '$4.99', img: 'https://lh3.googleusercontent.com/aida/AP1WRLseZgyJpgznCewyjbnXijuhbAX0tNFNBepPrrQjCuypXP4hWRID95E8zaYAeAf4sQ7jWqdugPn2EUrp2KvNiUiZsJoi9qu692rzO0V1D2wGqpwNIfpgJITtPEIxvBmpkH15Urmb6hnRHFoDPS6W0vaMmK-Ef9EMIye83RrQGqkqzImgS3Xw2N5CBfyBnTO83Jc3j6v26FcWces92WU5pLRMTMaDBkwClrCKD93vO6Yt9m7tCt1Bjfj2Yg' },
-  { name: 'Fresh Broccoli', sales: '182 sales this week', price: '$2.50', img: 'https://lh3.googleusercontent.com/aida/AP1WRLts168qtwNCnoDlFjIlTauSyRMpF-9NZnpB__ro9vBGCyFWMPJM9K0jk8hr9xoVWPKqb2prt1ylti04b1CRMfiI6usvv8Jf0cggUN9F91HhUdue3Vm-peRTFaviXJrSquTYIPb3qc4Cbw6x9YxjZwGNUFHscF3LLZkjTkleKW0vVnbyQ2euS5zZnqGbtU_4PpCTna4t1QhIzmJiSb57YRmIY-C2_o_qdPrHTD4XaOE6jq0-6wYf16mXcQ' },
-  { name: 'Fuji Apples', sales: '156 sales this week', price: '$1.20', img: 'https://lh3.googleusercontent.com/aida/AP1WRLsLFcRc3FN68kmqU5RyQR1SMgwM9Zj9sDtAvLhV9U7gGlsM5OmlzwtMjpXXam2-dmcZVhtoe3GmwtNGIMD-B_Y72BD0whGmX2dyzp4TaQM1utA9t6u7WOLEEZrufKzSdiSTyMVlj-YjLdO7id49VM_uXLpxabSX2Ds10DDl0z97ICLCmU6vjQz85IVe1b_Y_54DR7zvKw58RV_qlCjQNF0eXiPRqmY5JYTSPietkZS_A3NdLkW0qSxL7tI' },
-  { name: 'Whole Milk 1L', sales: '142 sales this week', price: '$3.15', img: 'https://lh3.googleusercontent.com/aida/AP1WRLsuQFA4_auAUjaJERtYwwvEGGYduKHqylHrKnIg6Pq6Wqkq-o5UQJeYc2movCsSN2KqCpEejjW62w7lHigyKNB59GgEihglGr0BVlbO8wUIoEilbydy8VLI4YONexBLk8YMjlSX_ex8CqqTUZcWLV7Yo981ayG-gBVM__qb2-3AEgrXfYd0PNh9T1G3SvJvcNk-ATbZj2Aa5KA1FmVYUS8wAfCMDjoqE3MEcZOI9UTAzRy6U2icw_I3Zw' },
-];
-
-const recentTransactions = [
-  { id: '#POS-82741', customer: 'James Wilson', date: 'Today, 10:45 AM', items: '4 Items', status: 'Completed', total: '$124.50' },
-  { id: '#POS-82740', customer: 'Sarah Connor', date: 'Today, 10:32 AM', items: '2 Items', status: 'Pending', total: '$42.00' },
-  { id: '#POS-82739', customer: 'Michael Brown', date: 'Today, 09:55 AM', items: '7 Items', status: 'Canceled', total: '$215.10' },
-  { id: '#POS-82738', customer: 'Emily Davis', date: 'Yesterday, 06:20 PM', items: '12 Items', status: 'Completed', total: '$450.80' },
-];
-
-function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barWidth }) {
+function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barWidth, loading }) {
   return (
     <div className="bg-surface-container-lowest p-8 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col justify-between relative overflow-hidden group">
       <div className="z-10">
         <p className="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-2">{title}</p>
-        <h3 className={`text-headline-lg font-headline-lg ${color}`}>{value}</h3>
+        {loading ? (
+          <div className="h-10 w-28 bg-surface-container-highest rounded animate-pulse mb-2" />
+        ) : (
+          <h3 className={`text-headline-lg font-headline-lg ${color}`}>{value}</h3>
+        )}
         <div className={`flex items-center gap-1 mt-4 ${trendUp ? 'text-primary' : 'text-on-surface-variant'} font-bold`}>
           <span className="material-symbols-outlined text-sm">{trendUp ? 'trending_up' : 'warning'}</span>
           <span>{trend}</span>
@@ -72,7 +19,7 @@ function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barW
       <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
         <span className={`material-symbols-outlined text-[120px] ${color}`}>{icon}</span>
       </div>
-      <div className={`h-1.5 w-full bg-surface-container absolute bottom-0 left-0`}>
+      <div className="h-1.5 w-full bg-surface-container absolute bottom-0 left-0">
         <div className={`h-full ${barColor} ${barWidth}`} />
       </div>
     </div>
@@ -80,12 +27,70 @@ function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barW
 }
 
 export default function Dashboard() {
+  const [stats, setStats] = useState(null);
+  const [salesTrend, setSalesTrend] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [recentTx, setRecentTx] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.dashboard.stats(),
+      api.dashboard.salesTrend(),
+      api.dashboard.topProducts(),
+      api.dashboard.recentTransactions(),
+    ]).then(([s, t, p, r]) => {
+      setStats(s);
+      setSalesTrend(t);
+      setTopProducts(p);
+      setRecentTx(r);
+    }).catch(console.error).finally(() => setLoading(false));
+  }, []);
+
+  const kpiCards = [
+    {
+      title: "Today's Sales",
+      value: stats ? `$${stats.todaySales.toFixed(2)}` : '$0',
+      trend: stats ? `${stats.todayTransactions} transactions today` : 'No data yet',
+      trendUp: true,
+      icon: 'payments',
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      barColor: 'bg-primary-container',
+      barWidth: 'w-3/4',
+    },
+    {
+      title: 'Pending Debts',
+      value: stats ? `$${stats.pendingDebts.toFixed(2)}` : '$0',
+      trend: stats ? `${stats.overdueAccounts} accounts with debt` : 'No data yet',
+      trendUp: false,
+      icon: 'account_balance_wallet',
+      color: 'text-error',
+      bg: 'bg-error/10',
+      barColor: 'bg-error',
+      barWidth: stats ? `${Math.min(stats.overdueAccounts * 10, 100)}%` : 'w-1/2',
+    },
+    {
+      title: 'Low Stock Alerts',
+      value: stats ? `${stats.lowStockItems} Items` : '0 Items',
+      trend: stats && stats.lowStockItems > 0 ? 'Restock required now' : 'All stocked up',
+      trendUp: stats ? stats.lowStockItems === 0 : true,
+      icon: 'inventory_2',
+      color: stats && stats.lowStockItems > 0 ? 'text-tertiary' : 'text-primary',
+      bg: stats && stats.lowStockItems > 0 ? 'bg-tertiary/10' : 'bg-primary/10',
+      barColor: stats && stats.lowStockItems > 0 ? 'bg-tertiary' : 'bg-primary-container',
+      barWidth: stats ? `${Math.min(stats.lowStockItems * 10, 100)}%` : 'w-2/3',
+    },
+  ];
+
+  const maxTrend = Math.max(...salesTrend.map(d => d.value), 1);
+
   return (
     <div className="space-y-gutter pb-xl">
       <h2 className="font-headline-lg text-headline-lg text-on-surface">Dashboard</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
         {kpiCards.map((card) => (
-          <KpiCard key={card.title} {...card} />
+          <KpiCard key={card.title} {...card} loading={loading} />
         ))}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
@@ -99,14 +104,13 @@ export default function Dashboard() {
           </div>
           <div className="h-[300px] relative w-full">
             <div className="absolute inset-0 flex items-end justify-between px-2 pt-8">
-              {weeklyData.map((d) => (
+              {salesTrend.map((d) => (
                 <div key={d.day} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
                   <div className="w-full mx-1 h-full flex items-end">
-                    <div className={`w-full bg-primary-container/20 rounded-t-lg relative hover:bg-primary-container/40 transition-all ${d.height}`}>
+                    <div className="w-full bg-primary-container/20 rounded-t-lg relative hover:bg-primary-container/40 transition-all" style={{ height: `${(d.value / maxTrend) * 100}%` }}>
                       <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
                         {d.day}: ${d.value}k
                       </div>
-                      <div className={`absolute bottom-0 w-full bg-primary-container rounded-t-lg ${d.height}`} style={{ height: '60%' }} />
                     </div>
                   </div>
                   <span className="text-label-md text-on-surface-variant">{d.day}</span>
@@ -123,18 +127,21 @@ export default function Dashboard() {
           <div className="flex-1 space-y-4">
             {topProducts.map((p) => (
               <div key={p.name} className="flex items-center gap-4 p-2 hover:bg-surface-container rounded-xl transition-all">
-                <div className="w-12 h-12 bg-surface-container rounded-xl overflow-hidden flex-shrink-0">
-                  <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                <div className="w-12 h-12 bg-surface-container rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined">inventory_2</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-body-md text-on-surface truncate">{p.name}</p>
-                  <p className="text-label-md text-on-surface-variant">{p.sales}</p>
+                  <p className="text-label-md text-on-surface-variant">{p.sales} sales</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-primary">{p.price}</p>
+                  <p className="font-bold text-primary">${Number(p.price).toFixed(2)}</p>
                 </div>
               </div>
             ))}
+            {topProducts.length === 0 && !loading && (
+              <p className="text-on-surface-variant text-body-md text-center py-8">No product data yet</p>
+            )}
           </div>
         </div>
       </div>
@@ -158,24 +165,27 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
-              {recentTransactions.map((tx) => (
+              {recentTx.map((tx) => (
                 <tr key={tx.id} className="hover:bg-surface-container/30 transition-colors cursor-pointer">
-                  <td className="px-8 py-5 font-bold text-primary">{tx.id}</td>
+                  <td className="px-8 py-5 font-bold text-primary">{tx.invoice}</td>
                   <td className="px-8 py-5 text-body-md">{tx.customer}</td>
                   <td className="px-8 py-5 text-on-surface-variant text-body-md">{tx.date}</td>
-                  <td className="px-8 py-5 text-body-md">{tx.items}</td>
+                  <td className="px-8 py-5 text-body-md">{tx.items} Items</td>
                   <td className="px-8 py-5">
                     <span className={`px-3 py-1 rounded-full text-label-md font-bold inline-block ${
-                      tx.status === 'Completed' ? 'bg-primary/10 text-primary' :
-                      tx.status === 'Pending' ? 'bg-secondary/10 text-secondary' :
+                      tx.status === 'completed' ? 'bg-primary/10 text-primary' :
+                      tx.status === 'held' ? 'bg-secondary/10 text-secondary' :
                       'bg-error/10 text-error'
                     }`}>
-                      {tx.status}
+                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                     </span>
                   </td>
-                  <td className="px-8 py-5 font-bold text-body-md">{tx.total}</td>
+                  <td className="px-8 py-5 font-bold text-body-md">${tx.total.toFixed(2)}</td>
                 </tr>
               ))}
+              {recentTx.length === 0 && !loading && (
+                <tr><td colSpan="6" className="text-center py-8 text-on-surface-variant">No recent transactions</td></tr>
+              )}
             </tbody>
           </table>
         </div>
