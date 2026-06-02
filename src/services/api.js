@@ -39,6 +39,7 @@ export const api = {
     stats: () => request('/dashboard/stats'),
     salesTrend: () => request('/dashboard/sales-trend'),
     topProducts: () => request('/dashboard/top-products'),
+    topCustomers: () => request('/dashboard/top-customers'),
     recentTransactions: () => request('/dashboard/recent-transactions'),
   },
 

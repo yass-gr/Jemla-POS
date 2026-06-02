@@ -68,6 +68,21 @@ router.get('/top-products', ensureAuthenticated, (req, res) => {
   res.json(products);
 });
 
+router.get('/top-customers', ensureAuthenticated, (req, res) => {
+  const customer = queryOne(`
+    SELECT c.id, c.name, c.phone, c.debt_balance,
+           COUNT(s.id) as total_orders,
+           COALESCE(SUM(s.total), 0) as total_spent
+    FROM customers c
+    JOIN sales s ON s.customer_id = c.id
+    WHERE s.status = 'completed'
+    GROUP BY c.id
+    ORDER BY total_spent DESC
+    LIMIT 1
+  `);
+  res.json(customer || null);
+});
+
 router.get('/recent-transactions', ensureAuthenticated, (req, res) => {
   const transactions = queryAll(`
     SELECT s.id, s.created_at, COALESCE(c.name, 'Walk-in') as customer,

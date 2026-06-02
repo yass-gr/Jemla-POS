@@ -65,6 +65,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [salesTrend, setSalesTrend] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [topCustomer, setTopCustomer] = useState(null);
   const [recentTx, setRecentTx] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,12 +74,14 @@ export default function Dashboard() {
       api.dashboard.stats(),
       api.dashboard.salesTrend(),
       api.dashboard.topProducts(),
+      api.dashboard.topCustomers(),
       api.dashboard.recentTransactions(),
     ])
-      .then(([s, t, p, r]) => {
+      .then(([s, t, p, c, r]) => {
         setStats(s);
         setSalesTrend(t);
         setTopProducts(p);
+        setTopCustomer(c);
         setRecentTx(r);
       })
       .catch(console.error)
@@ -122,6 +125,7 @@ export default function Dashboard() {
 
   const trendData = salesTrend.map(d => ({ ...d, value: Number(d.value) || 0 }));
   const bestProduct = topProducts[0];
+  const bestCustomer = topCustomer;
 
   return (
     <div className="space-y-4 sm:space-y-gutter pb-xl">
@@ -246,48 +250,88 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </Card>
-        <Card className="p-4 sm:p-6 flex flex-col">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="material-symbols-outlined text-primary">star</span>
-            <h4 className="text-headline-sm font-headline-sm">Meilleur Produit</h4>
-          </div>
-          {bestProduct ? (
-            <div className="flex items-start gap-6 flex-1">
-              <div className="w-28 h-28 rounded-2xl bg-surface-container flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
-                {bestProduct.img ? (
-                  <img src={bestProduct.img} alt={bestProduct.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="material-symbols-outlined text-5xl text-primary/40">inventory_2</span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0 space-y-3">
-                <p className="text-headline-md font-bold text-on-surface truncate">{bestProduct.name}</p>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <div>
-                    <p className="text-label-md text-on-surface-variant">Ventes</p>
-                    <p className="text-headline-sm font-bold text-primary">{bestProduct.sales}</p>
-                  </div>
-                  <div>
-                    <p className="text-label-md text-on-surface-variant">Prix</p>
-                    <p className="text-headline-sm font-bold text-on-surface">{Number(bestProduct.price).toFixed(2)} DH</p>
-                  </div>
-                  <div>
-                    <p className="text-label-md text-on-surface-variant">Stock</p>
-                    <p className="text-headline-sm font-bold text-on-surface">{bestProduct.stock} u</p>
-                  </div>
-                  <div>
-                    <p className="text-label-md text-on-surface-variant">Revenu</p>
-                    <p className="text-headline-sm font-bold text-secondary">{(bestProduct.sales * Number(bestProduct.price)).toFixed(2)} DH</p>
+        <div className="flex flex-col gap-4 sm:gap-gutter">
+          <Card className="p-4 sm:p-6 flex flex-col">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-primary">star</span>
+              <h4 className="text-headline-sm font-headline-sm">Meilleur Produit</h4>
+            </div>
+            {bestProduct ? (
+              <div className="flex items-start gap-4 flex-1">
+                <div className="w-20 h-20 rounded-2xl bg-surface-container flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
+                  {bestProduct.img ? (
+                    <img src={bestProduct.img} alt={bestProduct.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-4xl text-primary/40">inventory_2</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <p className="font-bold text-on-surface truncate">{bestProduct.name}</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Ventes</p>
+                      <p className="text-headline-sm font-bold text-primary">{bestProduct.sales}</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Prix</p>
+                      <p className="text-headline-sm font-bold text-on-surface">{Number(bestProduct.price).toFixed(2)} DH</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Stock</p>
+                      <p className="text-headline-sm font-bold text-on-surface">{bestProduct.stock} u</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Revenu</p>
+                      <p className="text-headline-sm font-bold text-secondary">{(bestProduct.sales * Number(bestProduct.price)).toFixed(2)} DH</p>
+                    </div>
                   </div>
                 </div>
               </div>
+            ) : (
+              !loading && (
+                <p className="text-on-surface-variant text-body-md text-center py-8">Aucune donnée produit</p>
+              )
+            )}
+          </Card>
+          <Card className="p-4 sm:p-6 flex flex-col">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-secondary">group</span>
+              <h4 className="text-headline-sm font-headline-sm">Meilleur Client</h4>
             </div>
-          ) : (
-            !loading && (
-              <p className="text-on-surface-variant text-body-md text-center py-8">Aucune donnée produit</p>
-            )
-          )}
-        </Card>
+            {bestCustomer ? (
+              <div className="flex items-start gap-4 flex-1">
+                <div className="w-20 h-20 rounded-2xl bg-secondary/10 flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-4xl text-secondary/50">person</span>
+                </div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <p className="font-bold text-on-surface truncate">{bestCustomer.name}</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Achats</p>
+                      <p className="text-headline-sm font-bold text-secondary">{bestCustomer.total_orders}</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Total</p>
+                      <p className="text-headline-sm font-bold text-on-surface">{Number(bestCustomer.total_spent).toFixed(2)} DH</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Dette</p>
+                      <p className="text-headline-sm font-bold text-error">{Number(bestCustomer.debt_balance).toFixed(2)} DH</p>
+                    </div>
+                    <div>
+                      <p className="text-label-md text-on-surface-variant">Contact</p>
+                      <p className="text-body-md font-bold text-on-surface truncate">{bestCustomer.phone || '-'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              !loading && (
+                <p className="text-on-surface-variant text-body-md text-center py-8">Aucune donnée client</p>
+              )
+            )}
+          </Card>
+        </div>
         <Card className="lg:col-span-2 p-4 sm:p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-headline-sm font-headline-sm">Top Products</h4>
