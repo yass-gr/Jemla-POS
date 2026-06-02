@@ -101,21 +101,20 @@ export default function Debts() {
               return (
                 <TableRow key={c.id}>
                   <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className="bg-surface-container-highest text-primary font-bold">{initials}</AvatarFallback>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-xs bg-surface-container-highest text-primary font-bold">{initials}</AvatarFallback>
                       </Avatar>
-                      <p className="text-body-lg font-bold text-on-surface">{c.name}</p>
+                      <p className="font-bold text-sm text-on-surface">{c.name}</p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className={`text-body-lg font-extrabold ${c.debt_balance > 5000 ? 'text-error' : 'text-on-surface'}`}>
+                    <p className={`font-bold text-sm ${c.debt_balance > 5000 ? 'text-error' : 'text-on-surface'}`}>
                       {c.debt_balance.toFixed(2)} DH
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-on-surface">{c.phone || '-'}</p>
-                    <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
+                    <p className="text-sm text-on-surface">{c.phone || '-'}{c.email ? ` · ${c.email}` : ''}</p>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="default" size="sm" className="rounded-xl">

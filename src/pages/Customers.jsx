@@ -111,17 +111,16 @@ export default function Customers() {
                 <TableRow key={c.id} className="group">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback>{initials}</AvatarFallback>
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-xs">{initials}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-bold text-on-surface leading-none">{c.name}</p>
+                        <p className="font-bold text-sm text-on-surface leading-none">{c.name}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-on-surface">{c.phone || '-'}</p>
-                    <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
+                    <p className="text-sm text-on-surface">{c.phone || '-'}{c.email ? ` · ${c.email}` : ''}</p>
                   </TableCell>
                   <TableCell>
                     <p className="text-on-surface-variant max-w-[200px] truncate">{c.address || '-'}</p>
@@ -145,7 +144,7 @@ export default function Customers() {
           </TableBody>
         </Table>
 
-        <div className="px-8 py-4 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
+        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">
             {filtered.length > 0
               ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} clients`

@@ -207,8 +207,8 @@ export default function Sales() {
                   <span className="font-bold text-primary">{s.invoice}</span>
                 </TableCell>
                 <TableCell>
-                  <div className="text-on-surface">{s.date}</div>
-                  <div className="text-xs text-on-surface-variant">{s.time}</div>
+                  <span className="text-on-surface">{s.date}</span>
+                  <span className="text-xs text-on-surface-variant ml-1">{s.time}</span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -254,7 +254,7 @@ export default function Sales() {
             )}
           </TableBody>
         </Table>
-        <div className="px-8 py-5 bg-surface-container/30 border-t border-outline-variant flex items-center justify-between">
+        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant font-medium">
             {filtered.length > 0
               ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} ventes`

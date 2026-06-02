@@ -116,16 +116,16 @@ export default function Products() {
             {paginated.map((p) => (
               <TableRow key={p.id} className="group">
                 <TableCell>
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-surface-variant overflow-hidden flex-shrink-0 border border-outline-variant/20 flex items-center justify-center text-primary">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded bg-surface-variant overflow-hidden flex-shrink-0 border border-outline-variant/20 flex items-center justify-center text-primary">
                       {p.image_url ? (
                         <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                       ) : (
-                        <span className="material-symbols-outlined text-2xl">inventory_2</span>
+                        <span className="material-symbols-outlined text-base">inventory_2</span>
                       )}
                     </div>
                     <div>
-                      <p className="font-bold text-on-surface">{p.name}</p>
+                      <p className="font-bold text-sm text-on-surface">{p.name}</p>
                     </div>
                   </div>
                 </TableCell>
