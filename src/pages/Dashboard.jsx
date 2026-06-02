@@ -251,83 +251,83 @@ export default function Dashboard() {
           </div>
         </Card>
         <div className="flex flex-col gap-4 sm:gap-gutter">
-          <Card className="p-4 sm:p-6 flex flex-col">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-primary">star</span>
-              <h4 className="text-headline-sm font-headline-sm">Meilleur Produit</h4>
+          <Card className="p-4 flex flex-col">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-primary text-lg">star</span>
+              <h4 className="text-sm font-bold text-on-surface">Meilleur Produit</h4>
             </div>
             {bestProduct ? (
-              <div className="flex items-start gap-4 flex-1">
-                <div className="w-20 h-20 rounded-2xl bg-surface-container flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
                   {bestProduct.img ? (
                     <img src={bestProduct.img} alt={bestProduct.name} className="w-full h-full object-cover" />
                   ) : (
-                    <span className="material-symbols-outlined text-4xl text-primary/40">inventory_2</span>
+                    <span className="material-symbols-outlined text-2xl text-primary/40">inventory_2</span>
                   )}
                 </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <p className="font-bold text-on-surface truncate">{bestProduct.name}</p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestProduct.name}</p>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Ventes</p>
-                      <p className="text-headline-sm font-bold text-primary">{bestProduct.sales}</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Ventes</p>
+                      <p className="text-sm font-bold text-primary leading-tight">{bestProduct.sales}</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Prix</p>
-                      <p className="text-headline-sm font-bold text-on-surface">{Number(bestProduct.price).toFixed(2)} DH</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Prix</p>
+                      <p className="text-sm font-bold text-on-surface leading-tight">{Number(bestProduct.price).toFixed(2)} DH</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Stock</p>
-                      <p className="text-headline-sm font-bold text-on-surface">{bestProduct.stock} u</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Stock</p>
+                      <p className="text-sm font-bold text-on-surface leading-tight">{bestProduct.stock} u</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Revenu</p>
-                      <p className="text-headline-sm font-bold text-secondary">{(bestProduct.sales * Number(bestProduct.price)).toFixed(2)} DH</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Revenu</p>
+                      <p className="text-sm font-bold text-secondary leading-tight">{(bestProduct.sales * Number(bestProduct.price)).toFixed(2)} DH</p>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
               !loading && (
-                <p className="text-on-surface-variant text-body-md text-center py-8">Aucune donnée produit</p>
+                <p className="text-on-surface-variant text-xs text-center py-6">Aucune donnée produit</p>
               )
             )}
           </Card>
-          <Card className="p-4 sm:p-6 flex flex-col">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-secondary">group</span>
-              <h4 className="text-headline-sm font-headline-sm">Meilleur Client</h4>
+          <Card className="p-4 flex flex-col">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-secondary text-lg">group</span>
+              <h4 className="text-sm font-bold text-on-surface">Meilleur Client</h4>
             </div>
             {bestCustomer ? (
-              <div className="flex items-start gap-4 flex-1">
-                <div className="w-20 h-20 rounded-2xl bg-secondary/10 flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
-                  <span className="material-symbols-outlined text-4xl text-secondary/50">person</span>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
+                  <span className="material-symbols-outlined text-2xl text-secondary/50">person</span>
                 </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <p className="font-bold text-on-surface truncate">{bestCustomer.name}</p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestCustomer.name}</p>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Achats</p>
-                      <p className="text-headline-sm font-bold text-secondary">{bestCustomer.total_orders}</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Achats</p>
+                      <p className="text-sm font-bold text-secondary leading-tight">{bestCustomer.total_orders}</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Total</p>
-                      <p className="text-headline-sm font-bold text-on-surface">{Number(bestCustomer.total_spent).toFixed(2)} DH</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Total</p>
+                      <p className="text-sm font-bold text-on-surface leading-tight">{Number(bestCustomer.total_spent).toFixed(2)} DH</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Dette</p>
-                      <p className="text-headline-sm font-bold text-error">{Number(bestCustomer.debt_balance).toFixed(2)} DH</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Dette</p>
+                      <p className="text-sm font-bold text-error leading-tight">{Number(bestCustomer.debt_balance).toFixed(2)} DH</p>
                     </div>
                     <div>
-                      <p className="text-label-md text-on-surface-variant">Contact</p>
-                      <p className="text-body-md font-bold text-on-surface truncate">{bestCustomer.phone || '-'}</p>
+                      <p className="text-[11px] text-on-surface-variant leading-tight">Contact</p>
+                      <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestCustomer.phone || '-'}</p>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
               !loading && (
-                <p className="text-on-surface-variant text-body-md text-center py-8">Aucune donnée client</p>
+                <p className="text-on-surface-variant text-xs text-center py-6">Aucune donnée client</p>
               )
             )}
           </Card>
