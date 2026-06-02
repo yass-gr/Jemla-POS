@@ -181,8 +181,8 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-gutter">
-        <Card className="p-4 sm:p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-gutter">
+        <Card className="lg:col-span-2 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <h4 className="text-headline-sm font-headline-sm">
               Sales Revenue Trend
@@ -288,7 +288,7 @@ export default function Dashboard() {
             )
           )}
         </Card>
-        <Card className="p-4 sm:p-6 flex flex-col">
+        <Card className="lg:col-span-2 p-4 sm:p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-headline-sm font-headline-sm">Top Products</h4>
             <a
