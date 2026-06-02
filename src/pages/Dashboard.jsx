@@ -182,7 +182,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-gutter">
-        <Card className="lg:col-span-3 p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <h4 className="text-headline-sm font-headline-sm">
               Sales Revenue Trend
@@ -246,10 +246,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-gutter">
-        <Card className="lg:col-span-2 p-4 sm:p-6 flex flex-col">
+        <Card className="p-4 sm:p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-4">
             <span className="material-symbols-outlined text-primary">star</span>
             <h4 className="text-headline-sm font-headline-sm">Meilleur Produit</h4>
