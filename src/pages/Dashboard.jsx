@@ -84,6 +84,8 @@ export default function Dashboard() {
   ];
 
   const maxTrend = Math.max(...salesTrend.map(d => d.value), 1);
+  const CHART_TOP = 32;
+  const CHART_BOT = 28;
 
   return (
     <div className="space-y-gutter pb-xl">
@@ -102,20 +104,22 @@ export default function Dashboard() {
               <button className="px-4 py-1.5 rounded-full text-label-md border border-outline-variant hover:bg-surface-container">Monthly</button>
             </div>
           </div>
-          <div className="h-[300px] relative w-full">
-            <div className="absolute inset-0 flex items-end justify-between px-2 pt-8">
-              {salesTrend.map((d) => (
-                <div key={d.day} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                  <div className="w-full mx-1 h-full flex items-end">
-                    <div className="w-full bg-primary-container rounded-t-lg relative hover:opacity-80 transition-all" style={{ height: `${(d.value / maxTrend) * 100}%` }}>
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
-                        {d.day}: ${d.value}k
+          <div className="relative w-full" style={{ height: 300 }}>
+            <div className="absolute inset-0 flex justify-between px-2" style={{ paddingTop: CHART_TOP }}>
+              {salesTrend.map((d) => {
+                const barH = Math.max((d.value / maxTrend) * (300 - CHART_TOP - CHART_BOT), 2);
+                return (
+                  <div key={d.day} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer justify-end" style={{ height: '100%' }}>
+                    <div className="flex-1" />
+                    <div className="w-[70%] bg-primary-container rounded-t-lg relative transition-all hover:opacity-80" style={{ height: barH }}>
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
+                        ${d.value}k
                       </div>
                     </div>
+                    <span className="text-label-md text-on-surface-variant">{d.day}</span>
                   </div>
-                  <span className="text-label-md text-on-surface-variant">{d.day}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

@@ -8,6 +8,11 @@ import productRoutes from './routes/products.js';
 import customerRoutes from './routes/customers.js';
 import dashboardRoutes from './routes/dashboard.js';
 import salesRoutes from './routes/sales.js';
+import supplierRoutes from './routes/suppliers.js';
+import purchaseRoutes from './routes/purchases.js';
+import returnRoutes from './routes/returns.js';
+import inventoryRoutes from './routes/inventory.js';
+import reportRoutes from './routes/reports.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,6 +40,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/sales', salesRoutes);
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/returns', returnRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

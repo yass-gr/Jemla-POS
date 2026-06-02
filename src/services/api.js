@@ -45,5 +45,6 @@ export const api = {
   sales: {
     list: () => request('/sales'),
     stats: () => request('/sales/stats'),
+    create: (data) => request('/sales', { method: 'POST', body: JSON.stringify(data) }),
   },
 };

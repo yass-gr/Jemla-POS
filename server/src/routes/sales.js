@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { queryAll, queryOne } from '../db.js';
+import { queryAll, queryOne, execute, getLastInsertId, saveDb, getDb } from '../db.js';
 import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = Router();
@@ -22,6 +22,49 @@ router.get('/stats', ensureAuthenticated, (req, res) => {
     totalSales: stats.total_sales,
     pendingDebts: pendingDebts.total,
   });
+});
+
+router.post('/', ensureAuthenticated, (req, res) => {
+  const { customer_id, items } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'items array is required' });
+  }
+
+  const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+
+  execute(
+    'INSERT INTO sales (customer_id, user_id, total, tax, status) VALUES (?, ?, ?, ?, ?)',
+    [customer_id || null, req.user.id, total, tax, 'completed']
+  );
+  const saleId = getLastInsertId();
+
+  const stmt = getDb().prepare(
+    'INSERT INTO sale_items (sale_id, product_id, product_name, price, qty, unit) VALUES (?, ?, ?, ?, ?, ?)'
+  );
+  for (const item of items) {
+    stmt.bind([saleId, item.product_id, item.product_name, item.price, item.qty, item.unit]);
+    stmt.step();
+    stmt.reset();
+
+    execute('UPDATE products SET stock = stock - ?, updated_at = datetime(\'now\') WHERE id = ?', [item.qty, item.product_id]);
+    execute('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)', [item.product_id, -item.qty, 'sale']);
+  }
+  stmt.free();
+
+  if (customer_id) {
+    execute('UPDATE customers SET debt_balance = debt_balance + ?, updated_at = datetime(\'now\') WHERE id = ?', [total, customer_id]);
+  }
+
+  saveDb();
+
+  const sale = queryOne('SELECT * FROM sales WHERE id = ?', [saleId]);
+  const saleItems = queryAll('SELECT * FROM sale_items WHERE sale_id = ?', [saleId]);
+  sale.items = saleItems;
+
+  res.status(201).json(sale);
 });
 
 router.get('/', ensureAuthenticated, (req, res) => {
