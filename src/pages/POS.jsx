@@ -19,6 +19,7 @@ export default function POS() {
   const [submitting, setSubmitting] = useState(false);
   const [showCartMobile, setShowCartMobile] = useState(false);
   const [productSearch, setProductSearch] = useState('');
+  const [printTicket, setPrintTicket] = useState(false);
 
   const [numpadOpen, setNumpadOpen] = useState(false);
   const [numpadTarget, setNumpadTarget] = useState(null);
@@ -131,6 +132,75 @@ export default function POS() {
     setNumpadTarget(null);
   }
 
+  function printBon() {
+    const date = new Date().toLocaleDateString('fr-FR', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const customerName = selectedCustomer ? selectedCustomer.name : 'Client Libre';
+
+    const w = window.open('', '_blank');
+    w.document.write(`
+      <html><head><title>Bon de vente</title>
+      <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 40px; color: #222; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 4px 0 0; color: #666; }
+        .title { text-align: center; font-size: 20px; font-weight: bold; border-top: 2px solid #333; border-bottom: 2px solid #333; padding: 10px 0; margin-bottom: 24px; }
+        .info { display: flex; justify-content: space-between; margin-bottom: 24px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        th { background: #f5f5f5; text-align: left; padding: 8px 12px; font-size: 13px; border-bottom: 2px solid #ddd; }
+        td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .right { text-align: right; }
+        .totals { margin-left: auto; width: 300px; }
+        .totals div { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; }
+        .totals .grand { font-weight: bold; font-size: 16px; border-top: 2px solid #333; padding-top: 8px; margin-top: 4px; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 60px; }
+        .signature-box { text-align: center; }
+        .signature-box .line { width: 200px; border-top: 1px solid #333; margin-top: 60px; padding-top: 8px; font-size: 13px; }
+        @media print { body { padding: 20px; } }
+      </style></head><body>
+        <div class="header">
+          <h1>Simi Shop</h1>
+          <p>Grossiste en fruits et légumes</p>
+        </div>
+        <div class="title">BON DE VENTE</div>
+        <div class="info">
+          <span>Date: ${date}</span>
+          <span>Client: ${customerName}</span>
+        </div>
+        <table>
+          <tr><th>Produit</th><th class="right">Qté</th><th class="right">Prix unitaire</th><th class="right">Total</th></tr>
+          ${cart.map(item => `
+            <tr>
+              <td>${item.product_name}</td>
+              <td class="right">${item.qty} ${item.unit}</td>
+              <td class="right">${item.price.toFixed(2)} DH</td>
+              <td class="right">${(item.price * item.qty).toFixed(2)} DH</td>
+            </tr>
+          `).join('')}
+        </table>
+        <div class="totals">
+          <div><span>Sous-total</span><span>${subtotal.toFixed(2)} DH</span></div>
+          <div><span>TVA (5%)</span><span>${tax.toFixed(2)} DH</span></div>
+          <div class="grand"><span>Total</span><span>${total.toFixed(2)} DH</span></div>
+        </div>
+        <div class="signatures">
+          <div class="signature-box">
+            <div class="line">Signature du vendeur</div>
+          </div>
+          <div class="signature-box">
+            <div class="line">Signature du client</div>
+          </div>
+        </div>
+      </body></html>
+    `);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
+  }
+
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const tax = subtotal * TAX_RATE;
   const total = subtotal + tax;
@@ -152,7 +222,9 @@ export default function POS() {
       });
       setCart([]);
       setShowCartMobile(false);
+      setPrintTicket(false);
       toast.success(`Vente confirmée ! Total: ${total.toFixed(2)} DH`);
+      if (printTicket) printBon();
 
       const prods = await api.products.list();
       setProducts(prods);
@@ -316,6 +388,8 @@ export default function POS() {
           onClearCustomer={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
           onCustomerSearch={setCustomerSearch}
           onOpenNumpad={openNumpad}
+          printTicket={printTicket}
+          onTogglePrint={() => setPrintTicket(prev => !prev)}
         />
       </div>
 
@@ -483,6 +557,15 @@ export default function POS() {
                 <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
               </div>
             </div>
+            <label className="flex items-center gap-2 mb-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={printTicket}
+                onChange={() => setPrintTicket(prev => !prev)}
+                className="w-4 h-4 rounded border-outline-variant accent-primary"
+              />
+              <span className="text-xs text-on-surface-variant">Imprimer le ticket</span>
+            </label>
             <div className="flex gap-2">
               <Button variant="outline" onClick={clearCart} className="flex-1 py-2 rounded-xl text-sm">
                 Vider
@@ -518,7 +601,7 @@ export default function POS() {
   );
 }
 
-function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch, onOpenNumpad }) {
+function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch, onOpenNumpad, printTicket, onTogglePrint }) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
       <div className="p-3 border-b border-outline-variant/30 space-y-2">
@@ -671,6 +754,16 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
             <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
           </div>
         </div>
+
+        <label className="flex items-center gap-2 mb-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={printTicket}
+            onChange={onTogglePrint}
+            className="w-4 h-4 rounded border-outline-variant accent-primary"
+          />
+          <span className="text-xs text-on-surface-variant">Imprimer le ticket</span>
+        </label>
 
         <Button
           onClick={onConfirm}
