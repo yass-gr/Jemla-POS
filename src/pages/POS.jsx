@@ -288,7 +288,7 @@ export default function POS() {
       </div>
 
       {/* Desktop Cart */}
-      <div className="hidden lg:flex lg:col-span-4 flex-col">
+      <div className="hidden lg:flex lg:col-span-4 flex-col self-start max-h-[calc(100vh-12rem)] sticky top-0">
         <CartPanel
           cart={cart}
           totalItems={totalItems}
