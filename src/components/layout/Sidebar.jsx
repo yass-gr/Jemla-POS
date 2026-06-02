@@ -18,7 +18,6 @@ const navItems = [
 export default function Sidebar({ open, onClose }) {
   return (
     <>
-      {/* Overlay for mobile */}
       {open && (
         <div
           className="fixed inset-0 bg-black/40 z-40 lg:hidden"
@@ -26,40 +25,40 @@ export default function Sidebar({ open, onClose }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top-0 h-screen w-[260px] bg-inverse-surface flex flex-col py-margin z-50 shadow-xl
-          transition-transform duration-300 ease-in-out
+          group fixed left-0 top-0 h-screen bg-inverse-surface flex flex-col z-50 shadow-xl
+          transition-[width] duration-200 ease-in-out
+          w-[260px] lg:w-[72px] lg:hover:w-[260px]
           lg:translate-x-0
           ${open ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="px-6 mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
+        <div className="px-4 mb-8 flex items-center gap-3 mt-margin">
+          <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-on-primary text-headline-sm">storefront</span>
           </div>
-          <div>
-            <h1 className="text-headline-md font-bold text-primary-fixed leading-tight">Simi Shop</h1>
-            <p className="text-label-md text-on-secondary-container/60">Retail Management</p>
+          <div className="lg:hidden lg:group-hover:block overflow-hidden">
+            <h1 className="text-headline-md font-bold text-primary-fixed leading-tight whitespace-nowrap">Simi Shop</h1>
+            <p className="text-label-md text-on-secondary-container/60 whitespace-nowrap">Retail Management</p>
           </div>
         </div>
-        <nav className="flex-1 space-y-2 overflow-y-auto px-2">
+        <nav className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden px-2">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center px-4 py-3.5 mx-2 rounded-xl transition-colors ${
+                `flex items-center gap-3 px-4 py-3.5 mx-2 rounded-xl transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20'
                     : 'text-on-secondary-container hover:bg-primary-container/20 hover:text-on-primary'
                 }`
               }
             >
-              <span className="material-symbols-outlined mr-3">{item.icon}</span>
-              <span className="font-label-md text-label-md">{item.label}</span>
+              <span className="material-symbols-outlined shrink-0">{item.icon}</span>
+              <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline truncate">{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -67,10 +66,10 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             to="/login"
             onClick={onClose}
-            className="flex items-center px-4 py-3 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-colors"
+            className="flex items-center gap-3 px-4 py-3.5 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-colors whitespace-nowrap"
           >
-            <span className="material-symbols-outlined mr-3">logout</span>
-            <span className="font-label-md text-label-md">Logout</span>
+            <span className="material-symbols-outlined shrink-0">logout</span>
+            <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline">Logout</span>
           </NavLink>
         </div>
       </aside>

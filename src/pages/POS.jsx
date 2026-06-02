@@ -198,83 +198,8 @@ export default function POS() {
         </div>
       </div>
 
-      {/* Mobile: Client + Categories */}
+      {/* Mobile: Categories */}
       <div className="lg:hidden flex flex-col gap-4">
-        <section className="bg-surface-container-lowest p-4 sm:p-6 rounded-xl shadow-sm border border-outline-variant/30 relative">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Client</h2>
-            <button className="text-primary hover:bg-primary-container/10 p-1 rounded-lg transition-colors">
-              <span className="material-symbols-outlined">person_add</span>
-            </button>
-          </div>
-          <div
-            className="flex items-center gap-3 bg-surface-container p-3 rounded-lg cursor-pointer"
-            onClick={() => setShowCustomerDropdown(!showCustomerDropdown)}
-          >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-secondary">person</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-body-md truncate">
-                {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
-              </p>
-              <p className="text-label-md text-on-surface-variant truncate">
-                {selectedCustomer ? `${selectedCustomer.phone || 'Pas de téléphone'} · ${selectedCustomer.debt_balance.toFixed(2)} DH dû` : 'Compte par défaut'}
-              </p>
-            </div>
-            <span className="material-symbols-outlined text-on-surface-variant shrink-0">
-              {showCustomerDropdown ? 'expand_less' : 'expand_more'}
-            </span>
-          </div>
-          {showCustomerDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-2 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden">
-              <div className="p-3">
-                <input
-                  type="text"
-                  placeholder="Rechercher un client..."
-                  value={customerSearch}
-                  onChange={e => setCustomerSearch(e.target.value)}
-                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"
-                  autoFocus
-                />
-              </div>
-              <div className="max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                  className="w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3"
-                >
-                  <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
-                    <span className="material-symbols-outlined text-sm">person_off</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-body-md">Client Libre</p>
-                    <p className="text-label-md text-on-surface-variant">Vente sans compte</p>
-                  </div>
-                </button>
-                {filteredCustomers.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                    className={`w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3 ${
-                      selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                      <span className="text-label-md font-bold text-secondary">
-                        {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-body-md truncate">{c.name}</p>
-                      <p className="text-label-md text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-
         <section className="flex flex-col">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h2 className="font-headline-sm text-headline-sm text-on-surface">Catégories</h2>
@@ -318,7 +243,7 @@ export default function POS() {
           </h2>
         </div>
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3">
             {[1,2,3,4,5,6,7,8,9,10].map(i => (
               <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse flex flex-col">
                 <div className="aspect-square mb-2 rounded-xl bg-surface-container" />
@@ -328,7 +253,7 @@ export default function POS() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pr-2 pb-6">
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3 pr-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
