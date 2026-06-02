@@ -238,81 +238,40 @@ export default function POS() {
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4 lg:gap-gutter h-full min-h-0">
 
-      {/* Desktop top bar: Categories */}
-      <div className="hidden lg:flex lg:col-span-12 items-center gap-4 bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/30">
-        <div className="flex items-center gap-2 overflow-x-auto flex-1">
+      {/* Products */}
+      <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
+        <div className="flex items-center justify-between mb-3 shrink-0">
+          <h2 className="font-headline-md text-headline-md text-on-surface">
+            Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
+          </h2>
+          <div className="relative shrink-0 ml-4">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={productSearch}
+              onChange={e => setProductSearch(e.target.value)}
+              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 shrink-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shrink-0 text-sm ${
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shrink-0 text-sm whitespace-nowrap ${
                 activeCategory === cat
                   ? 'bg-primary text-on-primary shadow'
-                  : 'text-on-surface-variant hover:bg-surface-container'
+                  : 'text-on-surface-variant hover:bg-surface-container border border-outline-variant/20'
               }`}
             >
               <span className="material-symbols-outlined text-sm">
                 {cat === 'Tous' ? 'apps' : cat === 'Fruits' ? 'nutrition' : 'eco'}
               </span>
-              <span className="whitespace-nowrap text-label-md">{cat}</span>
+              <span className="text-label-md whitespace-nowrap">{cat}</span>
             </button>
           ))}
-        </div>
-        <div className="relative shrink-0">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            value={productSearch}
-            onChange={e => setProductSearch(e.target.value)}
-            className="w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
-          />
-        </div>
-      </div>
-
-      {/* Mobile: Categories */}
-      <div className="lg:hidden flex flex-col gap-4">
-        <section className="flex flex-col">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Catégories</h2>
-            <div className="relative flex-1 max-w-[200px] ml-4">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                value={productSearch}
-                onChange={e => setProductSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shrink-0 ${
-                  activeCategory === cat
-                    ? 'bg-primary text-on-primary shadow-lg'
-                    : 'bg-surface-container-lowest text-on-surface hover:bg-primary-container/20 border border-outline-variant/20'
-                }`}
-              >
-                <span className="material-symbols-outlined text-xl">
-                  {cat === 'Tous' ? 'apps' : cat === 'Fruits' ? 'nutrition' : 'eco'}
-                </span>
-                <span className="text-label-md whitespace-nowrap">{cat}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      {/* Products */}
-      <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
-        <div className="flex justify-between items-center mb-4 shrink-0">
-          <h2 className="font-headline-md text-headline-md text-on-surface">
-            Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
-          </h2>
         </div>
         {loading ? (
           <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3">
