@@ -4,6 +4,9 @@ import { api } from '@/services/api';
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,11 +18,14 @@ export default function Products() {
   const categories = ['all', ...new Set(products.map(p => p.category))];
   const lowStockCount = products.filter(p => p.stock < 10).length;
 
-  const filtered = filter === 'all'
-    ? products
-    : filter === 'low'
-      ? products.filter(p => p.stock < 10)
-      : products.filter(p => p.category === filter);
+  const filtered = products.filter(p => {
+    const matchCategory = filter === 'all' ? true : filter === 'low' ? p.stock < 10 : p.category === filter;
+    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+    return matchCategory && matchSearch;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="space-y-gutter pb-xl">
@@ -42,6 +48,16 @@ export default function Products() {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
         <div className="md:col-span-8 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-wrap items-center gap-6">
+          <div className="relative flex-1 min-w-[200px]">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+            <input
+              type="text"
+              placeholder="Rechercher un produit..."
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1); }}
+              className="w-full bg-surface-container rounded-xl pl-10 pr-4 py-2.5 text-body-md outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
           <div className="flex items-center bg-surface-container p-1 rounded-xl">
             {categories.map(cat => (
               <button
@@ -90,7 +106,7 @@ export default function Products() {
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant/30">
-            {filtered.map((p) => (
+            {paginated.map((p) => (
               <tr key={p.id} className="group hover:bg-surface-container-low transition-colors">
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-4">
@@ -134,13 +150,46 @@ export default function Products() {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && !loading && (
+            {paginated.length === 0 && !loading && (
               <tr><td colSpan="6" className="text-center py-8 text-on-surface-variant">Aucun produit trouvé</td></tr>
             )}
           </tbody>
         </table>
         <div className="px-8 py-5 bg-surface-container/30 border-t border-outline-variant/30 flex items-center justify-between">
-          <p className="text-label-md text-on-surface-variant">Affichage de {filtered.length} sur {products.length} produits</p>
+          <p className="text-label-md text-on-surface-variant">
+            {filtered.length > 0
+              ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} produits`
+              : 'Aucun produit'}
+          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`w-9 h-9 rounded-lg text-label-md font-bold transition-colors ${
+                    p === page ? 'bg-primary text-on-primary' : 'hover:bg-surface-container-high text-on-surface-variant'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

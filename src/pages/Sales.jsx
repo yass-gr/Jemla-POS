@@ -4,6 +4,9 @@ import { api } from '@/services/api';
 export default function Sales() {
   const [sales, setSales] = useState([]);
   const [stats, setStats] = useState(null);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,6 +18,16 @@ export default function Sales() {
       setStats(st);
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  const filtered = search
+    ? sales.filter(s =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.invoice.toLowerCase().includes(search.toLowerCase())
+      )
+    : sales;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="space-y-6 pb-xl">
@@ -58,7 +71,7 @@ export default function Sales() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <button className="bg-surface-container-lowest border border-outline-variant px-4 py-2 rounded-full text-label-md font-medium hover:bg-surface-container transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-[20px]">calendar_today</span>
@@ -69,6 +82,16 @@ export default function Sales() {
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
             Statut: Tous
           </button>
+        </div>
+        <div className="relative flex-1 max-w-sm min-w-[200px]">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+          <input
+            type="text"
+            placeholder="Rechercher une vente..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl pl-10 pr-4 py-2.5 text-body-md outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
         <div className="flex items-center gap-2">
           <button className="bg-surface-container-lowest border border-outline-variant p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors">
@@ -94,7 +117,7 @@ export default function Sales() {
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant/30">
-            {sales.map((s) => (
+            {paginated.map((s) => (
               <tr key={s.id} className="hover:bg-surface-container-low/50 transition-colors group">
                 <td className="px-8 py-6">
                   <span className="text-body-md font-bold text-primary">{s.invoice}</span>
@@ -127,13 +150,46 @@ export default function Sales() {
                 </td>
               </tr>
             ))}
-            {sales.length === 0 && !loading && (
+            {paginated.length === 0 && !loading && (
               <tr><td colSpan="7" className="text-center py-8 text-on-surface-variant">Aucune vente trouvée</td></tr>
             )}
           </tbody>
         </table>
         <div className="px-8 py-5 bg-surface-container/30 border-t border-outline-variant flex items-center justify-between">
-          <p className="text-label-md text-on-surface-variant font-medium">Affichage de {sales.length} ventes</p>
+          <p className="text-label-md text-on-surface-variant font-medium">
+            {filtered.length > 0
+              ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} ventes`
+              : 'Aucune vente'}
+          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`w-9 h-9 rounded-lg text-label-md font-bold transition-colors ${
+                    p === page ? 'bg-primary text-on-primary' : 'hover:bg-surface-container-high text-on-surface-variant'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-2 rounded-lg hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
