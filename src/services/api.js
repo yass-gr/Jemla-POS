@@ -53,6 +53,28 @@ export const api = {
     restore: (id) => request(`/sales/${id}/restore`, { method: 'PATCH' }),
   },
 
+  suppliers: {
+    list: () => request('/suppliers'),
+    get: (id) => request(`/suppliers/${id}`),
+    create: (data) => request('/suppliers', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => request(`/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => request(`/suppliers/${id}`, { method: 'DELETE' }),
+  },
+
+  purchases: {
+    list: () => request('/purchases'),
+    create: (data) => request('/purchases', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
+  inventory: {
+    list: () => request('/inventory'),
+    log: () => request('/inventory/log'),
+  },
+
+  reports: {
+    summary: () => request('/reports/summary'),
+  },
+
   returns: {
     list: () => request('/returns'),
     create: (data) => request('/returns', { method: 'POST', body: JSON.stringify(data) }),

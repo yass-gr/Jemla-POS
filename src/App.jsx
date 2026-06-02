@@ -7,6 +7,12 @@ import Customers from './pages/Customers';
 import Sales from './pages/Sales';
 import Debts from './pages/Debts';
 import POS from './pages/POS';
+import Suppliers from './pages/Suppliers';
+import Purchases from './pages/Purchases';
+import Returns from './pages/Returns';
+import Inventory from './pages/Inventory';
+import Reports from './pages/Reports';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { Toaster } from './components/ui/sonner';
 
@@ -33,12 +39,12 @@ function Router() {
       <Route path="/customers" element={<ProtectedRoute><AppLayout><Customers /></AppLayout></ProtectedRoute>} />
       <Route path="/sales" element={<ProtectedRoute><AppLayout><Sales /></AppLayout></ProtectedRoute>} />
       <Route path="/debts" element={<ProtectedRoute><AppLayout><Debts /></AppLayout></ProtectedRoute>} />
-      <Route path="/suppliers" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Suppliers — Coming next</div></AppLayout></ProtectedRoute>} />
-      <Route path="/purchases" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Purchases — Coming next</div></AppLayout></ProtectedRoute>} />
-      <Route path="/returns" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Returns — Coming next</div></AppLayout></ProtectedRoute>} />
-      <Route path="/inventory" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Inventory — Coming next</div></AppLayout></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Reports — Coming next</div></AppLayout></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><AppLayout><div className="flex items-center justify-center h-full text-on-surface-variant text-headline-md">Settings — Coming next</div></AppLayout></ProtectedRoute>} />
+      <Route path="/suppliers" element={<ProtectedRoute><AppLayout><Suppliers /></AppLayout></ProtectedRoute>} />
+      <Route path="/purchases" element={<ProtectedRoute><AppLayout><Purchases /></AppLayout></ProtectedRoute>} />
+      <Route path="/returns" element={<ProtectedRoute><AppLayout><Returns /></AppLayout></ProtectedRoute>} />
+      <Route path="/inventory" element={<ProtectedRoute><AppLayout><Inventory /></AppLayout></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,6 +11,7 @@ export default function Inventory() {
   const [products, setProducts] = useState([]);
   const [log, setLog] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -21,8 +23,15 @@ export default function Inventory() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const totalStock = products.reduce((s, p) => s + p.stock, 0);
-  const lowStock = products.filter(p => p.stock < 10).length;
+  const filtered = search
+    ? products.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.category.toLowerCase().includes(search.toLowerCase())
+      )
+    : products;
+
+  const totalStock = filtered.reduce((s, p) => s + p.stock, 0);
+  const lowStock = filtered.filter(p => p.stock < 10).length;
 
   return (
     <div className="space-y-gutter pb-xl">
@@ -46,7 +55,18 @@ export default function Inventory() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
         <Card className="lg:col-span-2 overflow-hidden">
           <div className="p-6 border-b border-outline-variant/30">
-            <h3 className="font-headline-sm">Niveaux de Stock</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-headline-sm">Niveaux de Stock</h3>
+              <div className="relative max-w-xs">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
+                <Input
+                  type="text" placeholder="Rechercher un produit..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
           </div>
           <Table>
             <TableHeader>
@@ -58,7 +78,7 @@ export default function Inventory() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map(p => (
+              {filtered.map(p => (
                 <TableRow key={p.id}>
                   <TableCell className="font-bold text-on-surface">{p.name}</TableCell>
                   <TableCell className="text-on-surface-variant">{p.category}</TableCell>
@@ -72,6 +92,9 @@ export default function Inventory() {
                   </TableCell>
                 </TableRow>
               ))}
+              {filtered.length === 0 && !loading && (
+                <TableRow><TableCell colSpan="4" className="text-center py-12 text-on-surface-variant">Aucun produit trouvé</TableCell></TableRow>
+              )}
             </TableBody>
           </Table>
         </Card>
