@@ -34,7 +34,7 @@ export default function Sidebar({ open, onClose }) {
           ${open ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="mb-8 flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 mt-margin lg:group-hover:px-4">
+        <div className="mb-8 flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 mt-margin lg:group-hover:px-4">
           <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-on-primary text-headline-sm">storefront</span>
           </div>
@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose }) {
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 rounded-xl transition-all whitespace-nowrap ${
+                `flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 rounded-xl transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20'
                     : 'text-on-secondary-container hover:bg-primary-container/20 hover:text-on-primary'
@@ -66,7 +66,7 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             to="/login"
             onClick={onClose}
-            className="flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
+            className="flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 px-0 lg:group-hover:px-4 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined shrink-0">logout</span>
             <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline">Logout</span>
