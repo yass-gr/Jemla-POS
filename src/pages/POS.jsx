@@ -109,8 +109,104 @@ export default function POS() {
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-gutter min-h-0">
-      {/* Left panel: Client + Categories */}
-      <div className="lg:col-span-3 flex flex-col gap-4 lg:gap-gutter">
+
+      {/* Desktop top bar: Client + Categories */}
+      <div className="hidden lg:flex lg:col-span-12 items-center gap-4 bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/30">
+        <div className="relative shrink-0">
+          <div
+            className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-surface-container transition-colors"
+            onClick={() => setShowCustomerDropdown(!showCustomerDropdown)}
+          >
+            <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-sm text-secondary">person</span>
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-sm text-on-surface truncate max-w-[180px]">
+                {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
+              </p>
+              <p className="text-[10px] text-on-surface-variant truncate max-w-[180px]">
+                {selectedCustomer
+                  ? `${selectedCustomer.debt_balance.toFixed(2)} DH dû`
+                  : 'Vente sans compte'}
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-sm text-on-surface-variant shrink-0">
+              {showCustomerDropdown ? 'expand_less' : 'expand_more'}
+            </span>
+          </div>
+          {showCustomerDropdown && (
+            <div className="absolute top-full left-0 mt-2 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden min-w-[280px]">
+              <div className="p-3">
+                <input
+                  type="text"
+                  placeholder="Rechercher un client..."
+                  value={customerSearch}
+                  onChange={e => setCustomerSearch(e.target.value)}
+                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"
+                  autoFocus
+                />
+              </div>
+              <div className="max-h-48 overflow-y-auto">
+                <button
+                  onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+                  className="w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3"
+                >
+                  <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
+                    <span className="material-symbols-outlined text-sm">person_off</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-body-md">Client Libre</p>
+                    <p className="text-label-md text-on-surface-variant">Vente sans compte</p>
+                  </div>
+                </button>
+                {filteredCustomers.map(c => (
+                  <button
+                    key={c.id}
+                    onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+                    className={`w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3 ${
+                      selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                      <span className="text-label-md font-bold text-secondary">
+                        {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-body-md truncate">{c.name}</p>
+                      <p className="text-label-md text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="h-6 w-[1px] bg-outline-variant shrink-0" />
+
+        <div className="flex items-center gap-2 overflow-x-auto flex-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shrink-0 text-sm ${
+                activeCategory === cat
+                  ? 'bg-primary text-on-primary shadow'
+                  : 'text-on-surface-variant hover:bg-surface-container'
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">
+                {cat === 'Tous' ? 'apps' : cat === 'Fruits' ? 'nutrition' : 'eco'}
+              </span>
+              <span className="whitespace-nowrap text-label-md">{cat}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile: Client + Categories */}
+      <div className="lg:hidden flex flex-col gap-4">
         <section className="bg-surface-container-lowest p-4 sm:p-6 rounded-xl shadow-sm border border-outline-variant/30 relative">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-headline-sm text-headline-sm text-on-surface">Client</h2>
@@ -188,18 +284,18 @@ export default function POS() {
 
         <section className="flex flex-col">
           <h2 className="font-headline-sm text-headline-sm text-on-surface mb-3 sm:mb-4">Catégories</h2>
-          <div className="flex lg:grid lg:grid-cols-2 gap-2 sm:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+          <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-3 lg:p-5 rounded-xl flex items-center lg:flex-col lg:items-center gap-2 transition-all active:scale-95 shrink-0 ${
+                className={`px-4 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shrink-0 ${
                   activeCategory === cat
                     ? 'bg-primary text-on-primary shadow-lg'
                     : 'bg-surface-container-lowest text-on-surface hover:bg-primary-container/20 border border-outline-variant/20'
                 }`}
               >
-                <span className="material-symbols-outlined text-xl lg:text-2xl">
+                <span className="material-symbols-outlined text-xl">
                   {cat === 'Tous' ? 'apps' : cat === 'Fruits' ? 'nutrition' : 'eco'}
                 </span>
                 <span className="text-label-md whitespace-nowrap">{cat}</span>
@@ -209,16 +305,16 @@ export default function POS() {
         </section>
       </div>
 
-      {/* Center: Products */}
-      <div className="lg:col-span-6 flex flex-col min-h-0">
+      {/* Products */}
+      <div className="lg:col-span-8 flex flex-col min-h-0">
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-headline-md text-headline-md text-on-surface">
             Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
           </h2>
         </div>
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {[1,2,3,4,5,6,7,8].map(i => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[1,2,3,4,5,6,7,8,9,10].map(i => (
               <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse aspect-[4/5] flex flex-col">
                 <div className="flex-1 mb-2 rounded-xl bg-surface-container" />
                 <div className="h-2 w-12 bg-surface-container mx-auto mb-1 rounded" />
@@ -227,7 +323,7 @@ export default function POS() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto pr-2 pb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 overflow-y-auto pr-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
@@ -264,8 +360,8 @@ export default function POS() {
         )}
       </div>
 
-      {/* Right panel: Cart - hidden on mobile unless toggled */}
-      <div className="hidden lg:flex lg:col-span-3 flex-col h-full">
+      {/* Desktop Cart */}
+      <div className="hidden lg:flex lg:col-span-4 flex-col">
         <CartPanel
           cart={cart}
           totalItems={totalItems}
