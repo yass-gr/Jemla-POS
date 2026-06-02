@@ -110,81 +110,8 @@ export default function POS() {
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-gutter min-h-0">
 
-      {/* Desktop top bar: Client + Categories */}
+      {/* Desktop top bar: Categories */}
       <div className="hidden lg:flex lg:col-span-12 items-center gap-4 bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/30">
-        <div className="relative shrink-0">
-          <div
-            className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-surface-container transition-colors"
-            onClick={() => setShowCustomerDropdown(!showCustomerDropdown)}
-          >
-            <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-sm text-secondary">person</span>
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold text-sm text-on-surface truncate max-w-[180px]">
-                {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
-              </p>
-              <p className="text-[10px] text-on-surface-variant truncate max-w-[180px]">
-                {selectedCustomer
-                  ? `${selectedCustomer.debt_balance.toFixed(2)} DH dû`
-                  : 'Vente sans compte'}
-              </p>
-            </div>
-            <span className="material-symbols-outlined text-sm text-on-surface-variant shrink-0">
-              {showCustomerDropdown ? 'expand_less' : 'expand_more'}
-            </span>
-          </div>
-          {showCustomerDropdown && (
-            <div className="absolute top-full left-0 mt-2 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden min-w-[280px]">
-              <div className="p-3">
-                <input
-                  type="text"
-                  placeholder="Rechercher un client..."
-                  value={customerSearch}
-                  onChange={e => setCustomerSearch(e.target.value)}
-                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"
-                  autoFocus
-                />
-              </div>
-              <div className="max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                  className="w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3"
-                >
-                  <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
-                    <span className="material-symbols-outlined text-sm">person_off</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-body-md">Client Libre</p>
-                    <p className="text-label-md text-on-surface-variant">Vente sans compte</p>
-                  </div>
-                </button>
-                {filteredCustomers.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                    className={`w-full text-left px-4 py-3 hover:bg-surface-container flex items-center gap-3 ${
-                      selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                      <span className="text-label-md font-bold text-secondary">
-                        {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-body-md truncate">{c.name}</p>
-                      <p className="text-label-md text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="h-6 w-[1px] bg-outline-variant shrink-0" />
-
         <div className="flex items-center gap-2 overflow-x-auto flex-1">
           {categories.map((cat) => (
             <button
@@ -372,6 +299,14 @@ export default function POS() {
           onUpdateQty={updateQty}
           onClear={clearCart}
           onConfirm={confirmSale}
+          selectedCustomer={selectedCustomer}
+          showCustomerDropdown={showCustomerDropdown}
+          customerSearch={customerSearch}
+          filteredCustomers={filteredCustomers}
+          onToggleCustomer={() => setShowCustomerDropdown(prev => !prev)}
+          onSelectCustomer={(c) => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+          onClearCustomer={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+          onCustomerSearch={setCustomerSearch}
         />
       </div>
 
@@ -485,21 +420,90 @@ export default function POS() {
   );
 }
 
-function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onClear, onConfirm }) {
+function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch }) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
-      <div className="p-6 sm:p-8 border-b border-outline-variant/30 flex justify-between items-center">
-        <div>
+      <div className="p-4 sm:p-6 border-b border-outline-variant/30 space-y-3">
+        <div className="flex justify-between items-center">
           <h2 className="font-headline-sm text-headline-sm text-on-surface">Panier</h2>
-          <p className="text-label-md text-on-surface-variant">
-            {totalItems > 0 ? `${totalItems} article${totalItems > 1 ? 's' : ''}` : 'Aucun article'}
-          </p>
+          {cart.length > 0 && (
+            <button onClick={onClear} className="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
+              <span className="material-symbols-outlined">delete_sweep</span>
+            </button>
+          )}
         </div>
-        {cart.length > 0 && (
-          <button onClick={onClear} className="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
-            <span className="material-symbols-outlined">delete_sweep</span>
-          </button>
-        )}
+
+        {/* Customer picker inside cart */}
+        <div className="relative">
+          <div
+            className="flex items-center gap-2 bg-surface-container p-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
+            onClick={onToggleCustomer}
+          >
+            <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-sm text-secondary">person</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm text-on-surface truncate">
+                {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
+              </p>
+              <p className="text-[10px] text-on-surface-variant truncate">
+                {selectedCustomer
+                  ? `${selectedCustomer.debt_balance.toFixed(2)} DH dû`
+                  : 'Vente sans compte'}
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-sm text-on-surface-variant shrink-0">
+              {showCustomerDropdown ? 'expand_less' : 'expand_more'}
+            </span>
+          </div>
+          {showCustomerDropdown && (
+            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden">
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Rechercher un client..."
+                  value={customerSearch}
+                  onChange={e => onCustomerSearch(e.target.value)}
+                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-body-md outline-none focus:ring-2 focus:ring-primary"
+                  autoFocus
+                />
+              </div>
+              <div className="max-h-40 overflow-y-auto">
+                <button
+                  onClick={onClearCustomer}
+                  className="w-full text-left px-4 py-2.5 hover:bg-surface-container flex items-center gap-3"
+                >
+                  <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center">
+                    <span className="material-symbols-outlined text-sm">person_off</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm">Client Libre</p>
+                    <p className="text-label-md text-on-surface-variant">Vente sans compte</p>
+                  </div>
+                </button>
+                {filteredCustomers.map(c => (
+                  <button
+                    key={c.id}
+                    onClick={() => onSelectCustomer(c)}
+                    className={`w-full text-left px-4 py-2.5 hover:bg-surface-container flex items-center gap-3 ${
+                      selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                      <span className="text-label-md font-bold text-secondary">
+                        {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm truncate">{c.name}</p>
+                      <p className="text-label-md text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
