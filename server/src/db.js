@@ -80,6 +80,13 @@ export function getLastInsertId() {
   return result[0].values[0][0];
 }
 
+function addColumnIfMissing(table, column, def) {
+  const cols = queryAll(`PRAGMA table_info(${table})`);
+  if (!cols.find(c => c.name === column)) {
+    execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${def}`);
+  }
+}
+
 function createTables() {
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
@@ -197,6 +204,40 @@ function createTables() {
       updated_at TEXT DEFAULT (datetime('now'))
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS product_favorites (
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      product_id INTEGER NOT NULL REFERENCES products(id),
+      PRIMARY KEY (user_id, product_id)
+    )
+  `);
+
+  addColumnIfMissing('products', 'barcode', 'TEXT');
+  addColumnIfMissing('products', 'price_wholesale', 'REAL');
+  addColumnIfMissing('products', 'wholesale_min_qty', 'REAL DEFAULT 0');
+
+  addColumnIfMissing('customers', 'delivery_address', 'TEXT');
+
+  addColumnIfMissing('sales', 'payment_method', "TEXT DEFAULT 'cash'");
+  addColumnIfMissing('sales', 'payment_status', "TEXT DEFAULT 'paid'");
+  addColumnIfMissing('sales', 'amount_paid', 'REAL DEFAULT 0');
+  addColumnIfMissing('sales', 'change_due', 'REAL DEFAULT 0');
+  addColumnIfMissing('sales', 'discount_total', 'REAL DEFAULT 0');
+  addColumnIfMissing('sales', 'discount_note', 'TEXT');
+  addColumnIfMissing('sales', 'note', 'TEXT');
+  addColumnIfMissing('sales', 'delivery_address', 'TEXT');
+  addColumnIfMissing('sales', 'delivery_date', 'TEXT');
+  addColumnIfMissing('sales', 'delivery_status', "TEXT DEFAULT 'none'");
+  addColumnIfMissing('sales', 'delivery_fee', 'REAL DEFAULT 0');
+  addColumnIfMissing('sales', 'delivered_to', 'TEXT');
+
+  addColumnIfMissing('sale_items', 'discount', 'REAL DEFAULT 0');
+  addColumnIfMissing('sale_items', 'discount_type', "TEXT DEFAULT 'fixed'");
+  addColumnIfMissing('sale_items', 'note', 'TEXT');
+  addColumnIfMissing('sale_items', 'original_price', 'REAL');
+  addColumnIfMissing('sale_items', 'tax_rate', 'REAL DEFAULT 0.05');
+  addColumnIfMissing('sale_items', 'tax_exempt', 'INTEGER DEFAULT 0');
 }
 
 function seedAdmin() {

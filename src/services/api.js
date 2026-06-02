@@ -47,5 +47,20 @@ export const api = {
     stats: () => request('/sales/stats'),
     get: (id) => request(`/sales/${id}`),
     create: (data) => request('/sales', { method: 'POST', body: JSON.stringify(data) }),
+    recent: (limit) => request(`/sales/recent?limit=${limit || 5}`),
+    hold: (data) => request('/sales/hold', { method: 'POST', body: JSON.stringify(data) }),
+    held: () => request('/sales/held'),
+    restore: (id) => request(`/sales/${id}/restore`, { method: 'PATCH' }),
+  },
+
+  returns: {
+    list: () => request('/returns'),
+    create: (data) => request('/returns', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
+  favorites: {
+    list: () => request('/favorites'),
+    add: (productId) => request('/favorites', { method: 'POST', body: JSON.stringify({ product_id: productId }) }),
+    remove: (productId) => request(`/favorites/${productId}`, { method: 'DELETE' }),
   },
 };

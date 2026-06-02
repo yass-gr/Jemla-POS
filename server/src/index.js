@@ -13,6 +13,7 @@ import purchaseRoutes from './routes/purchases.js';
 import returnRoutes from './routes/returns.js';
 import inventoryRoutes from './routes/inventory.js';
 import reportRoutes from './routes/reports.js';
+import favoriteRoutes from './routes/favorites.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -45,6 +46,7 @@ app.use('/api/purchases', purchaseRoutes);
 app.use('/api/returns', returnRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

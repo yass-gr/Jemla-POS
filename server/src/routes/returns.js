@@ -22,7 +22,7 @@ router.post('/', ensureAuthenticated, (req, res) => {
   execute('INSERT INTO returns (sale_id, product_id, qty, reason) VALUES (?, ?, ?, ?)',
     [sale_id || null, product_id, qty, reason || null]);
 
-  execute('UPDATE products SET stock = stock - ?, updated_at = datetime(\'now\') WHERE id = ?', [qty, product_id]);
+  execute('UPDATE products SET stock = stock + ?, updated_at = datetime(\'now\') WHERE id = ?', [qty, product_id]);
   execute('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)', [product_id, -qty, 'Retour']);
 
   saveDb();

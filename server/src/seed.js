@@ -83,6 +83,7 @@ function createTables() {
   exec('CREATE TABLE IF NOT EXISTS inventory_log (id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER NOT NULL REFERENCES products(id), change_qty REAL NOT NULL, reason TEXT NOT NULL, created_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY AUTOINCREMENT, description TEXT NOT NULL, amount REAL NOT NULL, category TEXT, created_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS suppliers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT, email TEXT, address TEXT, created_at TEXT DEFAULT (datetime(\'now\')), updated_at TEXT DEFAULT (datetime(\'now\')))');
+  exec('CREATE TABLE IF NOT EXISTS product_favorites (user_id INTEGER NOT NULL REFERENCES users(id), product_id INTEGER NOT NULL REFERENCES products(id), PRIMARY KEY (user_id, product_id))');
 }
 
 async function seed() {
