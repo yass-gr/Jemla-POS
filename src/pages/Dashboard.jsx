@@ -107,7 +107,7 @@ export default function Dashboard() {
               {salesTrend.map((d) => (
                 <div key={d.day} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
                   <div className="w-full mx-1 h-full flex items-end">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative hover:bg-primary-container/40 transition-all" style={{ height: `${(d.value / maxTrend) * 100}%` }}>
+                    <div className="w-full bg-primary-container rounded-t-lg relative hover:opacity-80 transition-all" style={{ height: `${(d.value / maxTrend) * 100}%` }}>
                       <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
                         {d.day}: ${d.value}k
                       </div>
