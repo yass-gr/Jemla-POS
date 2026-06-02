@@ -118,7 +118,11 @@ export default function Products() {
                 <TableCell>
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-surface-variant overflow-hidden flex-shrink-0 border border-outline-variant/20 flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-2xl">inventory_2</span>
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <span className="material-symbols-outlined text-2xl">inventory_2</span>
+                      )}
                     </div>
                     <div>
                       <p className="font-headline-sm text-headline-sm text-on-surface">{p.name}</p>

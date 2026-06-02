@@ -3,6 +3,7 @@ import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import NumpadModal from '@/components/ui/NumpadModal';
 
 const TAX_RATE = 0.05;
 
@@ -17,6 +18,13 @@ export default function POS() {
   const [customerSearch, setCustomerSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showCartMobile, setShowCartMobile] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
+
+  const [numpadOpen, setNumpadOpen] = useState(false);
+  const [numpadTarget, setNumpadTarget] = useState(null);
+  const [numpadInitValue, setNumpadInitValue] = useState(0);
+  const [numpadTitle, setNumpadTitle] = useState('');
+  const [numpadAllowDecimal, setNumpadAllowDecimal] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -29,9 +37,11 @@ export default function POS() {
   }, []);
 
   const categories = ['Tous', ...new Set(products.map(p => p.category))];
-  const filtered = activeCategory === 'Tous'
-    ? products
-    : products.filter(p => p.category === activeCategory);
+  const filtered = products.filter(p => {
+    if (activeCategory !== 'Tous' && p.category !== activeCategory) return false;
+    if (productSearch && !p.name.toLowerCase().includes(productSearch.toLowerCase())) return false;
+    return true;
+  });
 
   const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(customerSearch.toLowerCase())
@@ -71,6 +81,19 @@ export default function POS() {
     });
   }
 
+  function setQtyDirect(productId, newQty) {
+    setCart(prev => {
+      const item = prev.find(i => i.product_id === productId);
+      if (!item) return prev;
+      if (newQty <= 0) {
+        return prev.filter(i => i.product_id !== productId);
+      }
+      return prev.map(i =>
+        i.product_id === productId ? { ...i, qty: newQty } : i
+      );
+    });
+  }
+
   function updatePrice(productId, newPrice) {
     setCart(prev => prev.map(item =>
       item.product_id === productId ? { ...item, price: Math.max(0, parseFloat(newPrice) || 0) } : item
@@ -79,6 +102,33 @@ export default function POS() {
 
   function clearCart() {
     setCart([]);
+  }
+
+  function openNumpad(type, productId) {
+    const item = cart.find(i => i.product_id === productId);
+    if (!item) return;
+    const currentValue = type === 'price' ? item.price : item.qty;
+    setNumpadTarget({ type, productId });
+    setNumpadInitValue(currentValue);
+    setNumpadTitle(type === 'price' ? 'Modifier le prix' : 'Modifier la quantité');
+    setNumpadAllowDecimal(true);
+    setNumpadOpen(true);
+  }
+
+  function handleNumpadConfirm(value) {
+    if (!numpadTarget) return;
+    if (numpadTarget.type === 'price') {
+      updatePrice(numpadTarget.productId, value);
+    } else {
+      setQtyDirect(numpadTarget.productId, value);
+    }
+    setNumpadOpen(false);
+    setNumpadTarget(null);
+  }
+
+  function handleNumpadClose() {
+    setNumpadOpen(false);
+    setNumpadTarget(null);
   }
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -114,7 +164,7 @@ export default function POS() {
   }
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-gutter min-h-0">
+    <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4 lg:gap-gutter h-full min-h-0">
 
       {/* Desktop top bar: Categories */}
       <div className="hidden lg:flex lg:col-span-12 items-center gap-4 bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/30">
@@ -135,6 +185,16 @@ export default function POS() {
               <span className="whitespace-nowrap text-label-md">{cat}</span>
             </button>
           ))}
+        </div>
+        <div className="relative shrink-0">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+          <input
+            type="text"
+            placeholder="Rechercher..."
+            value={productSearch}
+            onChange={e => setProductSearch(e.target.value)}
+            className="w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+          />
         </div>
       </div>
 
@@ -216,7 +276,19 @@ export default function POS() {
         </section>
 
         <section className="flex flex-col">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-3 sm:mb-4">Catégories</h2>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="font-headline-sm text-headline-sm text-on-surface">Catégories</h2>
+            <div className="relative flex-1 max-w-[200px] ml-4">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={productSearch}
+                onChange={e => setProductSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+          </div>
           <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2">
             {categories.map((cat) => (
               <button
@@ -239,8 +311,8 @@ export default function POS() {
       </div>
 
       {/* Products */}
-      <div className="lg:col-span-8 flex flex-col min-h-0">
-        <div className="flex justify-between items-center mb-4">
+      <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
+        <div className="flex justify-between items-center mb-4 shrink-0">
           <h2 className="font-headline-md text-headline-md text-on-surface">
             Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
           </h2>
@@ -256,7 +328,7 @@ export default function POS() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 overflow-y-auto pr-2 pb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pr-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
@@ -274,7 +346,11 @@ export default function POS() {
                   </div>
                 )}
                 <div className="aspect-square mb-2 rounded-xl overflow-hidden bg-surface-container flex items-center justify-center">
-                  <span className="material-symbols-outlined text-3xl sm:text-4xl text-primary/30">inventory_2</span>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-primary/30">inventory_2</span>
+                  )}
                 </div>
                 <p className="text-[9px] text-on-surface-variant uppercase tracking-wider text-center truncate">{p.category}</p>
                 <h3 className="font-bold text-xs text-on-surface text-center truncate">{p.name}</h3>
@@ -282,7 +358,7 @@ export default function POS() {
                   <p className="text-primary font-bold text-xs">{p.price.toFixed(2)} <span className="text-[8px]">DH</span></p>
                   <button
                     onClick={(e) => { e.stopPropagation(); addToCart(p); }}
-                    className="bg-primary-container text-on-primary w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform"
+                    className="bg-primary-container text-on-primary w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform"
                   >
                     <span className="material-symbols-outlined text-lg sm:text-xl">add</span>
                   </button>
@@ -294,7 +370,7 @@ export default function POS() {
       </div>
 
       {/* Desktop Cart */}
-      <div className="hidden lg:flex lg:col-span-4 flex-col self-start max-h-[calc(100vh-12rem)] sticky top-0">
+      <div className="hidden lg:flex lg:col-span-4 flex-col self-start sticky top-0">
         <CartPanel
           cart={cart}
           totalItems={totalItems}
@@ -314,6 +390,7 @@ export default function POS() {
           onSelectCustomer={(c) => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
           onClearCustomer={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
           onCustomerSearch={setCustomerSearch}
+          onOpenNumpad={openNumpad}
         />
       </div>
 
@@ -342,6 +419,73 @@ export default function POS() {
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
+          <div className="px-3 pt-3 pb-1 border-b border-outline-variant/20">
+            <div className="relative">
+              <div
+                className="flex items-center gap-2 bg-surface-container p-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
+                onClick={() => setShowCustomerDropdown(prev => !prev)}
+              >
+                <div className="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-xs text-secondary">person</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-xs text-on-surface truncate leading-tight">
+                    {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
+                  </p>
+                </div>
+                <span className="material-symbols-outlined text-xs text-on-surface-variant shrink-0">
+                  {showCustomerDropdown ? 'expand_less' : 'expand_more'}
+                </span>
+              </div>
+              {showCustomerDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden">
+                  <div className="p-2">
+                    <input
+                      type="text"
+                      placeholder="Rechercher un client..."
+                      value={customerSearch}
+                      onChange={e => setCustomerSearch(e.target.value)}
+                      className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-40 overflow-y-auto">
+                    <button
+                      onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+                      className="w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xs">person_off</span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-xs">Client Libre</p>
+                        <p className="text-[10px] text-on-surface-variant">Vente sans compte</p>
+                      </div>
+                    </button>
+                    {filteredCustomers.map(c => (
+                      <button
+                        key={c.id}
+                        onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
+                        className={`w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2 ${
+                          selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
+                        }`}
+                      >
+                        <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                          <span className="text-[10px] font-bold text-secondary">
+                            {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-xs truncate">{c.name}</p>
+                          <p className="text-[10px] text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {cart.length === 0 ? (
               <p className="text-on-surface-variant text-xs text-center py-8">
@@ -354,14 +498,12 @@ export default function POS() {
                     <div className="min-w-0 flex-1">
                       <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
                       <div className="flex items-center gap-0.5">
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={item.price}
-                          onChange={e => updatePrice(item.product_id, e.target.value)}
-                          className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right outline-none focus:ring-1 focus:ring-primary"
-                        />
+                        <button
+                          onClick={() => openNumpad('price', item.product_id)}
+                          className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right"
+                        >
+                          {item.price.toFixed(2)}
+                        </button>
                         <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
                       </div>
                     </div>
@@ -380,7 +522,12 @@ export default function POS() {
                       >
                         <span className="material-symbols-outlined text-sm">remove</span>
                       </button>
-                      <span className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</span>
+                      <button
+                        onClick={() => openNumpad('qty', item.product_id)}
+                        className="font-bold text-xs text-on-surface min-w-[2ch] text-center"
+                      >
+                        {item.qty}
+                      </button>
                       <button
                         onClick={() => updateQty(item.product_id, 1)}
                         className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"
@@ -433,11 +580,20 @@ export default function POS() {
           </div>
         </div>
       )}
+
+      <NumpadModal
+        open={numpadOpen}
+        title={numpadTitle}
+        value={numpadInitValue}
+        allowDecimal={numpadAllowDecimal}
+        onConfirm={handleNumpadConfirm}
+        onClose={handleNumpadClose}
+      />
     </div>
   );
 }
 
-function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch }) {
+function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers, onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch, onOpenNumpad }) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
       <div className="p-3 border-b border-outline-variant/30 space-y-2">
@@ -529,14 +685,12 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-0.5">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={item.price}
-                      onChange={e => onUpdatePrice(item.product_id, e.target.value)}
-                      className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right outline-none focus:ring-1 focus:ring-primary"
-                    />
+                    <button
+                      onClick={() => onOpenNumpad('price', item.product_id)}
+                      className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right"
+                    >
+                      {item.price.toFixed(2)}
+                    </button>
                     <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
                   </div>
                 </div>
@@ -555,7 +709,12 @@ function CartPanel({ cart, totalItems, subtotal, tax, total, submitting, onUpdat
                   >
                     <span className="material-symbols-outlined text-sm">remove</span>
                   </button>
-                  <span className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</span>
+                  <button
+                    onClick={() => onOpenNumpad('qty', item.product_id)}
+                    className="font-bold text-xs text-on-surface min-w-[2ch] text-center"
+                  >
+                    {item.qty}
+                  </button>
                   <button
                     onClick={() => onUpdateQty(item.product_id, 1)}
                     className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90"

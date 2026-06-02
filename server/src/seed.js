@@ -7,32 +7,35 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, '..', 'data', 'jemla.db');
 
+const IMG = 'https://images.unsplash.com/photo-';
+const IMG_SUFFIX = '?w=200&h=200&fit=crop&auto=format';
+
 const products = [
-  { name: 'Tomate', category: 'Légumes', price: 8, unit: 'kg', stock: 200 },
-  { name: 'Pomme de terre', category: 'Légumes', price: 5, unit: 'kg', stock: 300 },
-  { name: 'Oignon', category: 'Légumes', price: 4, unit: 'kg', stock: 250 },
-  { name: 'Carotte', category: 'Légumes', price: 6, unit: 'kg', stock: 180 },
-  { name: 'Banane', category: 'Fruits', price: 12, unit: 'kg', stock: 150 },
-  { name: 'Pomme', category: 'Fruits', price: 14, unit: 'kg', stock: 120 },
-  { name: 'Orange', category: 'Fruits', price: 8, unit: 'kg', stock: 200 },
-  { name: 'Fraise', category: 'Fruits', price: 25, unit: 'kg', stock: 40 },
-  { name: 'Chou', category: 'Légumes', price: 5, unit: 'pièce', stock: 60 },
-  { name: 'Laitue', category: 'Légumes', price: 3, unit: 'pièce', stock: 80 },
-  { name: 'Poivron vert', category: 'Légumes', price: 10, unit: 'kg', stock: 90 },
-  { name: 'Courgette', category: 'Légumes', price: 8, unit: 'kg', stock: 100 },
-  { name: 'Aubergine', category: 'Légumes', price: 7, unit: 'kg', stock: 70 },
-  { name: 'Raisin', category: 'Fruits', price: 20, unit: 'kg', stock: 35 },
-  { name: 'Pastèque', category: 'Fruits', price: 4, unit: 'kg', stock: 50 },
-  { name: 'Melon', category: 'Fruits', price: 7, unit: 'kg', stock: 45 },
-  { name: 'Haricots verts', category: 'Légumes', price: 12, unit: 'kg', stock: 40 },
-  { name: 'Petits pois', category: 'Légumes', price: 15, unit: 'kg', stock: 30 },
-  { name: 'Navet', category: 'Légumes', price: 5, unit: 'kg', stock: 65 },
-  { name: 'Ail', category: 'Légumes', price: 30, unit: 'kg', stock: 25 },
-  { name: 'Citron', category: 'Fruits', price: 10, unit: 'kg', stock: 85 },
-  { name: 'Dattes', category: 'Fruits', price: 40, unit: 'kg', stock: 20 },
-  { name: 'Figues', category: 'Fruits', price: 35, unit: 'kg', stock: 15 },
-  { name: 'Avocat', category: 'Fruits', price: 20, unit: 'pièce', stock: 55 },
-  { name: 'Patate douce', category: 'Légumes', price: 8, unit: 'kg', stock: 60 },
+  { name: 'Tomate', category: 'Légumes', price: 8, unit: 'kg', stock: 200, image_url: `${IMG}1531730802399-67fca7529b13${IMG_SUFFIX}` },
+  { name: 'Pomme de terre', category: 'Légumes', price: 5, unit: 'kg', stock: 300, image_url: `${IMG}1760368104765-f0441f4f4d6c${IMG_SUFFIX}` },
+  { name: 'Oignon', category: 'Légumes', price: 4, unit: 'kg', stock: 250, image_url: `${IMG}1755406050322-36c15e00c6d3${IMG_SUFFIX}` },
+  { name: 'Carotte', category: 'Légumes', price: 6, unit: 'kg', stock: 180, image_url: `${IMG}1474440692490-2e83ae13ba29${IMG_SUFFIX}` },
+  { name: 'Banane', category: 'Fruits', price: 12, unit: 'kg', stock: 150, image_url: `${IMG}1774983882471-abcf681085cc${IMG_SUFFIX}` },
+  { name: 'Pomme', category: 'Fruits', price: 14, unit: 'kg', stock: 120, image_url: `${IMG}1693036530117-4b63e22ea9de${IMG_SUFFIX}` },
+  { name: 'Orange', category: 'Fruits', price: 8, unit: 'kg', stock: 200, image_url: `${IMG}1757807196804-2c9b1a66f3a3${IMG_SUFFIX}` },
+  { name: 'Fraise', category: 'Fruits', price: 25, unit: 'kg', stock: 40, image_url: `${IMG}1713715980823-7118c048c79c${IMG_SUFFIX}` },
+  { name: 'Chou', category: 'Légumes', price: 5, unit: 'pièce', stock: 60, image_url: `${IMG}1779738192854-92a3daec9b45${IMG_SUFFIX}` },
+  { name: 'Laitue', category: 'Légumes', price: 3, unit: 'pièce', stock: 80, image_url: `${IMG}1477434779629-a454c123dcd3${IMG_SUFFIX}` },
+  { name: 'Poivron vert', category: 'Légumes', price: 10, unit: 'kg', stock: 90, image_url: `${IMG}1505692794401-b371fa865622${IMG_SUFFIX}` },
+  { name: 'Courgette', category: 'Légumes', price: 8, unit: 'kg', stock: 100, image_url: `${IMG}1757332051150-a5b3c4510af8${IMG_SUFFIX}` },
+  { name: 'Aubergine', category: 'Légumes', price: 7, unit: 'kg', stock: 70, image_url: `${IMG}1780331617758-304c32bc2006${IMG_SUFFIX}` },
+  { name: 'Raisin', category: 'Fruits', price: 20, unit: 'kg', stock: 35, image_url: `${IMG}1769889670620-a73b64e38d33${IMG_SUFFIX}` },
+  { name: 'Pastèque', category: 'Fruits', price: 4, unit: 'kg', stock: 50, image_url: `${IMG}1767747484833-8e9d4f88fe69${IMG_SUFFIX}` },
+  { name: 'Melon', category: 'Fruits', price: 7, unit: 'kg', stock: 45, image_url: `${IMG}1775326715451-16ea5a3d59bf${IMG_SUFFIX}` },
+  { name: 'Haricots verts', category: 'Légumes', price: 12, unit: 'kg', stock: 40, image_url: `${IMG}1768729341107-4ec2a7807a70${IMG_SUFFIX}` },
+  { name: 'Petits pois', category: 'Légumes', price: 15, unit: 'kg', stock: 30, image_url: `${IMG}1741518359695-bc91a1fab4ae${IMG_SUFFIX}` },
+  { name: 'Navet', category: 'Légumes', price: 5, unit: 'kg', stock: 65, image_url: `${IMG}1561270168-df3704f232c3${IMG_SUFFIX}` },
+  { name: 'Ail', category: 'Légumes', price: 30, unit: 'kg', stock: 25, image_url: `${IMG}1776722203199-83cdae0092a0${IMG_SUFFIX}` },
+  { name: 'Citron', category: 'Fruits', price: 10, unit: 'kg', stock: 85, image_url: `${IMG}1746981422898-28e48d7a905c${IMG_SUFFIX}` },
+  { name: 'Dattes', category: 'Fruits', price: 40, unit: 'kg', stock: 20, image_url: `${IMG}1769255484739-3437edbb858e${IMG_SUFFIX}` },
+  { name: 'Figues', category: 'Fruits', price: 35, unit: 'kg', stock: 15, image_url: `${IMG}1758614256427-580827e20f40${IMG_SUFFIX}` },
+  { name: 'Avocat', category: 'Fruits', price: 20, unit: 'pièce', stock: 55, image_url: `${IMG}1702105705586-c951ddade811${IMG_SUFFIX}` },
+  { name: 'Patate douce', category: 'Légumes', price: 8, unit: 'kg', stock: 60, image_url: `${IMG}1771340224790-9a8cc4a9a24a${IMG_SUFFIX}` },
 ];
 
 const suppliers = [
@@ -97,8 +100,8 @@ async function seed() {
   exec('INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)', ['cashier', cashierHash, 'Cashier', 'cashier']);
 
   for (const p of products) {
-    exec('INSERT INTO products (name, category, price, unit, stock) VALUES (?, ?, ?, ?, ?)',
-      [p.name, p.category, p.price, p.unit, p.stock]);
+    exec('INSERT INTO products (name, category, price, unit, stock, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+      [p.name, p.category, p.price, p.unit, p.stock, p.image_url || null]);
   }
 
   const customerIds = [];
