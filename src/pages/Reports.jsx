@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Card } from '@/components/ui/card';
 
 export default function Reports() {
   const [summary, setSummary] = useState(null);
@@ -27,7 +28,7 @@ export default function Reports() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
         {stats.map(s => (
-          <div key={s.label} className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30 flex items-center gap-4">
+          <Card key={s.label} className="p-6 flex items-center gap-4">
             <div className={`w-12 h-12 ${s.bg} rounded-xl flex items-center justify-center ${s.color}`}>
               <span className="material-symbols-outlined">{s.icon}</span>
             </div>
@@ -35,7 +36,7 @@ export default function Reports() {
               <p className="text-label-md text-on-surface-variant">{s.label}</p>
               <p className={`text-headline-sm font-bold ${s.color}`}>{s.value}</p>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

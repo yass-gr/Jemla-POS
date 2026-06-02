@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Login() {
   const { login } = useAuth();
@@ -24,7 +27,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-surface-container-lowest rounded-[32px] shadow-xl border border-outline-variant/30 p-8">
+      <Card className="w-full max-w-sm p-8 border-outline-variant/30 shadow-xl">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/20">
             <span className="material-symbols-outlined text-3xl text-on-primary">store</span>
@@ -37,12 +40,12 @@ export default function Login() {
           <div>
             <label className="block text-label-md font-bold text-on-surface-variant mb-2">Nom d'utilisateur</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
-              <input
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant z-10">person</span>
+              <Input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary/30 text-body-md outline-none text-on-surface placeholder:text-on-surface-variant/50"
+                className="pl-12 py-3.5"
                 placeholder="admin"
                 autoFocus
               />
@@ -52,12 +55,12 @@ export default function Login() {
           <div>
             <label className="block text-label-md font-bold text-on-surface-variant mb-2">Mot de passe</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
-              <input
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant z-10">lock</span>
+              <Input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary/30 text-body-md outline-none text-on-surface placeholder:text-on-surface-variant/50"
+                className="pl-12 py-3.5"
                 placeholder="••••••••"
               />
             </div>
@@ -70,11 +73,7 @@ export default function Login() {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-primary text-on-primary py-3.5 rounded-2xl font-bold text-label-md flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60"
-          >
+          <Button type="submit" disabled={submitting} className="w-full py-3.5 rounded-2xl shadow-lg shadow-primary/20" size="lg">
             {submitting ? (
               <span className="w-5 h-5 border-2 border-on-primary border-t-transparent rounded-full animate-spin" />
             ) : (
@@ -83,9 +82,9 @@ export default function Login() {
                 Se connecter
               </>
             )}
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

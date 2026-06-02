@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Card } from '@/components/ui/card';
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from '@/components/ui/table';
 
 export default function Returns() {
   const [returns, setReturns] = useState([]);
@@ -18,39 +22,39 @@ export default function Returns() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Retours</h2>
           <p className="text-body-md text-on-surface-variant mt-1">Gérez les produits retournés par les clients.</p>
         </div>
-        <div className="bg-error/10 px-5 py-2.5 rounded-xl">
+        <Card className="px-5 py-2.5 border-outline-variant/30">
           <p className="text-label-md text-on-surface-variant">Quantité retournée</p>
           <p className="font-bold text-headline-sm text-error">{totalReturned} unités</p>
-        </div>
+        </Card>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-[24px] shadow-sm border border-outline-variant/30 overflow-hidden">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-surface-container/50">
-              <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase">Produit</th>
-              <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase text-right">Quantité</th>
-              <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase">Raison</th>
-              <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase">Vente</th>
-              <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-outline-variant/30">
+      <Card className="overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Produit</TableHead>
+              <TableHead className="text-right">Quantité</TableHead>
+              <TableHead>Raison</TableHead>
+              <TableHead>Vente</TableHead>
+              <TableHead>Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {returns.map(r => (
-              <tr key={r.id} className="hover:bg-surface-container/30 transition-colors">
-                <td className="px-8 py-5 font-bold text-on-surface">{r.product_name}</td>
-                <td className="px-8 py-5 text-right">{r.qty}</td>
-                <td className="px-8 py-5 text-on-surface-variant">{r.reason || '-'}</td>
-                <td className="px-8 py-5 text-on-surface-variant">{r.sale_id ? `#INV-${String(r.sale_id).padStart(4, '0')}` : '-'}</td>
-                <td className="px-8 py-5 text-on-surface-variant">{new Date(r.created_at).toLocaleDateString()}</td>
-              </tr>
+              <TableRow key={r.id}>
+                <TableCell className="font-bold text-on-surface">{r.product_name}</TableCell>
+                <TableCell className="text-right">{r.qty}</TableCell>
+                <TableCell className="text-on-surface-variant">{r.reason || '-'}</TableCell>
+                <TableCell className="text-on-surface-variant">{r.sale_id ? `#INV-${String(r.sale_id).padStart(4, '0')}` : '-'}</TableCell>
+                <TableCell className="text-on-surface-variant">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+              </TableRow>
             ))}
             {!loading && returns.length === 0 && (
-              <tr><td colSpan="5" className="text-center py-12 text-on-surface-variant">Aucun retour enregistré</td></tr>
+              <TableRow><TableCell colSpan="5" className="text-center py-12 text-on-surface-variant">Aucun retour enregistré</TableCell></TableRow>
             )}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }

@@ -1,3 +1,6 @@
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 export default function Settings() {
   return (
     <div className="space-y-gutter pb-xl">
@@ -5,7 +8,7 @@ export default function Settings() {
       <p className="text-body-md text-on-surface-variant mt-1">Configuration de l'application.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-        <div className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30">
+        <Card className="p-6">
           <h3 className="font-headline-sm mb-4">Application</h3>
           <div className="space-y-4">
             <div className="flex justify-between py-2 border-b border-outline-variant/20">
@@ -25,9 +28,9 @@ export default function Settings() {
               <span className="font-bold">Français</span>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30">
+        <Card className="p-6">
           <h3 className="font-headline-sm mb-4">Comptes</h3>
           <div className="space-y-4">
             <div className="flex justify-between py-2 border-b border-outline-variant/20">
@@ -35,17 +38,17 @@ export default function Settings() {
                 <p className="font-bold">Admin</p>
                 <p className="text-label-md text-on-surface-variant">Administrateur</p>
               </div>
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-label-md font-bold">admin</span>
+              <Badge variant="default">admin</Badge>
             </div>
             <div className="flex justify-between py-2">
               <div>
                 <p className="font-bold">Cashier</p>
                 <p className="text-label-md text-on-surface-variant">Caissier</p>
               </div>
-              <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-label-md font-bold">cashier</span>
+              <Badge variant="secondary">cashier</Badge>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

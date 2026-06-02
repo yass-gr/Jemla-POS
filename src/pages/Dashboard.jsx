@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from '@/components/ui/table';
 
-function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barWidth, loading }) {
+function KpiCard({ title, value, trend, trendUp, icon, color, barColor, barWidth, loading }) {
   return (
-    <div className="bg-surface-container-lowest p-8 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col justify-between relative overflow-hidden group">
+    <Card className="p-6 flex flex-col justify-between relative overflow-hidden group">
       <div className="z-10">
         <p className="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-2">{title}</p>
         {loading ? (
@@ -22,7 +28,7 @@ function KpiCard({ title, value, trend, trendUp, icon, color, bg, barColor, barW
       <div className="h-1.5 w-full bg-surface-container absolute bottom-0 left-0">
         <div className={`h-full ${barColor} ${barWidth}`} />
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -50,23 +56,21 @@ export default function Dashboard() {
   const kpiCards = [
     {
       title: "Today's Sales",
-      value: stats ? `$${stats.todaySales.toFixed(2)}` : '$0',
+      value: stats ? `${stats.todaySales.toFixed(2)} DH` : '0 DH',
       trend: stats ? `${stats.todayTransactions} transactions today` : 'No data yet',
       trendUp: true,
       icon: 'payments',
       color: 'text-primary',
-      bg: 'bg-primary/10',
       barColor: 'bg-primary-container',
       barWidth: 'w-3/4',
     },
     {
       title: 'Pending Debts',
-      value: stats ? `$${stats.pendingDebts.toFixed(2)}` : '$0',
+      value: stats ? `${stats.pendingDebts.toFixed(2)} DH` : '0 DH',
       trend: stats ? `${stats.overdueAccounts} accounts with debt` : 'No data yet',
       trendUp: false,
       icon: 'account_balance_wallet',
       color: 'text-error',
-      bg: 'bg-error/10',
       barColor: 'bg-error',
       barWidth: stats ? `${Math.min(stats.overdueAccounts * 10, 100)}%` : 'w-1/2',
     },
@@ -77,7 +81,6 @@ export default function Dashboard() {
       trendUp: stats ? stats.lowStockItems === 0 : true,
       icon: 'inventory_2',
       color: stats && stats.lowStockItems > 0 ? 'text-tertiary' : 'text-primary',
-      bg: stats && stats.lowStockItems > 0 ? 'bg-tertiary/10' : 'bg-primary/10',
       barColor: stats && stats.lowStockItems > 0 ? 'bg-tertiary' : 'bg-primary-container',
       barWidth: stats ? `${Math.min(stats.lowStockItems * 10, 100)}%` : 'w-2/3',
     },
@@ -96,12 +99,12 @@ export default function Dashboard() {
         ))}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-        <div className="lg:col-span-2 bg-surface-container-lowest p-8 rounded-[24px] shadow-sm border border-outline-variant/30">
+        <Card className="lg:col-span-2 p-6">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-headline-sm font-headline-sm">Sales Revenue Trend</h4>
             <div className="flex gap-2">
-              <button className="px-4 py-1.5 rounded-full text-label-md bg-primary-container text-on-primary font-bold">Weekly</button>
-              <button className="px-4 py-1.5 rounded-full text-label-md border border-outline-variant hover:bg-surface-container">Monthly</button>
+              <Button variant="secondary" size="sm" className="rounded-full">Weekly</Button>
+              <Button variant="outline" size="sm" className="rounded-full">Monthly</Button>
             </div>
           </div>
           <div className="relative w-full" style={{ height: 300 }}>
@@ -113,7 +116,7 @@ export default function Dashboard() {
                     <div className="flex-1" />
                     <div className="w-[70%] bg-primary-container rounded-t-lg relative transition-all hover:opacity-80" style={{ height: barH }}>
                       <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
-                        ${d.value}k
+                        {d.value} DH
                       </div>
                     </div>
                     <span className="text-label-md text-on-surface-variant">{d.day}</span>
@@ -122,8 +125,8 @@ export default function Dashboard() {
               })}
             </div>
           </div>
-        </div>
-        <div className="bg-surface-container-lowest p-8 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col">
+        </Card>
+        <Card className="p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-headline-sm font-headline-sm">Top Products</h4>
             <a href="/products" className="text-primary font-bold text-label-md hover:underline">View All</a>
@@ -139,7 +142,7 @@ export default function Dashboard() {
                   <p className="text-label-md text-on-surface-variant">{p.sales} sales</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-primary">${Number(p.price).toFixed(2)}</p>
+                  <p className="font-bold text-primary">{Number(p.price).toFixed(2)} DH</p>
                 </div>
               </div>
             ))}
@@ -147,53 +150,50 @@ export default function Dashboard() {
               <p className="text-on-surface-variant text-body-md text-center py-8">No product data yet</p>
             )}
           </div>
-        </div>
+        </Card>
       </div>
-      <div className="bg-surface-container-lowest rounded-[24px] shadow-sm border border-outline-variant/30 overflow-hidden">
-        <div className="p-8 border-b border-outline-variant/30 flex justify-between items-center">
+      <Card className="overflow-hidden">
+        <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center">
           <h4 className="text-headline-sm font-headline-sm">Recent Transactions</h4>
-          <button className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors font-bold text-label-md">
+          <Button variant="outline" size="sm">
             <span className="material-symbols-outlined text-sm">filter_list</span> Filter
-          </button>
+          </Button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-surface-container/50">
-              <tr>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Order ID</th>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Customer</th>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Date</th>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Items</th>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
-                <th className="px-8 py-5 font-bold text-label-md text-on-surface-variant uppercase tracking-wider">Total</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/30">
-              {recentTx.map((tx) => (
-                <tr key={tx.id} className="hover:bg-surface-container/30 transition-colors cursor-pointer">
-                  <td className="px-8 py-5 font-bold text-primary">{tx.invoice}</td>
-                  <td className="px-8 py-5 text-body-md">{tx.customer}</td>
-                  <td className="px-8 py-5 text-on-surface-variant text-body-md">{tx.date}</td>
-                  <td className="px-8 py-5 text-body-md">{tx.items} Items</td>
-                  <td className="px-8 py-5">
-                    <span className={`px-3 py-1 rounded-full text-label-md font-bold inline-block ${
-                      tx.status === 'completed' ? 'bg-primary/10 text-primary' :
-                      tx.status === 'held' ? 'bg-secondary/10 text-secondary' :
-                      'bg-error/10 text-error'
-                    }`}>
-                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-8 py-5 font-bold text-body-md">${tx.total.toFixed(2)}</td>
-                </tr>
-              ))}
-              {recentTx.length === 0 && !loading && (
-                <tr><td colSpan="6" className="text-center py-8 text-on-surface-variant">No recent transactions</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Order ID</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Items</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {recentTx.map((tx) => (
+              <TableRow key={tx.id} className="cursor-pointer">
+                <TableCell className="font-bold text-primary">{tx.invoice}</TableCell>
+                <TableCell className="text-body-md">{tx.customer}</TableCell>
+                <TableCell className="text-on-surface-variant text-body-md">{tx.date}</TableCell>
+                <TableCell className="text-body-md">{tx.items} Items</TableCell>
+                <TableCell>
+                  <Badge variant={
+                    tx.status === 'completed' ? 'success' :
+                    tx.status === 'held' ? 'secondary' : 'destructive'
+                  }>
+                    {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-bold text-body-md">{tx.total.toFixed(2)} DH</TableCell>
+              </TableRow>
+            ))}
+            {recentTx.length === 0 && !loading && (
+              <TableRow><TableCell colSpan="6" className="text-center py-8 text-on-surface-variant">No recent transactions</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }

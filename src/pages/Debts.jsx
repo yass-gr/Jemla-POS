@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from '@/components/ui/table';
 
 export default function Debts() {
   const [customers, setCustomers] = useState([]);
@@ -21,17 +28,17 @@ export default function Debts() {
           <p className="text-body-md text-on-surface-variant">Suivez les soldes impayés des clients.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl bg-surface hover:bg-surface-container-high transition-colors font-semibold text-label-md">
+          <Button variant="outline" size="sm">
             <span className="material-symbols-outlined text-sm">filter_list</span> Filtrer
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl bg-surface hover:bg-surface-container-high transition-colors font-semibold text-label-md">
+          </Button>
+          <Button variant="outline" size="sm">
             <span className="material-symbols-outlined text-sm">file_download</span> Exporter
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-        <div className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+        <Card className="p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <span className="text-on-surface-variant font-semibold text-label-md">Total Dettes</span>
             <div className="p-2 bg-error-container text-on-error-container rounded-lg">
@@ -45,8 +52,8 @@ export default function Debts() {
               {customers.length} comptes actifs
             </p>
           </div>
-        </div>
-        <div className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+        </Card>
+        <Card className="p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <span className="text-on-surface-variant font-semibold text-label-md">Créditeurs Actifs</span>
             <div className="p-2 bg-secondary-container text-on-secondary-fixed-variant rounded-lg">
@@ -57,8 +64,8 @@ export default function Debts() {
             <p className="text-headline-lg font-extrabold text-on-surface">{customers.length}</p>
             <p className="text-label-md text-on-surface-variant mt-1">Avec soldes impayés</p>
           </div>
-        </div>
-        <div className="bg-surface-container-lowest p-6 rounded-[24px] shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+        </Card>
+        <Card className="p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <span className="text-on-surface-variant font-semibold text-label-md">Dette Moyenne</span>
             <div className="p-2 bg-primary-container text-on-primary rounded-lg">
@@ -71,66 +78,62 @@ export default function Debts() {
             </p>
             <p className="text-label-md text-on-surface-variant mt-1">Par compte</p>
           </div>
-        </div>
+        </Card>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-[24px] shadow-sm border border-outline-variant/30 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center">
           <h3 className="font-headline-sm text-headline-sm text-on-surface">Soldes Impayés</h3>
-          <span className="px-3 py-1 bg-surface-container-high rounded-full text-label-md text-on-surface-variant">Trié par: Montant</span>
+          <Badge variant="secondary" className="rounded-full">Trié par: Montant</Badge>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-surface-container-low/50">
-                <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Client</th>
-                <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Montant Dû</th>
-                <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Contact</th>
-                <th className="px-8 py-5 text-label-md font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/30">
-              {customers.map((c) => {
-                const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                return (
-                  <tr key={c.id} className="hover:bg-surface-container/30 transition-colors">
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-primary">
-                          {initials}
-                        </div>
-                        <div>
-                          <p className="text-body-lg font-bold text-on-surface">{c.name}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-8 py-6">
-                      <p className={`text-body-lg font-extrabold ${c.debt_balance > 5000 ? 'text-error' : 'text-on-surface'}`}>
-                        {c.debt_balance.toFixed(2)} DH
-                      </p>
-                    </td>
-                    <td className="px-8 py-6">
-                      <p className="text-body-md text-on-surface">{c.phone || '-'}</p>
-                      <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
-                    </td>
-                    <td className="px-8 py-6 text-right">
-                      <button className="bg-primary-container text-on-primary px-5 py-2 rounded-xl font-bold hover:shadow-lg transition-all active:scale-95">
-                        Payer
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-              {customers.length === 0 && !loading && (
-                <tr><td colSpan="4" className="text-center py-8 text-on-surface-variant">Aucune dette impayée</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Client</TableHead>
+              <TableHead>Montant Dû</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {customers.map((c) => {
+              const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+              return (
+                <TableRow key={c.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback className="bg-surface-container-highest text-primary font-bold">{initials}</AvatarFallback>
+                      </Avatar>
+                      <p className="text-body-lg font-bold text-on-surface">{c.name}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className={`text-body-lg font-extrabold ${c.debt_balance > 5000 ? 'text-error' : 'text-on-surface'}`}>
+                      {c.debt_balance.toFixed(2)} DH
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-body-md text-on-surface">{c.phone || '-'}</p>
+                    <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="default" size="sm" className="rounded-xl">
+                      Payer
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+            {customers.length === 0 && !loading && (
+              <TableRow><TableCell colSpan="4" className="text-center py-8 text-on-surface-variant">Aucune dette impayée</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
         <div className="px-8 py-5 border-t border-outline-variant/30 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">{customers.length} clients avec dettes</p>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
