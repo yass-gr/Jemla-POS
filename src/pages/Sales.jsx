@@ -113,45 +113,44 @@ export default function Sales() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <div className="space-y-6 pb-xl">
-      <div className="grid grid-cols-12 gap-gutter">
-        <div className="col-span-12 lg:col-span-4 flex flex-col justify-center">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Historique des Ventes</h2>
-          <p className="text-body-lg text-on-surface-variant mt-1">Consultez et gérez vos transactions.</p>
-        </div>
-        <div className="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-gutter">
-          <Card className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary-container/10 rounded-xl flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined">payments</span>
-            </div>
-            <div>
-              <p className="text-label-md text-on-surface-variant">Revenu Total</p>
-              <p className="text-headline-sm font-bold text-primary">
-                {stats ? `${stats.totalRevenue.toFixed(2)} DH` : '...'}
-              </p>
-            </div>
-          </Card>
-          <Card className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 bg-secondary-container/20 rounded-xl flex items-center justify-center text-secondary">
-              <span className="material-symbols-outlined">receipt_long</span>
-            </div>
-            <div>
-              <p className="text-label-md text-on-surface-variant">Total Ventes</p>
-              <p className="text-headline-sm font-bold text-on-surface">{stats ? stats.totalSales : '...'}</p>
-            </div>
-          </Card>
-          <Card className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 bg-error-container/10 rounded-xl flex items-center justify-center text-error">
-              <span className="material-symbols-outlined">pending_actions</span>
-            </div>
-            <div>
-              <p className="text-label-md text-on-surface-variant">Dettes Impayées</p>
-              <p className="text-headline-sm font-bold text-error">
-                {stats ? `${stats.pendingDebts.toFixed(2)} DH` : '...'}
-              </p>
-            </div>
-          </Card>
-        </div>
+    <div className="space-y-gutter pb-xl">
+      <div>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface">Historique des Ventes</h2>
+        <p className="text-body-md text-on-surface-variant mt-1">Consultez et gérez vos transactions.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span className="material-symbols-outlined">payments</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Revenu Total</p>
+            <p className="text-headline-sm font-bold text-primary">
+              {stats ? `${stats.totalRevenue.toFixed(2)} DH` : '...'}
+            </p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
+            <span className="material-symbols-outlined">receipt_long</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Total Ventes</p>
+            <p className="text-headline-sm font-bold text-on-surface">{stats ? stats.totalSales : '...'}</p>
+          </div>
+        </Card>
+        <Card className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0">
+            <span className="material-symbols-outlined">pending_actions</span>
+          </div>
+          <div>
+            <p className="text-label-md text-on-surface-variant">Dettes Impayées</p>
+            <p className="text-headline-sm font-bold text-error">
+              {stats ? `${stats.pendingDebts.toFixed(2)} DH` : '...'}
+            </p>
+          </div>
+        </Card>
       </div>
 
       <Card className="overflow-hidden">
