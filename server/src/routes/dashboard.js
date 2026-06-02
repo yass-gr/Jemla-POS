@@ -35,14 +35,22 @@ router.get('/sales-trend', ensureAuthenticated, (req, res) => {
   const days = 7;
   const trend = [];
   for (let i = days - 1; i >= 0; i--) {
-    const day = queryOne(`
+    const thisWeek = queryOne(`
       SELECT COALESCE(SUM(total), 0) as total
       FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
     `, [i]);
+    const lastWeek = queryOne(`
+      SELECT COALESCE(SUM(total), 0) as total
+      FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
+    `, [i + 7]);
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-    trend.push({ day: dayName, value: Math.round(day.total / 1000 * 10) / 10 });
+    trend.push({
+      day: dayName,
+      value: Math.round(thisWeek.total / 1000 * 10) / 10,
+      previous: Math.round(lastWeek.total / 1000 * 10) / 10,
+    });
   }
   res.json(trend);
 });

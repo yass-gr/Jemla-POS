@@ -11,6 +11,9 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
+import {
+  LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from "recharts";
 
 function KpiCard({
   title,
@@ -131,9 +134,7 @@ export default function Dashboard() {
     },
   ];
 
-  const maxTrend = Math.max(...salesTrend.map((d) => d.value), 1);
-  const CHART_TOP = 32;
-  const CHART_BOT = 28;
+  const trendData = salesTrend.map(d => ({ ...d, value: Number(d.value) || 0 }));
 
   return (
     <div className="space-y-4 sm:space-y-gutter pb-xl">
@@ -172,37 +173,42 @@ export default function Dashboard() {
             className="relative w-full"
             style={{ height: "clamp(180px, 40vw, 300px)" }}
           >
-            <div
-              className="absolute inset-0 flex justify-between px-1 sm:px-2"
-              style={{ paddingTop: CHART_TOP }}
-            >
-              {salesTrend.map((d) => {
-                const barH = Math.max(
-                  (d.value / maxTrend) * (300 - CHART_TOP - CHART_BOT),
-                  2,
-                );
-                return (
-                  <div
-                    key={d.day}
-                    className="flex-1 flex flex-col items-center gap-1 group cursor-pointer justify-end"
-                    style={{ height: "100%" }}
-                  >
-                    <div className="flex-1" />
-                    <div
-                      className="w-[60%] sm:w-[70%] bg-primary-container rounded-t-lg relative transition-all hover:opacity-80"
-                      style={{ height: barH }}
-                    >
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">
-                        {d.value} DH
-                      </div>
-                    </div>
-                    <span className="text-[10px] sm:text-label-md text-on-surface-variant">
-                      {d.day}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendData} margin={{ top: 8, right: 8, bottom: 8 }}>
+                <CartesianGrid vertical={false} stroke="oklch(0.922 0 0)" />
+                <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="oklch(0.556 0 0)" axisLine={true} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: "oklch(0.205 0 0)",
+                    border: "none",
+                    borderRadius: 8,
+                    color: "oklch(0.985 0 0)",
+                    fontSize: 12,
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
+                  formatter={(value) => value === "value" ? "Cette semaine" : "Semaine dernière"}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="oklch(0.546 0.245 262.88)"
+                  strokeWidth={2}
+                  dot={{ fill: "oklch(0.546 0.245 262.88)", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="previous"
+                  stroke="oklch(0.715 0.143 215.22)"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                  dot={{ fill: "oklch(0.715 0.143 215.22)", r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </Card>
         <Card className="p-4 sm:p-6 flex flex-col">
