@@ -204,34 +204,34 @@ export default function Sales() {
             {paginated.map((s) => (
               <TableRow key={s.id} className="group cursor-pointer" onClick={() => setSelectedSaleId(s.id)}>
                 <TableCell>
-                  <span className="text-body-md font-bold text-primary">{s.invoice}</span>
+                  <span className="font-bold text-primary">{s.invoice}</span>
                 </TableCell>
                 <TableCell>
-                  <div className="text-body-md text-on-surface">{s.date}</div>
-                  <div className="text-label-md text-on-surface-variant">{s.time}</div>
+                  <div className="text-on-surface">{s.date}</div>
+                  <div className="text-xs text-on-surface-variant">{s.time}</div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="text-xs bg-secondary-container text-secondary">{s.initials}</AvatarFallback>
                     </Avatar>
-                    <span className="text-body-md font-medium text-on-surface">{s.name}</span>
+                    <span className="font-medium text-on-surface">{s.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-body-md text-on-surface-variant">{s.items}</div>
+                  <div className="text-on-surface-variant">{s.items}</div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 capitalize">
                     <span className="material-symbols-outlined text-lg text-on-surface-variant">
                       {s.payment_method === 'card' ? 'credit_card' : s.payment_method === 'check' ? 'checkbook' : s.payment_method === 'credit' ? 'account_balance' : 'payments'}
                     </span>
-                    <span className="text-body-md text-on-surface-variant">
+                    <span className="text-on-surface-variant">
                       {s.payment_method === 'cash' ? 'Espèces' : s.payment_method === 'card' ? 'Carte' : s.payment_method === 'check' ? 'Chèque' : s.payment_method === 'credit' ? 'Crédit' : s.payment_method}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-body-md font-bold text-on-surface">{s.total}</TableCell>
+                <TableCell className="font-bold text-on-surface">{s.total}</TableCell>
                 <TableCell>
                   <Badge variant={s.payment_status === 'paid' ? 'success' : s.payment_status === 'partial' ? 'warning' : 'destructive'}>
                     {s.payment_status === 'paid' ? 'Payé' : s.payment_status === 'partial' ? 'Partiel' : 'Impayé'}

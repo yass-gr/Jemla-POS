@@ -9,7 +9,7 @@ const Table = React.forwardRef(({ className, ...props }, ref) => (
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("bg-surface-container/50 border-b border-outline-variant/30", className)} {...props} />
+  <thead ref={ref} className={cn("border-b border-outline-variant/20", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -24,17 +24,17 @@ const TableFooter = React.forwardRef(({ className, ...props }, ref) => (
 TableFooter.displayName = "TableFooter"
 
 const TableRow = React.forwardRef(({ className, ...props }, ref) => (
-  <tr ref={ref} className={cn("hover:bg-surface-container-low/50 transition-colors", className)} {...props} />
+  <tr ref={ref} className={cn("hover:bg-surface-container/40 transition-colors", className)} {...props} />
 ))
 TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef(({ className, ...props }, ref) => (
-  <th ref={ref} className={cn("px-8 py-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider", className)} {...props} />
+  <th ref={ref} className={cn("px-4 py-3 text-sm font-medium text-on-surface-variant", className)} {...props} />
 ))
 TableHead.displayName = "TableHead"
 
 const TableCell = React.forwardRef(({ className, ...props }, ref) => (
-  <td ref={ref} className={cn("px-8 py-5", className)} {...props} />
+  <td ref={ref} className={cn("px-4 py-3 text-sm text-on-surface", className)} {...props} />
 ))
 TableCell.displayName = "TableCell"
 

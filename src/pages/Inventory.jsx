@@ -93,7 +93,7 @@ export default function Inventory() {
                 </TableRow>
               ))}
               {filtered.length === 0 && !loading && (
-                <TableRow><TableCell colSpan="4" className="text-center py-12 text-on-surface-variant">Aucun produit trouvé</TableCell></TableRow>
+                <TableRow><TableCell colSpan="4" className="text-center py-8 text-on-surface-variant">Aucun produit trouvé</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

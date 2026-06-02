@@ -283,13 +283,13 @@ export default function Dashboard() {
                   <TableCell className="font-bold text-primary whitespace-nowrap">
                     {tx.invoice}
                   </TableCell>
-                  <TableCell className="text-body-md whitespace-nowrap">
+                  <TableCell className="whitespace-nowrap">
                     {tx.customer}
                   </TableCell>
-                  <TableCell className="text-on-surface-variant text-body-md whitespace-nowrap">
+                  <TableCell className="text-on-surface-variant whitespace-nowrap">
                     {tx.date}
                   </TableCell>
-                  <TableCell className="text-body-md whitespace-nowrap">
+                  <TableCell className="whitespace-nowrap">
                     {tx.items} Items
                   </TableCell>
                   <TableCell>
@@ -305,7 +305,7 @@ export default function Dashboard() {
                       {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-bold text-body-md whitespace-nowrap">
+                  <TableCell className="font-bold whitespace-nowrap">
                     {tx.total.toFixed(2)} DH
                   </TableCell>
                 </TableRow>

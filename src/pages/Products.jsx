@@ -125,15 +125,15 @@ export default function Products() {
                       )}
                     </div>
                     <div>
-                      <p className="font-headline-sm text-headline-sm text-on-surface">{p.name}</p>
+                      <p className="font-bold text-on-surface">{p.name}</p>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant={p.category === 'Fruits' ? 'default' : 'success'}>{p.category}</Badge>
                 </TableCell>
-                <TableCell className="text-center text-body-md text-on-surface-variant">{p.unit}</TableCell>
-                <TableCell className="text-right font-headline-sm text-headline-sm text-primary">{p.price.toFixed(2)} DH</TableCell>
+                <TableCell className="text-center text-on-surface-variant">{p.unit}</TableCell>
+                <TableCell className="text-right font-bold text-primary">{p.price.toFixed(2)} DH</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     <div className="w-40 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
@@ -162,7 +162,7 @@ export default function Products() {
             )}
           </TableBody>
         </Table>
-        <div className="px-8 py-5 bg-surface-container/30 border-t border-outline-variant/30 flex items-center justify-between">
+        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/30 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">
             {filtered.length > 0
               ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} produits`

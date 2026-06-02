@@ -114,7 +114,7 @@ export default function Debts() {
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-body-md text-on-surface">{c.phone || '-'}</p>
+                    <p className="text-on-surface">{c.phone || '-'}</p>
                     <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
                   </TableCell>
                   <TableCell className="text-right">
@@ -130,7 +130,7 @@ export default function Debts() {
             )}
           </TableBody>
         </Table>
-        <div className="px-8 py-5 border-t border-outline-variant/30 flex items-center justify-between">
+        <div className="px-4 py-3 border-t border-outline-variant/30 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">{customers.length} clients avec dettes</p>
         </div>
       </Card>

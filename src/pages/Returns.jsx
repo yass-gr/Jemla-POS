@@ -118,7 +118,7 @@ export default function Returns() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-outline-variant/20 flex items-center gap-4">
+        <div className="px-4 py-3 border-b border-outline-variant/20 flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
             <Input
@@ -150,11 +150,11 @@ export default function Returns() {
               </TableRow>
             ))}
             {!loading && paginated.length === 0 && (
-              <TableRow><TableCell colSpan="5" className="text-center py-12 text-on-surface-variant">Aucun retour enregistré</TableCell></TableRow>
+              <TableRow><TableCell colSpan="5" className="text-center py-8 text-on-surface-variant">Aucun retour enregistré</TableCell></TableRow>
             )}
           </TableBody>
         </Table>
-        <div className="px-6 py-4 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
+        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
           <p className="text-label-md text-on-surface-variant">
             {filtered.length > 0
               ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} retours`

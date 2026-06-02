@@ -115,16 +115,16 @@ export default function Customers() {
                         <AvatarFallback>{initials}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-bold text-body-lg text-on-surface leading-none">{c.name}</p>
+                        <p className="font-bold text-on-surface leading-none">{c.name}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-body-md text-on-surface">{c.phone || '-'}</p>
+                    <p className="text-on-surface">{c.phone || '-'}</p>
                     <p className="text-label-md text-on-surface-variant">{c.email || '-'}</p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-body-md text-on-surface-variant max-w-[200px] truncate">{c.address || '-'}</p>
+                    <p className="text-on-surface-variant max-w-[200px] truncate">{c.address || '-'}</p>
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant={c.debt_balance > 0 ? 'destructive' : 'success'}>
