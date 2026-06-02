@@ -34,23 +34,23 @@ export default function Sidebar({ open, onClose }) {
           ${open ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="px-4 mb-8 flex items-center gap-3 mt-margin">
+        <div className="mb-8 flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 mt-margin lg:group-hover:px-4">
           <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-on-primary text-headline-sm">storefront</span>
           </div>
-          <div className="lg:hidden lg:group-hover:block overflow-hidden">
+          <div className="hidden lg:group-hover:block overflow-hidden">
             <h1 className="text-headline-md font-bold text-primary-fixed leading-tight whitespace-nowrap">Simi Shop</h1>
             <p className="text-label-md text-on-secondary-container/60 whitespace-nowrap">Retail Management</p>
           </div>
         </div>
-        <nav className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden px-2">
+        <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3.5 mx-2 rounded-xl transition-colors whitespace-nowrap ${
+                `flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 lg:group-hover:px-4 lg:group-hover:mx-2 rounded-xl transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20'
                     : 'text-on-secondary-container hover:bg-primary-container/20 hover:text-on-primary'
@@ -58,18 +58,18 @@ export default function Sidebar({ open, onClose }) {
               }
             >
               <span className="material-symbols-outlined shrink-0">{item.icon}</span>
-              <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline truncate">{item.label}</span>
+              <span className="font-label-md text-label-md hidden lg:group-hover:inline truncate">{item.label}</span>
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto px-2">
+        <div className="mt-auto">
           <NavLink
             to="/login"
             onClick={onClose}
-            className="flex items-center gap-3 px-4 py-3.5 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-colors whitespace-nowrap"
+            className="flex items-center justify-center lg:group-hover:justify-start gap-0 lg:group-hover:gap-3 py-3.5 lg:group-hover:px-4 lg:group-hover:mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined shrink-0">logout</span>
-            <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline">Logout</span>
+            <span className="font-label-md text-label-md hidden lg:group-hover:inline">Logout</span>
           </NavLink>
         </div>
       </aside>
