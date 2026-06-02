@@ -35,6 +35,14 @@ const products = [
   { name: 'Patate douce', category: 'Légumes', price: 8, unit: 'kg', stock: 60 },
 ];
 
+const suppliers = [
+  { name: 'Marché de Gros Casablanca', phone: '+212 5 22 30 10 20', email: 'gros.casa@email.ma', address: 'Marché de Gros, Casablanca' },
+  { name: 'Ferme Agadir Bio', phone: '+212 5 28 21 33 44', email: 'contact@agadirbio.ma', address: 'Route de Taroudant, Agadir' },
+  { name: 'Coopérative Meknès', phone: '+212 5 35 53 22 11', email: 'coop.meknes@email.ma', address: 'Avenue des FAR, Meknès' },
+  { name: 'Import Fruits Tanger', phone: '+212 5 39 94 55 66', email: 'import.tanger@email.ma', address: 'Port de Tanger Med' },
+  { name: 'Producteur Local Marrakech', phone: '+212 5 24 44 77 88', email: 'local.marrakech@email.ma', address: 'Route de l\'Ourika, Marrakech' },
+];
+
 const customers = [
   { name: 'Hamid El Fassi', phone: '+212 6 61 23 45 67', email: 'hamid.elfassi@email.ma', address: '12 Rue de la Liberté, Casablanca', debt: 4500 },
   { name: 'Fatima Benali', phone: '+212 6 62 34 56 78', email: 'fatima.benali@email.ma', address: '45 Avenue Hassan II, Rabat', debt: 0 },
@@ -71,6 +79,7 @@ function createTables() {
   exec('CREATE TABLE IF NOT EXISTS returns (id INTEGER PRIMARY KEY AUTOINCREMENT, sale_id INTEGER REFERENCES sales(id), product_id INTEGER NOT NULL REFERENCES products(id), qty REAL NOT NULL, reason TEXT, created_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS inventory_log (id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER NOT NULL REFERENCES products(id), change_qty REAL NOT NULL, reason TEXT NOT NULL, created_at TEXT DEFAULT (datetime(\'now\')))');
   exec('CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY AUTOINCREMENT, description TEXT NOT NULL, amount REAL NOT NULL, category TEXT, created_at TEXT DEFAULT (datetime(\'now\')))');
+  exec('CREATE TABLE IF NOT EXISTS suppliers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT, email TEXT, address TEXT, created_at TEXT DEFAULT (datetime(\'now\')), updated_at TEXT DEFAULT (datetime(\'now\')))');
 }
 
 async function seed() {
@@ -97,6 +106,26 @@ async function seed() {
     exec('INSERT INTO customers (name, phone, email, address, debt_balance) VALUES (?, ?, ?, ?, ?)',
       [c.name, c.phone, c.email, c.address, c.debt]);
     customerIds.push(lastId());
+  }
+
+  const supplierIds = [];
+  for (const s of suppliers) {
+    exec('INSERT INTO suppliers (name, phone, email, address) VALUES (?, ?, ?, ?)',
+      [s.name, s.phone, s.email, s.address]);
+    supplierIds.push(lastId());
+  }
+
+  const nowPurch = new Date();
+  for (const p of all('SELECT id, price, stock FROM products')) {
+    const purchaseQty = p.stock + Math.floor(Math.random() * 50);
+    const unitPrice = Math.round(p.price * 0.6 * 100) / 100;
+    const purchDate = new Date(nowPurch);
+    purchDate.setDate(purchDate.getDate() - 20 - Math.floor(Math.random() * 10));
+    purchDate.setHours(6, 0, 0, 0);
+    exec('INSERT INTO purchases (product_id, supplier, qty, unit_price, total, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+      [p.id, suppliers[Math.floor(Math.random() * suppliers.length)].name,
+       purchaseQty, unitPrice, Math.round(purchaseQty * unitPrice * 100) / 100,
+       purchDate.toISOString().slice(0, 19).replace('T', ' ')]);
   }
 
   const allProducts = all('SELECT id, price FROM products');
@@ -141,6 +170,8 @@ async function seed() {
   console.log(`  - 2 users (admin/admin123, cashier/cashier123)`);
   console.log(`  - ${products.length} products`);
   console.log(`  - ${customers.length} customers`);
+  console.log(`  - ${suppliers.length} suppliers`);
+  console.log(`  - ${all('SELECT COUNT(*) as c FROM purchases')[0].c} purchases`);
   console.log(`  - ~70 sales over 15 days`);
 }
 
