@@ -8,7 +8,7 @@ export default function AppLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col lg:ml-[260px]">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header onMenuClick={() => setSidebarOpen(prev => !prev)} />
         <main className="flex-1 p-gutter space-y-gutter overflow-y-auto">
           {children}
