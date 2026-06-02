@@ -1,15 +1,21 @@
 import { useAuth } from '@/context/AuthContext';
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const { user, logout } = useAuth();
 
   const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
 
   return (
-    <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant shadow-sm">
-      <div className="flex items-center justify-between h-16 px-gutter">
-        <div className="flex items-center flex-1 max-w-xl">
-          <div className="relative w-full">
+    <header className="sticky top-0 z-30 bg-surface border-b border-outline-variant shadow-sm">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-gutter">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant"
+          >
+            <span className="material-symbols-outlined">menu</span>
+          </button>
+          <div className="relative w-full max-w-xl">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
               search
             </span>
@@ -20,7 +26,7 @@ export default function Header() {
             />
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 shrink-0">
           <button className="p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant relative">
             <span className="material-symbols-outlined">notifications</span>
             <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface" />
