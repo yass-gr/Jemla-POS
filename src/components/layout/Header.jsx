@@ -1,4 +1,10 @@
+import { useAuth } from '@/context/AuthContext';
+
 export default function Header() {
+  const { user, logout } = useAuth();
+
+  const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
+
   return (
     <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant shadow-sm">
       <div className="flex items-center justify-between h-16 px-gutter">
@@ -9,7 +15,7 @@ export default function Header() {
             </span>
             <input
               className="w-full pl-12 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary/20 text-body-md transition-all outline-none"
-              placeholder="Search..."
+              placeholder="Rechercher..."
               type="text"
             />
           </div>
@@ -22,12 +28,15 @@ export default function Header() {
           <div className="h-8 w-[1px] bg-outline-variant" />
           <div className="flex items-center gap-3">
             <div className="text-right hidden lg:block">
-              <p className="text-label-md font-bold text-on-surface leading-none">Admin User</p>
-              <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">Manager</p>
+              <p className="text-label-md font-bold text-on-surface leading-none">{user?.name || 'Utilisateur'}</p>
+              <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">{user?.role || ''}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary font-bold">
-              AU
-            </div>
+            <button onClick={logout} className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary font-bold group-hover:ring-2 group-hover:ring-error/30 transition-all">
+                {initials}
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant text-sm group-hover:text-error transition-colors">logout</span>
+            </button>
           </div>
         </div>
       </div>
