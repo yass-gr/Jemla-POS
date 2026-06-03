@@ -16,14 +16,14 @@ router.get('/:id', ensureAuthenticated, (req, res) => {
 });
 
 router.post('/', ensureAuthenticated, (req, res) => {
-  const { name, category, price, unit, stock, image_url, barcode, price_wholesale, wholesale_min_qty } = req.body;
-  if (!name || !category || !price || !unit) {
-    return res.status(400).json({ error: 'name, category, price, and unit are required' });
+  const { name, category, price, stock, image_url, barcode, price_wholesale, wholesale_min_qty } = req.body;
+  if (!name || !category || !price) {
+    return res.status(400).json({ error: 'name, category, and price are required' });
   }
 
   execute(
     'INSERT INTO products (name, category, price, unit, stock, image_url, barcode, price_wholesale, wholesale_min_qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [name, category, price, unit, stock || 0, image_url || null, barcode || null, price_wholesale ?? null, wholesale_min_qty ?? 0]
+    [name, category, price, 'kg', stock || 0, image_url || null, barcode || null, price_wholesale ?? null, wholesale_min_qty ?? 0]
   );
   const lastId = getLastInsertId();
   saveDb();
@@ -33,20 +33,20 @@ router.post('/', ensureAuthenticated, (req, res) => {
 });
 
 router.put('/:id', ensureAuthenticated, (req, res) => {
-  const { name, category, price, unit, stock, image_url, barcode, price_wholesale, wholesale_min_qty } = req.body;
+  const { name, category, price, stock, image_url, barcode, price_wholesale, wholesale_min_qty } = req.body;
 
   const existing = queryOne('SELECT id FROM products WHERE id = ?', [req.params.id]);
   if (!existing) return res.status(404).json({ error: 'Product not found' });
 
   execute(
     `UPDATE products SET name = COALESCE(?, name), category = COALESCE(?, category),
-     price = COALESCE(?, price), unit = COALESCE(?, unit),
+     price = COALESCE(?, price), unit = 'kg',
      stock = COALESCE(?, stock), image_url = COALESCE(?, image_url),
      barcode = COALESCE(?, barcode), price_wholesale = COALESCE(?, price_wholesale),
      wholesale_min_qty = COALESCE(?, wholesale_min_qty),
      updated_at = datetime('now')
      WHERE id = ?`,
-    [name || null, category || null, price ?? null, unit || null, stock ?? null, image_url ?? null, barcode || null, price_wholesale ?? null, wholesale_min_qty ?? null, req.params.id]
+    [name || null, category || null, price ?? null, stock ?? null, image_url ?? null, barcode || null, price_wholesale ?? null, wholesale_min_qty ?? null, req.params.id]
   );
   saveDb();
 

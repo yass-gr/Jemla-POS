@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { queryAll, queryOne, execute, getLastInsertId, saveDb } from '../db.js';
+import { queryAll, queryOne, execute, getLastInsertId, saveDb, getDb } from '../db.js';
 import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = Router();
@@ -56,6 +56,30 @@ router.delete('/:id', ensureAuthenticated, (req, res) => {
   execute('DELETE FROM customers WHERE id = ?', [req.params.id]);
   saveDb();
   res.json({ message: 'Customer deleted' });
+});
+
+router.post('/:id/payments', ensureAuthenticated, (req, res) => {
+  const { amount, payment_method, note } = req.body;
+  if (!amount || amount <= 0) return res.status(400).json({ error: 'Valid amount is required' });
+
+  const existing = queryOne('SELECT id, debt_balance FROM customers WHERE id = ?', [req.params.id]);
+  if (!existing) return res.status(404).json({ error: 'Customer not found' });
+
+  const db = getDb();
+  db.run('BEGIN TRANSACTION');
+  try {
+    execute('INSERT INTO customer_payments (customer_id, amount, payment_method, note) VALUES (?, ?, ?, ?)', [req.params.id, amount, payment_method || 'cash', note || null]);
+    execute('UPDATE customers SET debt_balance = debt_balance - ?, updated_at = datetime("now") WHERE id = ?', [amount, req.params.id]);
+    db.run('COMMIT');
+    saveDb();
+    
+    const paymentId = getLastInsertId();
+    const payment = queryOne('SELECT * FROM customer_payments WHERE id = ?', [paymentId]);
+    res.status(201).json(payment);
+  } catch (err) {
+    db.run('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;

@@ -19,8 +19,8 @@ const products = [
   { name: 'Pomme', category: 'Fruits', price: 14, unit: 'kg', stock: 120, image_url: `${IMG}1693036530117-4b63e22ea9de${IMG_SUFFIX}` },
   { name: 'Orange', category: 'Fruits', price: 8, unit: 'kg', stock: 200, image_url: `${IMG}1757807196804-2c9b1a66f3a3${IMG_SUFFIX}` },
   { name: 'Fraise', category: 'Fruits', price: 25, unit: 'kg', stock: 40, image_url: `${IMG}1713715980823-7118c048c79c${IMG_SUFFIX}` },
-  { name: 'Chou', category: 'Légumes', price: 5, unit: 'pièce', stock: 60, image_url: `${IMG}1779738192854-92a3daec9b45${IMG_SUFFIX}` },
-  { name: 'Laitue', category: 'Légumes', price: 3, unit: 'pièce', stock: 80, image_url: `${IMG}1477434779629-a454c123dcd3${IMG_SUFFIX}` },
+  { name: 'Chou', category: 'Légumes', price: 5, unit: 'kg', stock: 60, image_url: `${IMG}1779738192854-92a3daec9b45${IMG_SUFFIX}` },
+  { name: 'Laitue', category: 'Légumes', price: 3, unit: 'kg', stock: 80, image_url: `${IMG}1477434779629-a454c123dcd3${IMG_SUFFIX}` },
   { name: 'Poivron vert', category: 'Légumes', price: 10, unit: 'kg', stock: 90, image_url: `${IMG}1505692794401-b371fa865622${IMG_SUFFIX}` },
   { name: 'Courgette', category: 'Légumes', price: 8, unit: 'kg', stock: 100, image_url: `${IMG}1757332051150-a5b3c4510af8${IMG_SUFFIX}` },
   { name: 'Aubergine', category: 'Légumes', price: 7, unit: 'kg', stock: 70, image_url: `${IMG}1780331617758-304c32bc2006${IMG_SUFFIX}` },
@@ -34,7 +34,7 @@ const products = [
   { name: 'Citron', category: 'Fruits', price: 10, unit: 'kg', stock: 85, image_url: `${IMG}1746981422898-28e48d7a905c${IMG_SUFFIX}` },
   { name: 'Dattes', category: 'Fruits', price: 40, unit: 'kg', stock: 20, image_url: `${IMG}1769255484739-3437edbb858e${IMG_SUFFIX}` },
   { name: 'Figues', category: 'Fruits', price: 35, unit: 'kg', stock: 15, image_url: `${IMG}1758614256427-580827e20f40${IMG_SUFFIX}` },
-  { name: 'Avocat', category: 'Fruits', price: 20, unit: 'pièce', stock: 55, image_url: `${IMG}1702105705586-c951ddade811${IMG_SUFFIX}` },
+  { name: 'Avocat', category: 'Fruits', price: 20, unit: 'kg', stock: 55, image_url: `${IMG}1702105705586-c951ddade811${IMG_SUFFIX}` },
   { name: 'Patate douce', category: 'Légumes', price: 8, unit: 'kg', stock: 60, image_url: `${IMG}1771340224790-9a8cc4a9a24a${IMG_SUFFIX}` },
 ];
 
@@ -167,6 +167,32 @@ async function seed() {
     }
   }
 
+  // Seed returns - realistic return scenarios
+  const allSales = all('SELECT id FROM sales');
+  const reasons = ['Produit abîmé', 'Mauvaise qualité', 'Trop mûr', 'Erreur de commande', 'Client insatisfait', null, null, null];
+  
+  for (let i = 0; i < 15; i++) {
+    const sale = allSales[Math.floor(Math.random() * allSales.length)];
+    const saleItems = all('SELECT product_id, price FROM sale_items WHERE sale_id = ?', [sale.id]);
+    
+    if (saleItems.length > 0) {
+      const item = saleItems[Math.floor(Math.random() * saleItems.length)];
+      const returnQty = Math.min(2, item.qty);
+      const reason = reasons[Math.floor(Math.random() * reasons.length)];
+      
+      const returnDate = new Date();
+      returnDate.setDate(returnDate.getDate() - Math.floor(Math.random() * 7));
+      returnDate.setHours(10 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 60), 0, 0);
+      const dateStr = returnDate.toISOString().slice(0, 19).replace('T', ' ');
+      
+      exec('INSERT INTO returns (sale_id, product_id, qty, reason, created_at) VALUES (?, ?, ?, ?, ?)',
+        [sale.id, item.product_id, returnQty, reason, dateStr]);
+      
+      // Update stock to reflect the return
+      exec('UPDATE products SET stock = stock + ? WHERE id = ?', [returnQty, item.product_id]);
+    }
+  }
+
   const data = db.export();
   fs.writeFileSync(DB_PATH, Buffer.from(data));
 
@@ -177,6 +203,7 @@ async function seed() {
   console.log(`  - ${suppliers.length} suppliers`);
   console.log(`  - ${all('SELECT COUNT(*) as c FROM purchases')[0].c} purchases`);
   console.log(`  - ~70 sales over 15 days`);
+  console.log(`  - ${all('SELECT COUNT(*) as c FROM returns')[0].c} returns`);
 }
 
 seed().catch(console.error);

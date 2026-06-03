@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { queryAll, queryOne, execute, getLastInsertId, saveDb } from '../db.js';
+import { queryAll, queryOne, execute, getLastInsertId, saveDb, getDb } from '../db.js';
 import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = Router();
@@ -30,6 +30,25 @@ router.post('/', ensureAuthenticated, (req, res) => {
   const p = queryOne('SELECT * FROM purchases WHERE id = ?', [purchaseId]);
   const pr = queryOne('SELECT name FROM products WHERE id = ?', [product_id]);
   res.status(201).json({ ...p, product_name: pr?.name });
+});
+
+router.delete('/:id', ensureAuthenticated, (req, res) => {
+  const purchase = queryOne('SELECT * FROM purchases WHERE id = ?', [req.params.id]);
+  if (!purchase) return res.status(404).json({ error: 'Purchase not found' });
+
+  const db = getDb();
+  db.run('BEGIN TRANSACTION');
+  try {
+    execute('DELETE FROM purchases WHERE id = ?', [purchase.id]);
+    execute('UPDATE products SET stock = stock - ?, updated_at = datetime("now") WHERE id = ?', [purchase.qty, purchase.product_id]);
+    execute('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)', [purchase.product_id, -purchase.qty, 'Suppression achat']);
+    db.run('COMMIT');
+    saveDb();
+    res.json({ success: true });
+  } catch (err) {
+    db.run('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;

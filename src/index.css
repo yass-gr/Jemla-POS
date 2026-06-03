@@ -91,3 +91,98 @@
     vertical-align: middle;
   }
 }
+
+@media print {
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide UI elements */
+  nav, header, button, .no-print, 
+  [role="dialog"], [role="alertdialog"],
+  .fixed, .sticky {
+    display: none !important;
+  }
+
+  /* Show main content */
+  main, .main-content {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Optimize tables for print - use black borders like Inventory */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 10pt !important;
+  }
+
+  th, td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    text-align: left !important;
+    color: #000 !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+    font-size: 9pt !important;
+    text-transform: uppercase !important;
+  }
+
+  td {
+    font-size: 9pt !important;
+  }
+
+  /* Page headers */
+  h1 {
+    font-size: 20pt !important;
+    margin-bottom: 8px !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #000 !important;
+  }
+
+  p, .subtitle {
+    font-size: 10pt !important;
+    color: #000 !important;
+  }
+
+  /* Hide KPI cards and filters in print */
+  .grid, .flex {
+    display: none !important;
+  }
+
+  /* Ensure proper page breaks */
+  tr {
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  /* Print layout containers */
+  .print\\:block {
+    display: block !important;
+  }
+
+  .print\\:hidden {
+    display: none !important;
+  }
+}

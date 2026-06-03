@@ -5,7 +5,10 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Suppliers() {
   const { t } = useTranslation();
@@ -74,6 +77,20 @@ export default function Suppliers() {
     }
   }
 
+  function handleExportCSV() {
+    const columns = [
+      { header: t('suppliers.table.name'), key: 'name' },
+      { header: t('suppliers.table.phone'), key: 'phone' },
+      { header: t('suppliers.table.email'), key: 'email' },
+      { header: t('suppliers.table.address'), key: 'address' },
+    ];
+    exportToCSV(filtered, t('suppliers.title'), columns);
+  }
+
+  function handleExportPDF() {
+    exportToPDF(t('suppliers.title'), t('suppliers.subtitle'));
+  }
+
   return (
     <div className="space-y-5 pb-8">
       <div className="flex items-start justify-between">
@@ -81,10 +98,30 @@ export default function Suppliers() {
           <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('suppliers.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('suppliers.subtitle')}</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors mt-2">
-          <span className="material-symbols-outlined text-sm">add_circle</span>
-          {t('suppliers.add')}
-        </button>
+        <div className="flex items-center gap-2 mt-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+                <span className="material-symbols-outlined text-sm">download</span>
+                {t('common.export')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportCSV} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">description</span>
+                CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPDF} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors">
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            {t('suppliers.add')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -153,14 +190,23 @@ export default function Suppliers() {
                 <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{s.email || '-'}</td>
                 <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground max-w-[200px] truncate">{s.address || '-'}</td>
                 <td className="px-4 py-3 text-end">
-                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEdit(s)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors">
-                      <span className="material-symbols-outlined text-sm">edit</span>
-                    </button>
-                    <button onClick={() => handleDelete(s.id)} className="text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition-colors">
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                        <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => openEdit(s)} className="gap-2 cursor-pointer">
+                        <span className="material-symbols-outlined text-[16px]">edit</span>
+                        {t('common.edit')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(s.id)} className="gap-2 cursor-pointer text-error">
+                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                        {t('common.delete')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
@@ -194,6 +240,38 @@ export default function Suppliers() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="hidden print:block w-full text-black p-8 max-w-4xl mx-auto">
+        <div className="mb-6 border-b-2 border-black pb-4">
+          <h1 className="text-2xl font-bold uppercase tracking-wider mb-2">{t('suppliers.title')}</h1>
+          <p className="text-sm font-semibold">{t('suppliers.subtitle')}</p>
+          <div className="flex justify-between text-sm">
+            <p className="font-semibold">Date: <span className="font-normal">{new Date().toLocaleString()}</span></p>
+            <p className="font-semibold">{t('suppliers.total')}: <span className="font-normal">{filtered.length}</span></p>
+          </div>
+        </div>
+        
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('suppliers.table.name')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('suppliers.table.phone')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('suppliers.table.email')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('suppliers.table.address')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(search || filter !== 'all' ? filtered : suppliers).map(s => (
+              <tr key={s.id} className="break-inside-avoid">
+                <td className="border border-black p-2 text-sm font-semibold">{s.name}</td>
+                <td className="border border-black p-2 text-sm">{s.phone || '-'}</td>
+                <td className="border border-black p-2 text-sm">{s.email || '-'}</td>
+                <td className="border border-black p-2 text-sm">{s.address || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

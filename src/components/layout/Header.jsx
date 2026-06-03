@@ -11,12 +11,16 @@ export default function Header({ onMenuClick }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchFocused, setSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [notifications, setNotifications] = useState(null);
   const [notifCount, setNotifCount] = useState(0);
   const menuRef = useRef(null);
   const notifRef = useRef(null);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
@@ -25,6 +29,9 @@ export default function Header({ onMenuClick }) {
       }
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setShowNotif(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -47,10 +54,99 @@ export default function Header({ onMenuClick }) {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const query = searchQuery.toLowerCase();
+        const results = [];
+
+        // Search products
+        const products = await api.products.list();
+        const matchedProducts = products.filter(p => 
+          p.name.toLowerCase().includes(query) || 
+          p.category.toLowerCase().includes(query) ||
+          (p.barcode && p.barcode.includes(query))
+        ).slice(0, 3);
+        
+        matchedProducts.forEach(p => {
+          results.push({
+            type: 'product',
+            id: p.id,
+            name: p.name,
+            subtitle: `${p.category} • ${p.stock} ${p.unit}`,
+            path: '/products'
+          });
+        });
+
+        // Search customers
+        const customers = await api.customers.list();
+        const matchedCustomers = customers.filter(c => 
+          c.name.toLowerCase().includes(query) || 
+          (c.phone && c.phone.includes(query))
+        ).slice(0, 2);
+        
+        matchedCustomers.forEach(c => {
+          results.push({
+            type: 'customer',
+            id: c.id,
+            name: c.name,
+            subtitle: c.phone || c.email || '',
+            path: '/customers'
+          });
+        });
+
+        // Search sales
+        const sales = await api.sales.list();
+        const matchedSales = sales.filter(s => 
+          s.customer_name?.toLowerCase().includes(query) ||
+          String(s.id).includes(query)
+        ).slice(0, 2);
+        
+        matchedSales.forEach(s => {
+          results.push({
+            type: 'sale',
+            id: s.id,
+            name: `#${s.id} - ${s.customer_name || t('sales.free_customer')}`,
+            subtitle: `${s.total.toFixed(2)} DH • ${new Date(s.created_at).toLocaleDateString()}`,
+            path: '/sales'
+          });
+        });
+
+        setSuggestions(results.slice(0, 7));
+        setShowSuggestions(true);
+      } catch (err) {
+        console.error('Search error:', err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, t]);
+
+  const handleSearchSelect = (item) => {
+    // Navigate with search query parameter to filter and highlight the item
+    navigate(`${item.path}?search=${encodeURIComponent(searchQuery)}&highlight=${item.id}`);
+    setSearchQuery('');
+    setShowSuggestions(false);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to products page with search
+      navigate('/products');
+      setShowSuggestions(false);
+    }
+  };
+
   const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background transition-all duration-200">
+    <header className="sticky top-0 z-30 border-b border-border bg-background transition-all duration-200 print:hidden">
       <div className="flex items-center justify-between h-14 px-4 lg:px-6">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <button
@@ -61,19 +157,91 @@ export default function Header({ onMenuClick }) {
           </button>
           <div className={`relative w-full max-w-sm transition-all duration-200 ${
             searchFocused ? 'lg:max-w-lg' : ''
-          }`}>
-            <div className="flex items-center w-full h-9 ps-3 pe-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
-              <span className="material-symbols-outlined text-base text-muted-foreground me-2">search</span>
-              <input
-                className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
-                placeholder={t('header.search')}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-              />
-              <kbd className="absolute end-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
-                ⌘K
-              </kbd>
-            </div>
+          }`} ref={searchRef}>
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <div className="flex items-center w-full h-9 ps-3 pe-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
+                <span className="material-symbols-outlined text-base text-muted-foreground me-2">search</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => {
+                    setSearchFocused(true);
+                    if (searchQuery.trim()) setShowSuggestions(true);
+                  }}
+                  onBlur={() => setSearchFocused(false)}
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                  placeholder={t('header.search')}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSuggestions([]);
+                      setShowSuggestions(false);
+                    }}
+                    className="p-1 hover:bg-accent rounded-lg transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base text-muted-foreground">close</span>
+                  </button>
+                )}
+                {!searchQuery && (
+                  <kbd className="absolute end-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
+                    ⌘K
+                  </kbd>
+                )}
+              </div>
+            </form>
+
+            {/* Search Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full mt-2 left-0 right-0 bg-card border border-border rounded-xl shadow-xl z-50 max-h-[60vh] overflow-y-auto">
+                <div className="p-2 space-y-1">
+                  {suggestions.map((item, index) => (
+                    <button
+                      key={`${item.type}-${item.id}`}
+                      onClick={() => handleSearchSelect(item)}
+                      className="w-full text-start px-3 py-2 rounded-lg hover:bg-accent transition-colors group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          item.type === 'product' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400' :
+                          item.type === 'customer' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' :
+                          'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400'
+                        }`}>
+                          <span className="material-symbols-outlined text-sm">
+                            {item.type === 'product' ? 'inventory_2' :
+                             item.type === 'customer' ? 'person' : 'receipt'}
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+                          {item.subtitle && (
+                            <p className="text-[10px] text-muted-foreground truncate">{item.subtitle}</p>
+                          )}
+                        </div>
+                        <span className="material-symbols-outlined text-sm text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                          arrow_forward
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                <div className="px-3 py-2 border-t border-border">
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    {t('header.search_results', { count: suggestions.length })}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {showSuggestions && searchQuery && suggestions.length === 0 && (
+              <div className="absolute top-full mt-2 left-0 right-0 bg-card border border-border rounded-xl shadow-xl z-50 p-8 text-center">
+                <span className="material-symbols-outlined text-3xl text-muted-foreground mb-2 block">search_off</span>
+                <p className="text-xs text-muted-foreground">{t('header.no_results')}</p>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">

@@ -33,12 +33,13 @@ export const api = {
     create: (data) => request('/customers', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => request(`/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => request(`/customers/${id}`, { method: 'DELETE' }),
+    addPayment: (id, data) => request(`/customers/${id}/payments`, { method: 'POST', body: JSON.stringify(data) }),
   },
 
   dashboard: {
     stats: () => request('/dashboard/stats'),
-    salesTrend: () => request('/dashboard/sales-trend'),
-    topProducts: () => request('/dashboard/top-products'),
+    salesTrend: (period) => request(`/dashboard/sales-trend?period=${period || 'week'}`),
+    topProducts: (period) => request(`/dashboard/top-products?period=${period || 'all'}`),
     topCustomers: () => request('/dashboard/top-customers'),
     recentTransactions: () => request('/dashboard/recent-transactions'),
   },
@@ -65,20 +66,24 @@ export const api = {
   purchases: {
     list: () => request('/purchases'),
     create: (data) => request('/purchases', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id) => request(`/purchases/${id}`, { method: 'DELETE' }),
   },
 
   inventory: {
     list: () => request('/inventory'),
     log: () => request('/inventory/log'),
+    adjust: (data) => request('/inventory/adjust', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   reports: {
-    summary: () => request('/reports/summary'),
+    summary: (period) => request(`/reports/summary?period=${period || 'all'}`),
   },
 
   returns: {
     list: () => request('/returns'),
     create: (data) => request('/returns', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => request(`/returns/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => request(`/returns/${id}`, { method: 'DELETE' }),
   },
 
   favorites: {

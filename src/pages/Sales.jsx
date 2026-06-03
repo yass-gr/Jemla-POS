@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@/services/api';
 import SaleDetail from '@/components/SaleDetail';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 async function reprintSale(saleId) {
   try {
@@ -49,7 +52,7 @@ async function reprintSale(saleId) {
           ${items.map(item => `
             <tr>
               <td>${item.product_name}${item.discount > 0 ? ' (remise ' + item.discount + ' DH)' : ''}</td>
-              <td class="right">${item.qty} ${item.unit}</td>
+              <td class="right">${item.qty} kg</td>
               <td class="right">${item.price.toFixed(2)} DH</td>
               <td class="right">${(item.price * item.qty).toFixed(2)} DH</td>
             </tr>
@@ -111,6 +114,22 @@ export default function Sales() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
+  function handleExportCSV() {
+    const columns = [
+      { header: t('sales.table.invoice'), key: 'id' },
+      { header: t('sales.table.customer'), key: 'customer_name' },
+      { header: t('sales.table.total'), key: 'total' },
+      { header: t('sales.table.payment_method'), key: 'payment_method' },
+      { header: t('sales.table.status'), key: 'payment_status' },
+      { header: t('sales.table.date'), key: 'created_at' },
+    ];
+    exportToCSV(filtered, t('sales.title'), columns);
+  }
+
+  function handleExportPDF() {
+    exportToPDF(t('sales.title'), t('sales.subtitle'));
+  }
+
   return (
     <div className="space-y-5 pb-8">
       <div className="py-2">
@@ -149,6 +168,24 @@ export default function Sales() {
       </div>
 
       <div className="flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+              <span className="material-symbols-outlined text-sm">download</span>
+              {t('common.export')}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportCSV} className="gap-2 cursor-pointer">
+              <span className="material-symbols-outlined text-[16px]">description</span>
+              CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportPDF} className="gap-2 cursor-pointer">
+              <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+              PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <div className="relative flex-1 max-w-sm">
           <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
           <input
@@ -223,14 +260,23 @@ export default function Sales() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <button className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors" onClick={e => { e.stopPropagation(); reprintSale(s.id); }} title={t('sales.reprint')}>
-                        <span className="material-symbols-outlined text-sm">print</span>
-                      </button>
-                      <button className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors" onClick={e => { e.stopPropagation(); setSelectedSaleId(s.id); }}>
-                        <span className="material-symbols-outlined text-sm">more_vert</span>
-                      </button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
+                          <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
+                        <DropdownMenuItem onClick={() => reprintSale(s.id)} className="gap-2 cursor-pointer">
+                          <span className="material-symbols-outlined text-[16px]">print</span>
+                          {t('sales.reprint')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedSaleId(s.id)} className="gap-2 cursor-pointer">
+                          <span className="material-symbols-outlined text-[16px]">visibility</span>
+                          {t('common.details')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
@@ -265,9 +311,44 @@ export default function Sales() {
           )}
         </div>
       </div>
+
+      <div className="hidden print:block w-full text-black p-8 max-w-4xl mx-auto">
+        <div className="mb-6 border-b-2 border-black pb-4">
+          <h1 className="text-2xl font-bold uppercase tracking-wider mb-2">{t('sales.title')}</h1>
+          <div className="flex justify-between text-sm">
+            <p className="font-semibold">Date: <span className="font-normal">{new Date().toLocaleString()}</span></p>
+            <p className="font-semibold">{t('sales.stat_total_sales')}: <span className="font-normal">{filtered.length}</span></p>
+          </div>
+        </div>
+        
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('sales.table.invoice')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('sales.table.customer')}</th>
+              <th className="border border-black p-2 text-right text-sm font-bold w-32">{t('sales.table.total')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('sales.table.payment_method')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('sales.table.status')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(search || filter !== 'all' ? filtered : sales).map(s => (
+              <tr key={s.id} className="break-inside-avoid">
+                <td className="border border-black p-2 text-sm font-semibold">#{s.id}</td>
+                <td className="border border-black p-2 text-sm">{s.customer_name || '-'}</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{s.total.toFixed(2)} DH</td>
+                <td className="border border-black p-2 text-sm">{s.payment_method}</td>
+                <td className="border border-black p-2 text-sm">{s.payment_status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {selectedSaleId && (
         <SaleDetail saleId={selectedSaleId} onClose={() => setSelectedSaleId(null)} />
       )}
+
     </div>
   );
 }

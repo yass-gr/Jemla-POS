@@ -4,9 +4,16 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import NumpadModal from '@/components/ui/NumpadModal';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Returns() {
   const { t } = useTranslation();
@@ -18,8 +25,10 @@ export default function Returns() {
   const pageSize = 10;
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingReturn, setEditingReturn] = useState(null);
   const [form, setForm] = useState({ product_id: '', qty: 1, reason: '', sale_id: '' });
   const [products, setProducts] = useState([]);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const [numpadOpen, setNumpadOpen] = useState(false);
   const [numpadTarget, setNumpadTarget] = useState(null);
@@ -50,9 +59,22 @@ export default function Returns() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
   const totalReturned = returns.reduce((s, r) => s + r.qty, 0);
+  const totalValue = returns.reduce((s, r) => s + (r.price || 0) * r.qty, 0);
 
   function openAdd() {
+    setEditingReturn(null);
     setForm({ product_id: products[0]?.id || '', qty: 1, reason: '', sale_id: '' });
+    setDialogOpen(true);
+  }
+
+  function openEdit(ret) {
+    setEditingReturn(ret);
+    setForm({ 
+      product_id: ret.product_id, 
+      qty: ret.qty, 
+      reason: ret.reason || '', 
+      sale_id: ret.sale_id || '' 
+    });
     setDialogOpen(true);
   }
 
@@ -87,13 +109,48 @@ export default function Returns() {
         reason: form.reason || undefined,
         sale_id: form.sale_id ? parseInt(form.sale_id) : undefined,
       };
-      const ret = await api.returns.create(payload);
-      setReturns(prev => [ret, ...prev]);
-      toast.success(t('returns.created'));
+      
+      if (editingReturn) {
+        const updated = await api.returns.update(editingReturn.id, payload);
+        setReturns(prev => prev.map(r => r.id === editingReturn.id ? updated : r));
+        toast.success(t('returns.updated'));
+      } else {
+        const ret = await api.returns.create(payload);
+        setReturns(prev => [ret, ...prev]);
+        toast.success(t('returns.created'));
+      }
       setDialogOpen(false);
     } catch (err) {
       toast.error(t('returns.error') + err.message);
     }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    try {
+      await api.returns.delete(deleteTarget.id);
+      setReturns(prev => prev.filter(r => r.id !== deleteTarget.id));
+      toast.success(t('returns.deleted'));
+      setDeleteTarget(null);
+    } catch (err) {
+      toast.error(t('returns.error') + err.message);
+    }
+  }
+
+  function handleExportCSV() {
+    const columns = [
+      { header: t('returns.table.product'), key: 'product_name' },
+      { header: t('returns.table.qty'), key: 'qty' },
+      { header: t('purchases.table.unit_price'), key: 'price' },
+      { header: t('returns.table.reason'), key: 'reason' },
+      { header: t('returns.table.sale'), key: 'sale_id' },
+      { header: t('returns.table.date'), key: 'created_at' },
+    ];
+    exportToCSV(filtered, t('returns.title'), columns);
+  }
+
+  function handleExportPDF() {
+    exportToPDF(t('returns.title'), t('returns.subtitle'));
   }
 
   return (
@@ -103,10 +160,30 @@ export default function Returns() {
           <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('returns.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('returns.subtitle')}</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors">
-          <span className="material-symbols-outlined text-sm">add_circle</span>
-          {t('returns.add')}
-        </button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+                <span className="material-symbols-outlined text-sm">download</span>
+                {t('common.export')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportCSV} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">description</span>
+                CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPDF} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors">
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            {t('returns.add')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -124,8 +201,8 @@ export default function Returns() {
             <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('returns.amount')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{returns.length}</span>
-            <span className="material-symbols-outlined text-2xl text-emerald-300 dark:text-emerald-400">receipt_long</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalValue.toFixed(2)} MAD</span>
+            <span className="material-symbols-outlined text-2xl text-emerald-300 dark:text-emerald-400">payments</span>
           </div>
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white to-amber-500/10 dark:from-card dark:to-amber-950/40">
@@ -163,9 +240,11 @@ export default function Returns() {
               <tr>
                 <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('returns.table.product')}</th>
                 <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('returns.table.qty')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('purchases.table.unit_price')}</th>
                 <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('returns.table.reason')}</th>
                 <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('returns.table.sale')}</th>
                 <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('returns.table.date')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('returns.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -173,13 +252,33 @@ export default function Returns() {
                 <tr key={r.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{r.product_name}</td>
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{r.qty}</td>
+                  <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground text-end">{r.price ? `${r.price.toFixed(2)} MAD` : '-'}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{r.reason || t('returns.none')}</td>
-                  <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{r.sale_id ? `#INV-${String(r.sale_id).padStart(4, '0')}` : t('returns.none')}</td>
+                  <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{r.sale_id ? `#${String(r.sale_id).padStart(4, '0')}` : t('returns.none')}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</td>
+                  <td className="px-4 py-3 text-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                          <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openEdit(r)} className="gap-2 cursor-pointer">
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          {t('common.edit')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setDeleteTarget(r)} className="gap-2 cursor-pointer text-error">
+                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          {t('common.delete')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
                 </tr>
               ))}
               {!loading && paginated.length === 0 && (
-                <tr><td colSpan="5" className="px-4 py-8 text-center text-xs text-[#64748B] dark:text-muted-foreground">{t('returns.no_results')}</td></tr>
+                <tr><td colSpan="7" className="px-4 py-8 text-center text-xs text-[#64748B] dark:text-muted-foreground">{t('returns.no_results')}</td></tr>
               )}
             </tbody>
           </table>
@@ -211,7 +310,7 @@ export default function Returns() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('returns.dialog.title')}</DialogTitle>
+            <DialogTitle>{editingReturn ? t('returns.dialog.edit_title') : t('returns.dialog.title')}</DialogTitle>
             <DialogDescription>{t('returns.dialog.description')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -250,6 +349,54 @@ export default function Returns() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('returns.delete_confirm')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget && t('returns.delete_desc', { name: deleteTarget.product_name, qty: deleteTarget.qty })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="hidden print:block w-full text-black p-8 max-w-4xl mx-auto">
+        <div className="mb-6 border-b-2 border-black pb-4">
+          <h1 className="text-2xl font-bold uppercase tracking-wider mb-2">{t('returns.title')}</h1>
+          <div className="flex justify-between text-sm">
+            <p className="font-semibold">Date: <span className="font-normal">{new Date().toLocaleString()}</span></p>
+            <p className="font-semibold">{t('returns.total')}: <span className="font-normal">{filtered.length}</span></p>
+          </div>
+        </div>
+        
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('returns.table.product')}</th>
+              <th className="border border-black p-2 text-right text-sm font-bold w-24">{t('returns.table.qty')}</th>
+              <th className="border border-black p-2 text-right text-sm font-bold w-32">{t('purchases.table.unit_price')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('returns.table.reason')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('returns.table.date')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(search ? filtered : returns).map(r => (
+              <tr key={r.id} className="break-inside-avoid">
+                <td className="border border-black p-2 text-sm font-semibold">{r.product_name}</td>
+                <td className="border border-black p-2 text-sm text-right">{r.qty}</td>
+                <td className="border border-black p-2 text-sm text-right">{(r.price || 0).toFixed(2)} DH</td>
+                <td className="border border-black p-2 text-sm">{r.reason || '-'}</td>
+                <td className="border border-black p-2 text-sm">{new Date(r.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <NumpadModal
         open={numpadOpen}

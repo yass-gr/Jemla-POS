@@ -557,7 +557,7 @@ export default function POS() {
                   )}
                   {p.stock > 0 && (
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
-                      <span className="text-white text-[11px] font-bold">{p.stock} {p.unit}</span>
+                      <span className="text-white text-[11px] font-bold">{p.stock} kg</span>
                       {p.price_wholesale && p.wholesale_min_qty && (
                         <span className="text-white/80 text-[8px]">{p.wholesale_min_qty}+kg</span>
                       )}
@@ -744,7 +744,7 @@ export default function POS() {
                   <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-1">
                     <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
-                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
+                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / kg</span>
                     {item.discount > 0 && (
                       <Badge variant="destructive" className="text-[8px] px-1 py-0">
                         -{item.discount}{item.discount_type === 'percentage' ? '%' : ' DH'}
@@ -789,7 +789,7 @@ export default function POS() {
                         key={preset}
                         onMouseDown={(e) => { e.preventDefault(); updateQty(item.product_id, preset - item.qty); }}
                         className="text-[8px] px-1 py-0.5 rounded bg-[#f1f5f9] dark:bg-muted hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 text-[#64748B] dark:text-muted-foreground"
-                      >{preset}{item.unit}</button>
+                      >{preset}kg</button>
                     ))}
                   </div>
                   <p className="font-bold text-xs text-[#0F766E] dark:text-teal-400">{(item.price * item.qty).toFixed(2)} DH</p>
@@ -1220,7 +1220,7 @@ function CartPanel({
                   <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-1">
                     <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
-                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
+                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / kg</span>
                     {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
                   </div>
                 </div>
@@ -1348,7 +1348,7 @@ function printBon(sale, settings = {}) {
         ${items.map(item => `
           <tr>
             <td>${item.product_name}${item.discount > 0 ? ' (-' + item.discount + (item.discount_type === 'percentage' ? '%)' : ' DH)') : ''}</td>
-            <td class="right">${item.qty} ${item.unit}</td>
+            <td class="right">${item.qty} kg</td>
             <td class="right">${item.price.toFixed(2)}</td>
             <td class="right">${(item.price * item.qty).toFixed(2)}</td>
           </tr>

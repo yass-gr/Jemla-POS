@@ -32,36 +32,83 @@ router.get('/stats', ensureAuthenticated, (req, res) => {
 });
 
 router.get('/sales-trend', ensureAuthenticated, (req, res) => {
-  const days = 7;
+  const period = req.query.period || 'week';
   const trend = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const thisWeek = queryOne(`
-      SELECT COALESCE(SUM(total), 0) as total
-      FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
-    `, [i]);
-    const lastWeek = queryOne(`
-      SELECT COALESCE(SUM(total), 0) as total
-      FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
-    `, [i + 7]);
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-    trend.push({
-      day: dayName,
-      value: Math.round(thisWeek.total / 1000 * 10) / 10,
-      previous: Math.round(lastWeek.total / 1000 * 10) / 10,
+
+  if (period === 'year' || period === 'all') {
+    const range = period === 'year' ? 365 : 99999;
+    const months = queryAll(`
+      SELECT strftime('%Y-%m', created_at) as label,
+             COALESCE(SUM(total), 0) as total
+      FROM sales WHERE status = 'completed'
+        AND date(created_at) >= date('now', '-' || ? || ' days')
+      GROUP BY strftime('%Y-%m', created_at)
+      ORDER BY label ASC
+    `, [range]);
+
+    const prevMonths = queryAll(`
+      SELECT strftime('%Y-%m', created_at) as label,
+             COALESCE(SUM(total), 0) as total
+      FROM sales WHERE status = 'completed'
+        AND date(created_at) >= date('now', '-' || ? || ' days')
+        AND date(created_at) < date('now', '-' || ? || ' days')
+      GROUP BY strftime('%Y-%m', created_at)
+      ORDER BY label ASC
+    `, [range * 2, range]);
+
+    const prevMap = {};
+    prevMonths.forEach(m => { prevMap[m.label] = m.total; });
+
+    months.forEach((m) => {
+      const date = new Date(m.label + '-01');
+      const label = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      trend.push({
+        day: label,
+        value: Math.round(m.total / 1000 * 10) / 10,
+        previous: Math.round((prevMap[m.label] || 0) / 1000 * 10) / 10,
+      });
     });
+  } else {
+    const days = period === 'month' ? 30 : 7;
+    for (let i = days - 1; i >= 0; i--) {
+      const thisPeriod = queryOne(`
+        SELECT COALESCE(SUM(total), 0) as total
+        FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
+      `, [i]);
+      const prevPeriod = queryOne(`
+        SELECT COALESCE(SUM(total), 0) as total
+        FROM sales WHERE date(created_at) = date('now', '-' || ? || ' days')
+      `, [i + days]);
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayName = period === 'month'
+        ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : date.toLocaleDateString('en-US', { weekday: 'short' });
+      trend.push({
+        day: dayName,
+        value: Math.round(thisPeriod.total / 1000 * 10) / 10,
+        previous: Math.round(prevPeriod.total / 1000 * 10) / 10,
+      });
+    }
   }
   res.json(trend);
 });
 
 router.get('/top-products', ensureAuthenticated, (req, res) => {
+  const period = req.query.period || 'all';
+  let filter = '';
+  if (period === 'week') filter = "AND date(s.created_at) >= date('now', '-7 days')";
+  else if (period === 'month') filter = "AND date(s.created_at) >= date('now', '-30 days')";
+  else if (period === 'year') filter = "AND date(s.created_at) >= date('now', '-365 days')";
+
   const products = queryAll(`
     SELECT si.product_name as name, COUNT(*) as sales, si.price,
            p.stock, p.image_url as img,
            COALESCE(SUM(si.qty * si.price), 0) as revenue
     FROM sale_items si
     JOIN products p ON si.product_id = p.id
+    JOIN sales s ON si.sale_id = s.id
+    WHERE s.status = 'completed' ${filter}
     GROUP BY si.product_id
     ORDER BY revenue DESC
     LIMIT 4

@@ -10,7 +10,10 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 const emptyForm = { name: '', phone: '', email: '', address: '', delivery_address: '' };
 
@@ -112,6 +115,21 @@ export default function Customers() {
     }
   }
 
+  function handleExportCSV() {
+    const columns = [
+      { header: t('customers.table.name'), key: 'name' },
+      { header: t('customers.table.phone'), key: 'phone' },
+      { header: t('customers.table.email'), key: 'email' },
+      { header: t('customers.table.address'), key: 'address' },
+      { header: t('customers.table.debt'), key: 'debt_balance' },
+    ];
+    exportToCSV(filtered, t('customers.title'), columns);
+  }
+
+  function handleExportPDF() {
+    exportToPDF(t('customers.title'), t('customers.subtitle'));
+  }
+
   return (
     <div className="space-y-5 pb-8">
       <div className="flex items-start justify-between">
@@ -119,13 +137,33 @@ export default function Customers() {
           <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('customers.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('customers.subtitle')}</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors mt-2"
-        >
-          <span className="material-symbols-outlined text-sm">add_circle</span>
-          {t('customers.add')}
-        </button>
+        <div className="flex items-center gap-2 mt-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+                <span className="material-symbols-outlined text-sm">download</span>
+                {t('common.export')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportCSV} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">description</span>
+                CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPDF} className="gap-2 cursor-pointer">
+                <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            {t('customers.add')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -227,29 +265,29 @@ export default function Customers() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-end">
-                      <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        {c.debt_balance > 0 && (
-                          <button
-                            onClick={() => navigate('/debts')}
-                            title={t('customers.view_debt')}
-                            className="text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 p-1.5 rounded-lg transition-colors"
-                          >
-                            <span className="material-symbols-outlined text-sm">payments</span>
-                          </button>
-                        )}
-                        <button
-                          onClick={() => openEdit(c)}
-                          className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          onClick={() => setDeleteTarget(c)}
-                          className="text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                        </button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                            <span className="material-symbols-outlined text-[18px]">more_vert</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {c.debt_balance > 0 && (
+                            <DropdownMenuItem onClick={() => navigate('/debts')} className="gap-2 cursor-pointer">
+                              <span className="material-symbols-outlined text-[16px]">payments</span>
+                              {t('customers.view_debt')}
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem onClick={() => openEdit(c)} className="gap-2 cursor-pointer">
+                            <span className="material-symbols-outlined text-[16px]">edit</span>
+                            {t('common.edit')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setDeleteTarget(c)} className="gap-2 cursor-pointer text-error">
+                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                            {t('common.delete')}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 );
@@ -297,6 +335,38 @@ export default function Customers() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="hidden print:block w-full text-black p-8 max-w-4xl mx-auto">
+        <div className="mb-6 border-b-2 border-black pb-4">
+          <h1 className="text-2xl font-bold uppercase tracking-wider mb-2">{t('customers.title')}</h1>
+          <p className="text-sm">{t('customers.subtitle')}</p>
+          <div className="flex justify-between text-sm">
+            <p className="font-semibold">Date: <span className="font-normal">{new Date().toLocaleString()}</span></p>
+            <p className="font-semibold">{t('customers.total')}: <span className="font-normal">{filtered.length} {t('customers.table.customer', { count: filtered.length })}</span></p>
+          </div>
+        </div>
+        
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('customers.table.name')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('customers.table.phone')}</th>
+              <th className="border border-black p-2 text-left text-sm font-bold">{t('customers.table.email')}</th>
+              <th className="border border-black p-2 text-right text-sm font-bold w-32">{t('customers.table.debt')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(search || filter !== 'all' ? filtered : customers).map(c => (
+              <tr key={c.id} className="break-inside-avoid">
+                <td className="border border-black p-2 text-sm font-semibold">{c.name}</td>
+                <td className="border border-black p-2 text-sm">{c.phone || '-'}</td>
+                <td className="border border-black p-2 text-sm">{c.email || '-'}</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{c.debt_balance.toFixed(2)} DH</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
