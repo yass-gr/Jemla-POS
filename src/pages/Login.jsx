@@ -26,7 +26,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] p-8">
+      <div className="w-full max-w-sm bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-[#0F766E] dark:bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#0F766E]/20 dark:shadow-teal-900/30">
             <span className="material-symbols-outlined text-3xl text-white">store</span>
