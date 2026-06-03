@@ -91,7 +91,7 @@ export default function SaleDetail({ saleId, onClose }) {
                       <p className="font-bold text-body-md text-on-surface truncate">{item.product_name}</p>
                       <p className="text-label-md text-on-surface-variant">
                         {item.price.toFixed(2)} DH × {item.qty} kg
-                        {item.discount > 0 && <span className="text-error ms-2">-{item.discount} DH</span>}
+                        {item.discount > 0 && <span className="text-error ms-2">-{item.discount.toFixed(2)} DH</span>}
                       </p>
                     </div>
                     <p className="font-bold text-body-lg text-primary ms-4">

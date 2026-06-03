@@ -620,7 +620,7 @@ export default function POS() {
                   )}
                   {p.stock > 0 && (
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
-                      <span className="text-white text-[11px] font-bold">{p.stock} kg</span>
+                      <span className="text-white text-[11px] font-bold">{p.stock.toFixed(2)} kg</span>
                       {p.price_wholesale && p.wholesale_min_qty && (
                         <span className="text-white/80 text-[8px]">{p.wholesale_min_qty}+kg</span>
                       )}
@@ -833,7 +833,7 @@ export default function POS() {
                     <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / kg</span>
                     {item.discount > 0 && (
                       <Badge variant="destructive" className="text-[8px] px-1 py-0">
-                        -{item.discount}{item.discount_type === 'percentage' ? '%' : ' DH'}
+                        -{item.discount.toFixed(2)}{item.discount_type === 'percentage' ? '%' : ' DH'}
                       </Badge>
                     )}
                     {item.tax_exempt && <Badge variant="secondary" className="text-[8px] px-1 py-0">{t('pos.tax_exempt')}</Badge>}
@@ -863,7 +863,7 @@ export default function POS() {
                   <button onClick={() => updateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">remove</span>
                   </button>
-                  <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
+                  <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{Number(item.qty).toFixed(2)}</button>
                   <button onClick={() => updateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">add</span>
                   </button>
@@ -1359,7 +1359,7 @@ function CartPanel({
                   <div className="flex items-center gap-1">
                     <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
                     <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / kg</span>
-                    {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
+                    {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount.toFixed(2)} DH</Badge>}
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -1376,7 +1376,7 @@ function CartPanel({
                   <button onClick={() => onUpdateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">remove</span>
                   </button>
-                  <button onClick={() => onOpenNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
+                  <button onClick={() => onOpenNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{Number(item.qty).toFixed(2)}</button>
                   <button onClick={() => onUpdateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">add</span>
                   </button>
@@ -1485,8 +1485,8 @@ function printBon(sale, settings = {}) {
         <tr><th>Produit</th><th class="right">Qté</th><th class="right">P.U.</th><th class="right">Total</th></tr>
         ${items.map(item => `
           <tr>
-            <td>${item.product_name}${item.discount > 0 ? ' (-' + item.discount + (item.discount_type === 'percentage' ? '%)' : ' DH)') : ''}</td>
-            <td class="right">${item.qty} kg</td>
+            <td>${item.product_name}${item.discount > 0 ? ' (-' + Number(item.discount).toFixed(2) + (item.discount_type === 'percentage' ? '%)' : ' DH)') : ''}</td>
+            <td class="right">${Number(item.qty).toFixed(2)} kg</td>
             <td class="right">${item.price.toFixed(2)}</td>
             <td class="right">${(item.price * item.qty).toFixed(2)}</td>
           </tr>

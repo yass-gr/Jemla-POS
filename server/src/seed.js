@@ -7,59 +7,175 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, '..', 'data', 'jemla.db');
 
+// High-quality isolated product images (white background, professional)
 const IMG = 'https://images.unsplash.com/photo-';
-const IMG_SUFFIX = '?w=200&h=200&fit=crop&auto=format';
+const IMG_SUFFIX = '?w=400&h=400&fit=crop&auto=format&q=80';
 
+// Realistic Moroccan wholesale products with seasonal pricing
 const products = [
-  { name: 'Tomate', category: 'Légumes', price: 8, unit: 'kg', stock: 200, image_url: `${IMG}1531730802399-67fca7529b13${IMG_SUFFIX}` },
-  { name: 'Pomme de terre', category: 'Légumes', price: 5, unit: 'kg', stock: 300, image_url: `${IMG}1760368104765-f0441f4f4d6c${IMG_SUFFIX}` },
-  { name: 'Oignon', category: 'Légumes', price: 4, unit: 'kg', stock: 250, image_url: `${IMG}1755406050322-36c15e00c6d3${IMG_SUFFIX}` },
-  { name: 'Carotte', category: 'Légumes', price: 6, unit: 'kg', stock: 180, image_url: `${IMG}1474440692490-2e83ae13ba29${IMG_SUFFIX}` },
-  { name: 'Banane', category: 'Fruits', price: 12, unit: 'kg', stock: 150, image_url: `${IMG}1774983882471-abcf681085cc${IMG_SUFFIX}` },
-  { name: 'Pomme', category: 'Fruits', price: 14, unit: 'kg', stock: 120, image_url: `${IMG}1693036530117-4b63e22ea9de${IMG_SUFFIX}` },
-  { name: 'Orange', category: 'Fruits', price: 8, unit: 'kg', stock: 200, image_url: `${IMG}1757807196804-2c9b1a66f3a3${IMG_SUFFIX}` },
-  { name: 'Fraise', category: 'Fruits', price: 25, unit: 'kg', stock: 40, image_url: `${IMG}1713715980823-7118c048c79c${IMG_SUFFIX}` },
-  { name: 'Chou', category: 'Légumes', price: 5, unit: 'kg', stock: 60, image_url: `${IMG}1779738192854-92a3daec9b45${IMG_SUFFIX}` },
-  { name: 'Laitue', category: 'Légumes', price: 3, unit: 'kg', stock: 80, image_url: `${IMG}1477434779629-a454c123dcd3${IMG_SUFFIX}` },
-  { name: 'Poivron vert', category: 'Légumes', price: 10, unit: 'kg', stock: 90, image_url: `${IMG}1505692794401-b371fa865622${IMG_SUFFIX}` },
-  { name: 'Courgette', category: 'Légumes', price: 8, unit: 'kg', stock: 100, image_url: `${IMG}1757332051150-a5b3c4510af8${IMG_SUFFIX}` },
-  { name: 'Aubergine', category: 'Légumes', price: 7, unit: 'kg', stock: 70, image_url: `${IMG}1780331617758-304c32bc2006${IMG_SUFFIX}` },
-  { name: 'Raisin', category: 'Fruits', price: 20, unit: 'kg', stock: 35, image_url: `${IMG}1769889670620-a73b64e38d33${IMG_SUFFIX}` },
-  { name: 'Pastèque', category: 'Fruits', price: 4, unit: 'kg', stock: 50, image_url: `${IMG}1767747484833-8e9d4f88fe69${IMG_SUFFIX}` },
-  { name: 'Melon', category: 'Fruits', price: 7, unit: 'kg', stock: 45, image_url: `${IMG}1775326715451-16ea5a3d59bf${IMG_SUFFIX}` },
-  { name: 'Haricots verts', category: 'Légumes', price: 12, unit: 'kg', stock: 40, image_url: `${IMG}1768729341107-4ec2a7807a70${IMG_SUFFIX}` },
-  { name: 'Petits pois', category: 'Légumes', price: 15, unit: 'kg', stock: 30, image_url: `${IMG}1741518359695-bc91a1fab4ae${IMG_SUFFIX}` },
-  { name: 'Navet', category: 'Légumes', price: 5, unit: 'kg', stock: 65, image_url: `${IMG}1561270168-df3704f232c3${IMG_SUFFIX}` },
-  { name: 'Ail', category: 'Légumes', price: 30, unit: 'kg', stock: 25, image_url: `${IMG}1776722203199-83cdae0092a0${IMG_SUFFIX}` },
-  { name: 'Citron', category: 'Fruits', price: 10, unit: 'kg', stock: 85, image_url: `${IMG}1746981422898-28e48d7a905c${IMG_SUFFIX}` },
-  { name: 'Dattes', category: 'Fruits', price: 40, unit: 'kg', stock: 20, image_url: `${IMG}1769255484739-3437edbb858e${IMG_SUFFIX}` },
-  { name: 'Figues', category: 'Fruits', price: 35, unit: 'kg', stock: 15, image_url: `${IMG}1758614256427-580827e20f40${IMG_SUFFIX}` },
-  { name: 'Avocat', category: 'Fruits', price: 20, unit: 'kg', stock: 55, image_url: `${IMG}1702105705586-c951ddade811${IMG_SUFFIX}` },
-  { name: 'Patate douce', category: 'Légumes', price: 8, unit: 'kg', stock: 60, image_url: `${IMG}1771340224790-9a8cc4a9a24a${IMG_SUFFIX}` },
+  // Winter vegetables (Nov-Mar)
+  { name: 'Tomate', category: 'Légumes', price: 6, unit: 'kg', stock: 500, image_url: `${IMG}1592585484333-1c71e6b4d9f6${IMG_SUFFIX}`, barcode: '6111000000001', price_wholesale: 4.5, wholesale_min_qty: 20 },
+  { name: 'Pomme de terre', category: 'Légumes', price: 4, unit: 'kg', stock: 800, image_url: `${IMG}1518929662106-fa8acf49bb4e${IMG_SUFFIX}`, barcode: '6111000000002', price_wholesale: 2.8, wholesale_min_qty: 25 },
+  { name: 'Oignon', category: 'Légumes', price: 3.5, unit: 'kg', stock: 600, image_url: `${IMG}1618485175738-0db20e445b19${IMG_SUFFIX}`, barcode: '6111000000003', price_wholesale: 2.2, wholesale_min_qty: 30 },
+  { name: 'Carotte', category: 'Légumes', price: 5, unit: 'kg', stock: 450, image_url: `${IMG}1598112446039-65cc0a4b1f68${IMG_SUFFIX}`, barcode: '6111000000004', price_wholesale: 3.5, wholesale_min_qty: 20 },
+  { name: 'Courgette', category: 'Légumes', price: 7, unit: 'kg', stock: 350, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000005', price_wholesale: 5, wholesale_min_qty: 15 },
+  { name: 'Aubergine', category: 'Légumes', price: 6.5, unit: 'kg', stock: 300, image_url: `${IMG}1615484315151-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000006', price_wholesale: 4.5, wholesale_min_qty: 15 },
+  { name: 'Poivron vert', category: 'Légumes', price: 9, unit: 'kg', stock: 280, image_url: `${IMG}1563565313360-af4e38e3e2d2${IMG_SUFFIX}`, barcode: '6111000000007', price_wholesale: 6.5, wholesale_min_qty: 12 },
+  { name: 'Poivron rouge', category: 'Légumes', price: 12, unit: 'kg', stock: 250, image_url: `${IMG}1563565313360-af4e38e3e2d2${IMG_SUFFIX}`, barcode: '6111000000008', price_wholesale: 8.5, wholesale_min_qty: 12 },
+  { name: 'Chou vert', category: 'Légumes', price: 4, unit: 'kg', stock: 400, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000009', price_wholesale: 2.8, wholesale_min_qty: 20 },
+  { name: 'Chou rouge', category: 'Légumes', price: 5, unit: 'kg', stock: 350, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000010', price_wholesale: 3.5, wholesale_min_qty: 20 },
+  { name: 'Laitue', category: 'Légumes', price: 2.5, unit: 'kg', stock: 500, image_url: `${IMG}1622218722351-4c7e1b2e1b1e${IMG_SUFFIX}`, barcode: '6111000000011', price_wholesale: 1.8, wholesale_min_qty: 25 },
+  { name: 'Épinard', category: 'Légumes', price: 5, unit: 'kg', stock: 250, image_url: `${IMG}1576045537719-39c0ae3e1e1e${IMG_SUFFIX}`, barcode: '6111000000012', price_wholesale: 3.5, wholesale_min_qty: 15 },
+  { name: 'Brocoli', category: 'Légumes', price: 10, unit: 'kg', stock: 200, image_url: `${IMG}1459421614115-f443a7d3a132${IMG_SUFFIX}`, barcode: '6111000000013', price_wholesale: 7, wholesale_min_qty: 10 },
+  { name: 'Chou-fleur', category: 'Légumes', price: 8, unit: 'kg', stock: 220, image_url: `${IMG}1568585121333-d4e3b5e1e1e1${IMG_SUFFIX}`, barcode: '6111000000014', price_wholesale: 5.5, wholesale_min_qty: 12 },
+  { name: 'Navet', category: 'Légumes', price: 4, unit: 'kg', stock: 300, image_url: `${IMG}1591127454761-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000015', price_wholesale: 2.8, wholesale_min_qty: 20 },
+  { name: 'Radis', category: 'Légumes', price: 3, unit: 'kg', stock: 350, image_url: `${IMG}1591127454761-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000016', price_wholesale: 2, wholesale_min_qty: 25 },
+  { name: 'Céleri', category: 'Légumes', price: 6, unit: 'kg', stock: 180, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000017', price_wholesale: 4.2, wholesale_min_qty: 12 },
+  { name: 'Persil', category: 'Légumes', price: 4, unit: 'kg', stock: 400, image_url: `${IMG}1576045537719-39c0ae3e1e1e${IMG_SUFFIX}`, barcode: '6111000000018', price_wholesale: 2.8, wholesale_min_qty: 20 },
+  { name: 'Coriandre', category: 'Légumes', price: 5, unit: 'kg', stock: 350, image_url: `${IMG}1576045537719-39c0ae3e1e1e${IMG_SUFFIX}`, barcode: '6111000000019', price_wholesale: 3.5, wholesale_min_qty: 15 },
+  { name: 'Menthe', category: 'Légumes', price: 6, unit: 'kg', stock: 300, image_url: `${IMG}1576045537719-39c0ae3e1e1e${IMG_SUFFIX}`, barcode: '6111000000020', price_wholesale: 4.2, wholesale_min_qty: 15 },
+  
+  // Root vegetables & aromatics
+  { name: 'Ail', category: 'Légumes', price: 28, unit: 'kg', stock: 150, image_url: `${IMG}1615484315151-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000021', price_wholesale: 20, wholesale_min_qty: 5 },
+  { name: 'Gingembre', category: 'Légumes', price: 35, unit: 'kg', stock: 100, image_url: `${IMG}1615484315151-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000022', price_wholesale: 25, wholesale_min_qty: 5 },
+  { name: 'Patate douce', category: 'Légumes', price: 7, unit: 'kg', stock: 350, image_url: `${IMG}1598112446039-65cc0a4b1f68${IMG_SUFFIX}`, barcode: '6111000000023', price_wholesale: 5, wholesale_min_qty: 15 },
+  { name: 'Betterave', category: 'Légumes', price: 5, unit: 'kg', stock: 280, image_url: `${IMG}1591127454761-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000024', price_wholesale: 3.5, wholesale_min_qty: 15 },
+  
+  // Summer vegetables (Apr-Sep)
+  { name: 'Concombre', category: 'Légumes', price: 5, unit: 'kg', stock: 450, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000025', price_wholesale: 3.5, wholesale_min_qty: 20 },
+  { name: 'Haricots verts', category: 'Légumes', price: 11, unit: 'kg', stock: 250, image_url: `${IMG}1567186470-a3c39c3e1e1e${IMG_SUFFIX}`, barcode: '6111000000026', price_wholesale: 8, wholesale_min_qty: 10 },
+  { name: 'Petits pois', category: 'Légumes', price: 14, unit: 'kg', stock: 200, image_url: `${IMG}1567186470-a3c39c3e1e1e${IMG_SUFFIX}`, barcode: '6111000000027', price_wholesale: 10, wholesale_min_qty: 10 },
+  { name: 'Fèves fraîches', category: 'Légumes', price: 8, unit: 'kg', stock: 220, image_url: `${IMG}1567186470-a3c39c3e1e1e${IMG_SUFFIX}`, barcode: '6111000000028', price_wholesale: 5.5, wholesale_min_qty: 12 },
+  { name: 'Artichaut', category: 'Légumes', price: 9, unit: 'kg', stock: 180, image_url: `${IMG}1604371255477-b9b6dc3c3e0e${IMG_SUFFIX}`, barcode: '6111000000029', price_wholesale: 6.5, wholesale_min_qty: 10 },
+  { name: 'Asperges', category: 'Légumes', price: 25, unit: 'kg', stock: 80, image_url: `${IMG}1567186470-a3c39c3e1e1e${IMG_SUFFIX}`, barcode: '6111000000030', price_wholesale: 18, wholesale_min_qty: 5 },
+  
+  // Citrus fruits (Winter)
+  { name: 'Orange Navel', category: 'Fruits', price: 7, unit: 'kg', stock: 600, image_url: `${IMG}1611085637755-8b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000031', price_wholesale: 5, wholesale_min_qty: 25 },
+  { name: 'Orange Sanguine', category: 'Fruits', price: 9, unit: 'kg', stock: 400, image_url: `${IMG}1611085637755-8b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000032', price_wholesale: 6.5, wholesale_min_qty: 20 },
+  { name: 'Clémentine', category: 'Fruits', price: 10, unit: 'kg', stock: 500, image_url: `${IMG}1611085637755-8b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000033', price_wholesale: 7, wholesale_min_qty: 20 },
+  { name: 'Mandarine', category: 'Fruits', price: 11, unit: 'kg', stock: 450, image_url: `${IMG}1611085637755-8b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000034', price_wholesale: 8, wholesale_min_qty: 20 },
+  { name: 'Citron', category: 'Fruits', price: 9, unit: 'kg', stock: 550, image_url: `${IMG}1590520394219-6b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000035', price_wholesale: 6.5, wholesale_min_qty: 20 },
+  { name: 'Pamplemousse', category: 'Fruits', price: 8, unit: 'kg', stock: 300, image_url: `${IMG}1590520394219-6b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000036', price_wholesale: 5.5, wholesale_min_qty: 15 },
+  
+  // Stone fruits & berries (Spring-Summer)
+  { name: 'Fraise', category: 'Fruits', price: 22, unit: 'kg', stock: 200, image_url: `${IMG}1464966576223-4b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000037', price_wholesale: 16, wholesale_min_qty: 8 },
+  { name: 'Cerise', category: 'Fruits', price: 35, unit: 'kg', stock: 120, image_url: `${IMG}1528824449531-e6a3e1e1e1e1${IMG_SUFFIX}`, barcode: '6111000000038', price_wholesale: 25, wholesale_min_qty: 5 },
+  { name: 'Pêche', category: 'Fruits', price: 16, unit: 'kg', stock: 280, image_url: `${IMG}1595673756989-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000039', price_wholesale: 11, wholesale_min_qty: 10 },
+  { name: 'Abricot', category: 'Fruits', price: 18, unit: 'kg', stock: 250, image_url: `${IMG}1595673756989-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000040', price_wholesale: 13, wholesale_min_qty: 10 },
+  { name: 'Prune', category: 'Fruits', price: 14, unit: 'kg', stock: 300, image_url: `${IMG}1595673756989-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000041', price_wholesale: 10, wholesale_min_qty: 12 },
+  { name: 'Nectarine', category: 'Fruits', price: 17, unit: 'kg', stock: 260, image_url: `${IMG}1595673756989-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000042', price_wholesale: 12, wholesale_min_qty: 10 },
+  
+  // Melons & watermelons (Summer)
+  { name: 'Pastèque', category: 'Fruits', price: 3.5, unit: 'kg', stock: 800, image_url: `${IMG}1587046512015-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000043', price_wholesale: 2.5, wholesale_min_qty: 30 },
+  { name: 'Melon Cantaloup', category: 'Fruits', price: 6, unit: 'kg', stock: 400, image_url: `${IMG}1571762691837-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000044', price_wholesale: 4.2, wholesale_min_qty: 15 },
+  { name: 'Melon Vert', category: 'Fruits', price: 7, unit: 'kg', stock: 350, image_url: `${IMG}1571762691837-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000045', price_wholesale: 5, wholesale_min_qty: 15 },
+  
+  // Tropical fruits (Year-round)
+  { name: 'Banane', category: 'Fruits', price: 11, unit: 'kg', stock: 700, image_url: `${IMG}1571762691837-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000046', price_wholesale: 8, wholesale_min_qty: 25 },
+  { name: 'Ananas', category: 'Fruits', price: 15, unit: 'kg', stock: 250, image_url: `${IMG}1550258989718-c7b7bb7e1e1e${IMG_SUFFIX}`, barcode: '6111000000047', price_wholesale: 11, wholesale_min_qty: 10 },
+  { name: 'Mangue', category: 'Fruits', price: 28, unit: 'kg', stock: 150, image_url: `${IMG}1553275042-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000048', price_wholesale: 20, wholesale_min_qty: 8 },
+  { name: 'Avocat', category: 'Fruits', price: 18, unit: 'kg', stock: 300, image_url: `${IMG}1523049539099-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000049', price_wholesale: 13, wholesale_min_qty: 10 },
+  { name: 'Kiwi', category: 'Fruits', price: 16, unit: 'kg', stock: 280, image_url: `${IMG}1585049357888-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000050', price_wholesale: 11, wholesale_min_qty: 10 },
+  
+  // Apples & pears (Fall-Winter)
+  { name: 'Pomme Golden', category: 'Fruits', price: 12, unit: 'kg', stock: 500, image_url: `${IMG}1560806365298-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000051', price_wholesale: 8.5, wholesale_min_qty: 20 },
+  { name: 'Pomme Gala', category: 'Fruits', price: 13, unit: 'kg', stock: 480, image_url: `${IMG}1560806365298-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000052', price_wholesale: 9, wholesale_min_qty: 20 },
+  { name: 'Pomme Granny Smith', category: 'Fruits', price: 14, unit: 'kg', stock: 450, image_url: `${IMG}1560806365298-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000053', price_wholesale: 10, wholesale_min_qty: 20 },
+  { name: 'Poire Williams', category: 'Fruits', price: 15, unit: 'kg', stock: 350, image_url: `${IMG}1631133755469-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000054', price_wholesale: 11, wholesale_min_qty: 15 },
+  { name: 'Poire Conference', category: 'Fruits', price: 14, unit: 'kg', stock: 380, image_url: `${IMG}1631133755469-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000055', price_wholesale: 10, wholesale_min_qty: 15 },
+  
+  // Grapes (Late summer-Fall)
+  { name: 'Raisin Noir', category: 'Fruits', price: 18, unit: 'kg', stock: 300, image_url: `${IMG}1537690015691-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000056', price_wholesale: 13, wholesale_min_qty: 10 },
+  { name: 'Raisin Blanc', category: 'Fruits', price: 19, unit: 'kg', stock: 280, image_url: `${IMG}1537690015691-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000057', price_wholesale: 14, wholesale_min_qty: 10 },
+  { name: 'Raisin Rouge', category: 'Fruits', price: 20, unit: 'kg', stock: 260, image_url: `${IMG}1537690015691-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000058', price_wholesale: 14.5, wholesale_min_qty: 10 },
+  
+  // Exotic & specialty
+  { name: 'Grenade', category: 'Fruits', price: 12, unit: 'kg', stock: 350, image_url: `${IMG}1615484315151-9f6b9e1c7c0e${IMG_SUFFIX}`, barcode: '6111000000059', price_wholesale: 8.5, wholesale_min_qty: 15 },
+  { name: 'Figues fraîches', category: 'Fruits', price: 32, unit: 'kg', stock: 100, image_url: `${IMG}1603569636537-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000060', price_wholesale: 23, wholesale_min_qty: 5 },
+  { name: 'Dattes Deglet Nour', category: 'Fruits', price: 45, unit: 'kg', stock: 180, image_url: `${IMG}1596370626789-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000061', price_wholesale: 32, wholesale_min_qty: 5 },
+  { name: 'Coing', category: 'Fruits', price: 10, unit: 'kg', stock: 200, image_url: `${IMG}1631133755469-7b7bb7e1e1e1${IMG_SUFFIX}`, barcode: '6111000000062', price_wholesale: 7, wholesale_min_qty: 10 },
 ];
 
 const suppliers = [
-  { name: 'Marché de Gros Casablanca', phone: '+212 5 22 30 10 20', email: 'gros.casa@email.ma', address: 'Marché de Gros, Casablanca' },
-  { name: 'Ferme Agadir Bio', phone: '+212 5 28 21 33 44', email: 'contact@agadirbio.ma', address: 'Route de Taroudant, Agadir' },
-  { name: 'Coopérative Meknès', phone: '+212 5 35 53 22 11', email: 'coop.meknes@email.ma', address: 'Avenue des FAR, Meknès' },
-  { name: 'Import Fruits Tanger', phone: '+212 5 39 94 55 66', email: 'import.tanger@email.ma', address: 'Port de Tanger Med' },
-  { name: 'Producteur Local Marrakech', phone: '+212 5 24 44 77 88', email: 'local.marrakech@email.ma', address: 'Route de l\'Ourika, Marrakech' },
+  { name: 'Marché de Gros Casablanca', phone: '+212 5 22 30 10 20', email: 'contact@groscasa.ma', address: 'Boulevard Bir Anzarane, Casablanca' },
+  { name: 'Coopérative Agricole Agadir', phone: '+212 5 28 21 33 44', email: 'coop@agadir-agricole.ma', address: 'Zone Agricole, Agadir' },
+  { name: 'Producteurs Meknès', phone: '+212 5 35 53 22 11', email: 'producteurs@meknes.ma', address: 'Route Fès, Meknès' },
+  { name: 'Import Export Tanger', phone: '+212 5 39 94 55 66', email: 'import@tanger-med.ma', address: 'Port Tanger Med, Tanger' },
+  { name: 'Ferme Bio Marrakech', phone: '+212 5 24 44 77 88', email: 'bio@marrakech-ferme.ma', address: 'Route Ourika, Marrakech' },
+  { name: 'Souk Hebdomadaire Beni Mellal', phone: '+212 5 23 48 99 00', email: 'souk@benimellal.ma', address: 'Souk El Had, Beni Mellal' },
+  { name: 'Coopérative Berkane', phone: '+212 5 36 61 22 33', email: 'coop@berkane.ma', address: 'Centre Ville, Berkane' },
+  { name: 'Producteurs Gharb', phone: '+212 5 37 25 44 55', email: 'gharb@producteurs.ma', address: 'Kenitra, Gharb' },
 ];
 
 const customers = [
-  { name: 'Hamid El Fassi', phone: '+212 6 61 23 45 67', email: 'hamid.elfassi@email.ma', address: '12 Rue de la Liberté, Casablanca', debt: 4500 },
-  { name: 'Fatima Benali', phone: '+212 6 62 34 56 78', email: 'fatima.benali@email.ma', address: '45 Avenue Hassan II, Rabat', debt: 0 },
-  { name: 'Mohamed Ouazzani', phone: '+212 6 63 45 67 89', email: 'm.ouazzani@email.ma', address: '8 Rue Mohammed V, Marrakech', debt: 2200 },
-  { name: 'Aicha Lahlou', phone: '+212 6 64 56 78 90', email: 'aicha.lahlou@email.ma', address: '22 Boulevard Zerktouni, Fès', debt: 780 },
-  { name: 'Hassan Tazi', phone: '+212 6 65 67 89 01', email: 'hassan.tazi@email.ma', address: '3 Rue Al Qods, Tanger', debt: 3200 },
-  { name: 'Karima Idrissi', phone: '+212 6 66 78 90 12', email: 'karima.idrissi@email.ma', address: '17 Rue Oued Eddahab, Agadir', debt: 0 },
-  { name: 'Youssef Belmahi', phone: '+212 6 67 89 01 23', email: 'youssef.belmahi@email.ma', address: '55 Rue Atlas, Meknès', debt: 1500 },
-  { name: 'Nadia El Amrani', phone: '+212 6 68 90 12 34', email: 'nadia.elamrani@email.ma', address: '9 Rue Yacoub El Mansour, Oujda', debt: 600 },
-  { name: 'Rachid Bennani', phone: '+212 6 69 01 23 45', email: 'rachid.bennani@email.ma', address: '31 Rue Ibn Sina, Tétouan', debt: 8900 },
-  { name: 'Salma Benjelloun', phone: '+212 6 70 12 34 56', email: 'salma.benjelloun@email.ma', address: '14 Rue Al Andalous, El Jadida', debt: 0 },
+  { name: 'Épicerie Al Baraka', phone: '+212 6 61 23 45 67', email: 'albaraka@email.ma', address: 'Hay Mohammadi, Casablanca', debt: 8500 },
+  { name: 'Primeur Fatima', phone: '+212 6 62 34 56 78', email: 'fatima.primeur@email.ma', address: 'Derb Sultan, Casablanca', debt: 0 },
+  { name: 'Restaurant Dar Tajine', phone: '+212 6 63 45 67 89', email: 'contact@dartajine.ma', address: 'Medina, Marrakech', debt: 4200 },
+  { name: 'Hôtel Riad Atlas', phone: '+212 6 64 56 78 90', email: 'riad.atlas@email.ma', address: 'Guéliz, Marrakech', debt: 12000 },
+  { name: 'Supermarché Marjane', phone: '+212 6 65 67 89 01', email: 'marjane.local@email.ma', address: 'Maarif, Rabat', debt: 25000 },
+  { name: 'Traiteur Le Gourmet', phone: '+212 6 66 78 90 12', email: 'legourmet@email.ma', address: 'Agdal, Rabat', debt: 3200 },
+  { name: 'Épicerie Ibn Sina', phone: '+212 6 67 89 01 23', email: 'ibnsina@email.ma', address: 'Ville Nouvelle, Fès', debt: 1800 },
+  { name: 'Primeur Hassan II', phone: '+212 6 68 90 12 34', email: 'hassan2.primeur@email.ma', address: 'Borough, Fès', debt: 5600 },
+  { name: 'Restaurant La Marina', phone: '+212 6 69 01 23 45', email: 'lamarina@email.ma', address: 'Port, Agadir', debt: 0 },
+  { name: 'Hôtel Sofitel', phone: '+212 6 70 12 34 56', email: 'sofitel.tanger@email.ma', address: 'Corniche, Tanger', debt: 18000 },
+  { name: 'Épicerie Al Wifaq', phone: '+212 6 71 23 45 67', email: 'alwifaq@email.ma', address: 'Hay Salam, Meknès', debt: 2400 },
+  { name: 'Primeur Najah', phone: '+212 6 72 34 56 78', email: 'najah.primeur@email.ma', address: 'Hamria, Meknès', debt: 0 },
+  { name: 'Cantine Scolaire Lycée', phone: '+212 6 73 45 67 89', email: 'lycee.cantine@email.ma', address: 'Centre, Oujda', debt: 6800 },
+  { name: 'Restaurant Al Mounia', phone: '+212 6 74 56 78 90', email: 'almounia@email.ma', address: 'Medina, Fès', debt: 0 },
+  { name: 'Superette Carrefour', phone: '+212 6 75 67 89 01', email: 'carrefour.local@email.ma', address: 'Sidi Maarouf, Casablanca', debt: 32000 },
+  { name: 'Traiteur Saveurs du Maroc', phone: '+212 6 76 78 90 12', email: 'saveurs@email.ma', address: 'Ocean, Rabat', debt: 4500 },
+  { name: 'Épicerie Al Amal', phone: '+212 6 77 89 01 23', email: 'alamal@email.ma', address: 'Hay Nahda, Tétouan', debt: 1200 },
+  { name: 'Primeur Boughaz', phone: '+212 6 78 90 12 34', email: 'boughaz@email.ma', address: 'Souani, Tétouan', debt: 0 },
+  { name: 'Restaurant Dar Zaki', phone: '+212 6 79 01 23 45', email: 'darzaki@email.ma', address: 'Kasbah, Tanger', debt: 7200 },
+  { name: 'Hôtel Kenzi Tower', phone: '+212 6 80 12 34 56', email: 'kenzi@email.ma', address: 'Twin Center, Casablanca', debt: 22000 },
 ];
 
 let db = null;
+
+// Helper function to get seasonal price multiplier
+function getSeasonalMultiplier(month, productCategory) {
+  // Moroccan seasonal patterns
+  const winterMonths = [11, 0, 1]; // Dec-Feb (simplified for logic)
+  const springMonths = [2, 3, 4]; // Mar-May
+  const summerMonths = [5, 6, 7]; // Jun-Aug
+  const fallMonths = [8, 9, 10]; // Sep-Nov
+  
+  if (productCategory === 'Fruits') {
+    if (summerMonths.includes(month)) return 0.85; // Cheaper in summer
+    if (winterMonths.includes(month)) return 1.25; // More expensive in winter
+  }
+  
+  if (productCategory === 'Légumes') {
+    if (springMonths.includes(month)) return 0.80; // Cheaper in spring
+    if (winterMonths.includes(month)) return 1.15; // Slightly more expensive in winter
+  }
+  
+  return 1.0;
+}
+
+// Generate realistic purchase dates throughout the year
+function generatePurchaseDates(startDate, daysBack) {
+  const dates = [];
+  for (let i = 0; i < daysBack; i++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() - i);
+    
+    // More purchases on weekdays, fewer on weekends
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      if (Math.random() > 0.3) continue; // Skip 70% of weekend purchases
+    }
+    
+    // Multiple deliveries per day for large distributor
+    const numDeliveries = 1 + Math.floor(Math.random() * 3);
+    for (let j = 0; j < numDeliveries; j++) {
+      const deliveryDate = new Date(date);
+      deliveryDate.setHours(5 + j * 3, Math.floor(Math.random() * 60), 0, 0);
+      dates.push(deliveryDate);
+    }
+  }
+  return dates.sort((a, b) => a - b);
+}
 
 function exec(sql, params = []) { return db.run(sql, params); }
 function all(sql, params = []) {
@@ -119,92 +235,161 @@ async function seed() {
     supplierIds.push(lastId());
   }
 
-  const nowPurch = new Date();
-  for (const p of all('SELECT id, price, stock FROM products')) {
-    const purchaseQty = p.stock + Math.floor(Math.random() * 50);
-    const unitPrice = Math.round(p.price * 0.6 * 100) / 100;
-    const purchDate = new Date(nowPurch);
-    purchDate.setDate(purchDate.getDate() - 20 - Math.floor(Math.random() * 10));
-    purchDate.setHours(6, 0, 0, 0);
-    exec('INSERT INTO purchases (product_id, supplier, qty, unit_price, total, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-      [p.id, suppliers[Math.floor(Math.random() * suppliers.length)].name,
-       purchaseQty, unitPrice, Math.round(purchaseQty * unitPrice * 100) / 100,
-       purchDate.toISOString().slice(0, 19).replace('T', ' ')]);
-  }
-
-  const allProducts = all('SELECT id, price FROM products');
+  console.log('Generating 1 year of realistic purchase data...');
+  
+  // Generate purchases over 1 year (365 days)
   const now = new Date();
+  const purchaseDates = generatePurchaseDates(now, 365);
+  const allProducts = all('SELECT id, price, category FROM products');
+  
+  let purchaseCount = 0;
+  for (const purchaseDate of purchaseDates) {
+    const month = purchaseDate.getMonth();
+    
+    // Each delivery includes 5-15 products
+    const numProducts = 5 + Math.floor(Math.random() * 11);
+    const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+    const selectedProducts = shuffled.slice(0, numProducts);
+    
+    for (const product of selectedProducts) {
+      const seasonalMultiplier = getSeasonalMultiplier(month, product.category);
+      const basePrice = product.price * 0.6; // Wholesale is 60% of retail
+      const unitPrice = Math.round(basePrice * seasonalMultiplier * 100) / 100;
+      
+      // Larger quantities for large distributor
+      const qty = 50 + Math.floor(Math.random() * 200); // 50-250 kg per product
+      
+      const supplier = suppliers[Math.floor(Math.random() * suppliers.length)];
+      
+      exec('INSERT INTO purchases (product_id, supplier, qty, unit_price, total, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+        [product.id, supplier.name, qty, unitPrice, Math.round(qty * unitPrice * 100) / 100,
+         purchaseDate.toISOString().slice(0, 19).replace('T', ' ')]);
+      
+      purchaseCount++;
+    }
+  }
+  
+  console.log(`Generated ${purchaseCount} purchase records`);
 
-  for (let day = 14; day >= 0; day--) {
-    const salesCount = 3 + Math.floor(Math.random() * 5);
-    for (let i = 0; i < salesCount; i++) {
-      const customerId = Math.random() > 0.3 ? customerIds[Math.floor(Math.random() * customerIds.length)] : null;
-      const saleDate = new Date(now);
-      saleDate.setDate(saleDate.getDate() - day);
-      saleDate.setHours(8 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60), 0, 0);
+  console.log('Generating 1 year of realistic sales data...');
+  
+  // Generate sales over 1 year
+  let salesCount = 0;
+  const reasons = ['Produit abîmé', 'Mauvaise qualité', 'Trop mûr', 'Erreur de commande', 'Client insatisfait', null, null, null, null, null];
+  let returnCount = 0;
+  
+  for (let day = 365; day >= 0; day--) {
+    const saleDate = new Date(now);
+    saleDate.setDate(saleDate.getDate() - day);
+    const month = saleDate.getMonth();
+    const dayOfWeek = saleDate.getDay();
+    
+    // Determine number of sales based on day type and season
+    let baseSales = 15; // Average daily sales
+    
+    // Weekend adjustments
+    if (dayOfWeek === 5) baseSales = 25; // Friday busy
+    if (dayOfWeek === 6 || dayOfWeek === 0) baseSales = 10; // Weekend slower
+    
+    // Seasonal adjustments
+    if ([6, 7, 8].includes(month)) baseSales += 5; // Summer higher
+    if ([11, 0].includes(month)) baseSales += 8; // Holiday season
+    
+    // Ramadan effect (approximate dates)
+    // Ramadan 2024: ~March 11 - April 9
+    // Ramadan 2025: ~Feb 28 - March 30
+    const isRamadan2024 = (month === 2 && day >= 10) || (month === 3 && day <= 9);
+    const isRamadan2025 = (month === 1 && day >= 27) || (month === 2 && day <= 29);
+    if (isRamadan2024 || isRamadan2025) {
+      baseSales = Math.floor(baseSales * 1.4); // 40% increase during Ramadan
+    }
+    
+    const dailySales = baseSales + Math.floor(Math.random() * 10);
+    
+    for (let i = 0; i < dailySales; i++) {
+      // Sale time: 7 AM to 8 PM
+      const hour = 7 + Math.floor(Math.random() * 13);
+      const minute = Math.floor(Math.random() * 60);
+      saleDate.setHours(hour, minute, 0, 0);
       const dateStr = saleDate.toISOString().slice(0, 19).replace('T', ' ');
-
-      const itemCount = 1 + Math.floor(Math.random() * 4);
+      
+      // 60% of sales have customers
+      const customerId = Math.random() > 0.4 ? customerIds[Math.floor(Math.random() * customerIds.length)] : null;
+      
+      // Number of items per sale: 1-8 for wholesale
+      const itemCount = 1 + Math.floor(Math.random() * 8);
       let total = 0;
       const items = [];
+      
       for (let j = 0; j < itemCount; j++) {
         const product = allProducts[Math.floor(Math.random() * allProducts.length)];
-        const qty = 0.5 + Math.floor(Math.random() * 10) / 2;
-        const price = product.price + (Math.random() > 0.5 ? 2 : -2);
-        items.push({ product_id: product.id, price: Math.max(price, 1), qty });
+        
+        // Wholesale quantities: 5-50 kg typically
+        const qty = 5 + Math.floor(Math.random() * 45) / 2; // 5-27.5 kg
+        
+        // Price variation based on season and negotiation
+        const seasonalMultiplier = getSeasonalMultiplier(month, product.category);
+        const priceVariation = 0.9 + Math.random() * 0.2; // ±10% variation
+        const price = Math.round(product.price * seasonalMultiplier * priceVariation * 100) / 100;
+        
+        items.push({ product_id: product.id, price: Math.max(price, 1), qty: Math.round(qty * 10) / 10 });
         total += price * qty;
       }
-
+      
+      const finalTotal = Math.round(total * 100) / 100;
+      const tax = Math.round(finalTotal * 0.05 * 100) / 100; // 5% tax
+      
       exec('INSERT INTO sales (customer_id, user_id, total, tax, status, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-        [customerId, 1, Math.round(total * 100) / 100, Math.round(total * 0.05 * 100) / 100, 'completed', dateStr]);
+        [customerId, 1, finalTotal, tax, 'completed', dateStr]);
       const saleId = lastId();
-
+      
       for (const item of items) {
         const productRow = one('SELECT name, unit FROM products WHERE id = ?', [item.product_id]);
         exec('INSERT INTO sale_items (sale_id, product_id, product_name, price, qty, unit) VALUES (?, ?, ?, ?, ?, ?)',
           [saleId, item.product_id, productRow.name, item.price, item.qty, productRow.unit]);
       }
+      
+      salesCount++;
+      
+      // Generate returns (about 2% of sales)
+      if (Math.random() < 0.02 && items.length > 0) {
+        const item = items[Math.floor(Math.random() * items.length)];
+        const returnQty = Math.min(Math.max(1, item.qty * (0.1 + Math.random() * 0.3)), item.qty);
+        const reason = reasons[Math.floor(Math.random() * reasons.length)];
+        
+        const returnDate = new Date(saleDate);
+        returnDate.setDate(returnDate.getDate() + Math.floor(Math.random() * 3));
+        returnDate.setHours(10 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 60), 0, 0);
+        const returnDateStr = returnDate.toISOString().slice(0, 19).replace('T', ' ');
+        
+        exec('INSERT INTO returns (sale_id, product_id, qty, reason, created_at) VALUES (?, ?, ?, ?, ?)',
+          [saleId, item.product_id, Math.round(returnQty * 10) / 10, reason, returnDateStr]);
+        
+        exec('UPDATE products SET stock = stock + ? WHERE id = ?', [Math.round(returnQty * 10) / 10, item.product_id]);
+        exec('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)',
+          [item.product_id, Math.round(returnQty * 10) / 10, 'return']);
+        
+        returnCount++;
+      }
     }
   }
-
-  // Seed returns - realistic return scenarios
-  const allSales = all('SELECT id FROM sales ORDER BY id');
-  const reasons = ['Produit abîmé', 'Mauvaise qualité', 'Trop mûr', 'Erreur de commande', 'Client insatisfait', null, null, null];
   
-  for (let i = 0; i < 20; i++) {
-    const sale = allSales[Math.floor(Math.random() * allSales.length)];
-    const saleItems = all('SELECT product_id, qty FROM sale_items WHERE sale_id = ?', [sale.id]);
-    
-    if (saleItems.length > 0) {
-      const item = saleItems[Math.floor(Math.random() * saleItems.length)];
-      const returnQty = Math.min(Math.max(0.5, item.qty * (0.2 + Math.random() * 0.5)), item.qty);
-      const reason = reasons[Math.floor(Math.random() * reasons.length)];
-      
-      const returnDate = new Date();
-      returnDate.setDate(returnDate.getDate() - Math.floor(Math.random() * 5));
-      returnDate.setHours(10 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 60), 0, 0);
-      const dateStr = returnDate.toISOString().slice(0, 19).replace('T', ' ');
-      
-      exec('INSERT INTO returns (sale_id, product_id, qty, reason, created_at) VALUES (?, ?, ?, ?, ?)',
-        [sale.id, item.product_id, Math.round(returnQty * 10) / 10, reason, dateStr]);
-      
-      exec('UPDATE products SET stock = stock + ? WHERE id = ?', [Math.round(returnQty * 10) / 10, item.product_id]);
-      exec('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)',
-        [item.product_id, Math.round(returnQty * 10) / 10, 'return']);
-    }
-  }
+  console.log(`Generated ${salesCount} sales records`);
+  console.log(`Generated ${returnCount} return records`);
 
+  // Save database
   const data = db.export();
   fs.writeFileSync(DB_PATH, Buffer.from(data));
 
-  console.log('Seed complete!');
+  console.log('\n✅ Seed complete!');
   console.log(`  - 2 users (admin/admin123, cashier/cashier123)`);
-  console.log(`  - ${products.length} products`);
+  console.log(`  - ${products.length} products (${products.filter(p => p.category === 'Légumes').length} légumes, ${products.filter(p => p.category === 'Fruits').length} fruits)`);
   console.log(`  - ${customers.length} customers`);
   console.log(`  - ${suppliers.length} suppliers`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM purchases')[0].c} purchases`);
-  console.log(`  - ~70 sales over 15 days`);
+  console.log(`  - ${all('SELECT COUNT(*) as c FROM purchases')[0].c} purchases (1 year)`);
+  console.log(`  - ${all('SELECT COUNT(*) as c FROM sales')[0].c} sales (1 year)`);
   console.log(`  - ${all('SELECT COUNT(*) as c FROM returns')[0].c} returns`);
+  console.log(`  - Date range: ${new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-MA')} to ${now.toLocaleDateString('fr-MA')}`);
 }
 
 seed().catch(console.error);

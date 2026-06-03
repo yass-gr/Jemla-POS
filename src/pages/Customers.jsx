@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import {
@@ -20,8 +20,10 @@ const emptyForm = { name: '', phone: '', email: '', address: '', delivery_addres
 export default function Customers() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
   const [customers, setCustomers] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -31,6 +33,28 @@ export default function Customers() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  
+  // Handle highlighting a specific customer from URL params
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
+
+  useEffect(() => {
+    if (highlightedId) {
+      const timer = setTimeout(() => setHighlightedId(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedId]);
+
+  // Scroll to highlighted customer
+  useEffect(() => {
+    if (highlightedId && customers.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`customer-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+    }
+  }, [highlightedId, customers]);
 
   function loadCustomers() {
     setLoading(true);
@@ -241,8 +265,13 @@ export default function Customers() {
               )}
               {!loading && paginated.map((c) => {
                 const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const isHighlighted = highlightedId === c.id;
                 return (
-                  <tr key={c.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+                  <tr 
+                    key={c.id} 
+                    id={`customer-${c.id}`}
+                    className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0 ${isHighlighted ? 'bg-amber-100 dark:bg-amber-900/30 animate-pulse' : ''}`}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0">{initials}</div>
@@ -294,10 +323,20 @@ export default function Customers() {
               })}
               {!loading && paginated.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-4 py-8 text-xs text-[#64748B] dark:text-muted-foreground text-center">
-                    {search || filter !== 'all' ? t('customers.no_results') : (
+                  <td colSpan="5" className="px-4 py-12">
+                    {search || filter !== 'all' ? (
+                      <div className="flex flex-col items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50">
+                        <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-sm">info</span>
+                        <span className="text-xs text-amber-800 dark:text-amber-300">
+                          {t('customers.no_results')}
+                        </span>
+                      </div>
+                    ) : (
                       <div className="flex flex-col items-center gap-3">
-                        <span>{t('customers.none')}</span>
+                        <div className="w-16 h-16 mb-2 rounded-full bg-surface-container flex items-center justify-center">
+                          <span className="material-symbols-outlined text-3xl text-muted-foreground">group</span>
+                        </div>
+                        <p className="text-sm font-medium text-foreground">{t('customers.none')}</p>
                         <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors">
                           <span className="material-symbols-outlined text-sm">add_circle</span>
                           {t('customers.add')}

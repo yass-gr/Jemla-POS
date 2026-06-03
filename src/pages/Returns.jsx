@@ -272,7 +272,7 @@ export default function Returns() {
                   }`}
                 >
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{r.product_name}</td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{r.qty}</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{Number(r.qty).toFixed(2)}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground text-end">{r.price ? `${r.price.toFixed(2)} MAD` : '-'}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{r.reason || t('returns.none')}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{r.sale_id ? `#${String(r.sale_id).padStart(4, '0')}` : t('returns.none')}</td>
@@ -352,7 +352,7 @@ export default function Returns() {
               <label className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-1 block">{t('returns.form.qty')} *</label>
               <button type="button" onClick={() => openNumpad(form.qty)}
                 className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-start text-sm text-[#0f172a] dark:text-foreground">
-                {form.qty}
+                {Number(form.qty).toFixed(2)}
               </button>
             </div>
             <div>
@@ -409,7 +409,7 @@ export default function Returns() {
             {(search ? filtered : returns).map(r => (
               <tr key={r.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">{r.product_name}</td>
-                <td className="border border-black p-2 text-sm text-right">{r.qty}</td>
+                <td className="border border-black p-2 text-sm text-right">{Number(r.qty).toFixed(2)}</td>
                 <td className="border border-black p-2 text-sm text-right">{(r.price || 0).toFixed(2)} DH</td>
                 <td className="border border-black p-2 text-sm">{r.reason || '-'}</td>
                 <td className="border border-black p-2 text-sm">{new Date(r.created_at).toLocaleDateString()}</td>

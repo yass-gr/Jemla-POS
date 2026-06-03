@@ -71,7 +71,6 @@ router.post('/', ensureAuthenticated, (req, res) => {
 
   const taxAmount = subtotal * 0.05;
   const paid = amount_paid !== undefined ? Math.min(amount_paid, finalTotal) : finalTotal;
-  const changeDue = paid > finalTotal ? 0 : (paid === finalTotal ? 0 : 0);
   const change = amount_paid !== undefined && amount_paid > finalTotal ? amount_paid - finalTotal : 0;
   const paymentStatus = paid >= finalTotal ? 'paid' : paid > 0 ? 'partial' : 'unpaid';
 

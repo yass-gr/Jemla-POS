@@ -79,6 +79,7 @@ export default function Purchases() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
   const totalSpent = purchases.reduce((s, p) => s + p.total, 0);
   const totalQty = purchases.reduce((s, p) => s + p.qty, 0);
+  const avgPrice = totalQty > 0 ? totalSpent / totalQty : 0;
 
   function openAdd() {
     setForm({ product_id: products[0]?.id || '', supplier: '', qty: 1, unit_price: 0, supplier_mode: 'select' });
@@ -210,17 +211,17 @@ export default function Purchases() {
             <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('purchases.total_qty')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalQty} kg</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{Number(totalQty).toFixed(2)} kg</span>
             <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">package_2</span>
           </div>
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-purple-500/10 dark:to-purple-950/40">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('purchases.unique_products')}</span>
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('purchases.avg_price')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{new Set(purchases.map(p => p.product_name)).size}</span>
-            <span className="material-symbols-outlined text-2xl text-purple-300 dark:text-purple-400">inventory_2</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{avgPrice.toFixed(2)} DH</span>
+            <span className="material-symbols-outlined text-2xl text-purple-300 dark:text-purple-400">trending_up</span>
           </div>
         </div>
       </div>
@@ -276,7 +277,7 @@ export default function Purchases() {
                       <span className="text-xs text-[#64748B] dark:text-muted-foreground">{t('purchases.none')}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.qty} kg</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{Number(p.qty).toFixed(2)} kg</td>
                   <td className="px-4 py-3 text-xs text-[#0F766E] dark:text-teal-400 text-end font-semibold">{p.unit_price.toFixed(2)} DH</td>
                   <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground text-end">{p.total.toFixed(2)} DH</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">
@@ -386,7 +387,7 @@ export default function Purchases() {
               <label className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-1 block">{t('purchases.form.qty')} *</label>
               <button type="button" onClick={() => openNumpad('qty', form.qty)}
                 className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-start text-sm text-[#0f172a] dark:text-foreground">
-                {form.qty} kg
+                {Number(form.qty).toFixed(2)} kg
               </button>
             </div>
             <div>
@@ -441,7 +442,7 @@ export default function Purchases() {
               <tr key={p.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">{p.product_name}</td>
                 <td className="border border-black p-2 text-sm">{p.supplier}</td>
-                <td className="border border-black p-2 text-sm text-right">{p.qty} kg</td>
+                <td className="border border-black p-2 text-sm text-right">{Number(p.qty).toFixed(2)} kg</td>
                 <td className="border border-black p-2 text-sm text-right">{p.unit_price.toFixed(2)} DH</td>
                 <td className="border border-black p-2 text-sm text-right font-bold">{p.total.toFixed(2)} DH</td>
               </tr>

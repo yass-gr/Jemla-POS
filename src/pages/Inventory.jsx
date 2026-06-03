@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -10,13 +11,15 @@ import { toast } from 'sonner';
 import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Inventory() {
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [log, setLog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
   
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [adjustForm, setAdjustForm] = useState({ productId: '', changeQty: '', reason: 'correction' });
@@ -39,6 +42,19 @@ export default function Inventory() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Scroll to highlighted product
+  useEffect(() => {
+    if (highlightedId && products.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`inventory-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, products]);
 
   const handleAdjust = async () => {
     if (!adjustForm.productId || !adjustForm.changeQty || !adjustForm.reason) {
@@ -144,7 +160,7 @@ export default function Inventory() {
             <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('inventory.total_stock')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalStock} kg</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalStock.toFixed(2)} kg</span>
             <span className="material-symbols-outlined text-2xl text-emerald-300 dark:text-emerald-400">inventory_2</span>
           </div>
         </div>
@@ -201,10 +217,16 @@ export default function Inventory() {
               </thead>
               <tbody>
                 {paginated.map(p => (
-                  <tr key={p.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+                  <tr 
+                    key={p.id} 
+                    id={`inventory-${p.id}`}
+                    className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors ${
+                      highlightedId === p.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                    }`}
+                  >
                     <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{p.name}</td>
                     <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{p.category}</td>
-                    <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.stock} kg</td>
+                    <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.stock.toFixed(2)} kg</td>
                     <td className="px-4 py-3 text-xs">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         p.stock < (p.wholesale_min_qty || 10) ? 'bg-red-100 dark:bg-red-900/40 text-[#ef4444]' : p.stock < (p.wholesale_min_qty || 10) + 20 ? 'bg-amber-100 dark:bg-amber-900/40 text-[#f59e0b] dark:text-amber-300' : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
@@ -317,7 +339,7 @@ export default function Inventory() {
               <tr key={p.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">{p.name}</td>
                 <td className="border border-black p-2 text-sm">{p.category}</td>
-                <td className="border border-black p-2 text-sm text-right font-bold">{p.stock} {p.unit}</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{p.stock.toFixed(2)} {p.unit}</td>
                 <td className="border border-black p-2"></td>
                 <td className="border border-black p-2"></td>
               </tr>

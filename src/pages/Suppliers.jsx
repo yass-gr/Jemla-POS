@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import {
@@ -12,20 +13,42 @@ import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Suppliers() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [suppliers, setSuppliers] = useState([]);
-  const [search, setSearch] = useState('');
+  const [purchases, setPurchases] = useState([]);
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [loading, setLoading] = useState(true);
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '' });
 
   useEffect(() => {
-    api.suppliers.list().then(setSuppliers).catch(console.error).finally(() => setLoading(false));
+    Promise.all([
+      api.suppliers.list(),
+      api.purchases.list(),
+    ]).then(([s, p]) => {
+      setSuppliers(s);
+      setPurchases(p);
+    }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  // Scroll to highlighted supplier
+  useEffect(() => {
+    if (highlightedId && suppliers.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`supplier-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, suppliers]);
 
   let filtered = search
     ? suppliers.filter(s => s.name.toLowerCase().includes(search.toLowerCase()) || (s.phone && s.phone.includes(search)))
@@ -36,6 +59,8 @@ export default function Suppliers() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const totalSpend = purchases.reduce((s, p) => s + p.total, 0);
+  const activeSuppliers = new Set(purchases.filter(p => p.supplier).map(p => p.supplier)).size;
 
   function openAdd() {
     setEditing(null);
@@ -136,20 +161,20 @@ export default function Suppliers() {
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-blue-500/10 dark:to-blue-950/40">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('suppliers.filter_phone')}</span>
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('suppliers.total_spend')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{suppliers.filter(s => s.phone).length}</span>
-            <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">contact_phone</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalSpend.toFixed(2)} DH</span>
+            <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">payments</span>
           </div>
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-purple-500/10 dark:to-purple-950/40">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('suppliers.with_email')}</span>
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('suppliers.active')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{suppliers.filter(s => s.email).length}</span>
-            <span className="material-symbols-outlined text-2xl text-purple-300 dark:text-purple-400">email</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{activeSuppliers}</span>
+            <span className="material-symbols-outlined text-2xl text-purple-300 dark:text-purple-400">local_shipping</span>
           </div>
         </div>
       </div>
@@ -184,7 +209,13 @@ export default function Suppliers() {
           </thead>
           <tbody>
             {paginated.map(s => (
-              <tr key={s.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+              <tr 
+                key={s.id} 
+                id={`supplier-${s.id}`}
+                className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0 ${
+                  highlightedId === s.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                }`}
+              >
                 <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{s.name}</td>
                 <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{s.phone || '-'}</td>
                 <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{s.email || '-'}</td>

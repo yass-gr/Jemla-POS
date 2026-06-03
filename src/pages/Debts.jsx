@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -11,12 +12,14 @@ import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Debts() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
 
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [activeCustomer, setActiveCustomer] = useState(null);
@@ -34,6 +37,19 @@ export default function Debts() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Scroll to highlighted customer with debt
+  useEffect(() => {
+    if (highlightedId && customers.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`debt-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, customers]);
 
   const openPayment = (customer) => {
     setActiveCustomer(customer);
@@ -179,7 +195,13 @@ export default function Debts() {
             </thead>
             <tbody>
               {paginated.map((c) => (
-                <tr key={c.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+                <tr 
+                  key={c.id} 
+                  id={`debt-${c.id}`}
+                  className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0 ${
+                    highlightedId === c.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                  }`}
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0">

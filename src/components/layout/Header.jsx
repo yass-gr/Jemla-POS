@@ -348,7 +348,7 @@ export default function Header({ onMenuClick }) {
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                             <div className="min-w-0 flex-1">
                               <p className="text-xs font-semibold text-foreground truncate">{p.name}</p>
-                              <p className="text-[10px] text-amber-600 dark:text-amber-400">{p.stock} {p.unit} {t('products.remaining')}</p>
+                              <p className="text-[10px] text-amber-600 dark:text-amber-400">{p.stock.toFixed(2)} {p.unit} {t('products.remaining')}</p>
                             </div>
                           </div>
                         </button>

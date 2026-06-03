@@ -52,8 +52,8 @@ async function reprintSale(saleId) {
           <tr><th>Produit</th><th class="right">Qté</th><th class="right">Prix unitaire</th><th class="right">Total</th></tr>
           ${items.map(item => `
             <tr>
-              <td>${item.product_name}${item.discount > 0 ? ' (remise ' + item.discount + ' DH)' : ''}</td>
-              <td class="right">${item.qty} kg</td>
+              <td>${item.product_name}${item.discount > 0 ? ' (remise ' + item.discount.toFixed(2) + ' DH)' : ''}</td>
+              <td class="right">${item.qty.toFixed(2)} kg</td>
               <td class="right">${item.price.toFixed(2)} DH</td>
               <td class="right">${(item.price * item.qty).toFixed(2)} DH</td>
             </tr>
@@ -165,11 +165,11 @@ export default function Sales() {
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-blue-500/10 dark:to-blue-950/40">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('sales.stat_total_sales')}</span>
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('sales.stat_avg_ticket')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{stats ? stats.totalSales : '...'}</span>
-            <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">receipt_long</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{stats && stats.totalSales > 0 ? `${(stats.totalRevenue / stats.totalSales).toFixed(2)} DH` : '...'}</span>
+            <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">receipt</span>
           </div>
         </div>
         <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-red-500/10 dark:to-red-950/40">
@@ -272,7 +272,7 @@ export default function Sales() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground">{s.total}</td>
+                  <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground">{s.total.toFixed(2)} DH</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       s.payment_status === 'paid' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' :
@@ -359,7 +359,7 @@ export default function Sales() {
               <tr key={s.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">#{s.id}</td>
                 <td className="border border-black p-2 text-sm">{s.name || '-'}</td>
-                <td className="border border-black p-2 text-sm text-right font-bold">{s.total}</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{s.total.toFixed(2)} DH</td>
                 <td className="border border-black p-2 text-sm">{s.payment_method}</td>
                 <td className="border border-black p-2 text-sm">{s.payment_status}</td>
               </tr>

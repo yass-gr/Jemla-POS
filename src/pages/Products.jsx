@@ -304,7 +304,7 @@ export default function Products() {
                             style={{ width: `${Math.min((p.stock / Math.max(50, minQty * 2)) * 100, 100)}%` }} />
                         </div>
                         <p className={`text-[10px] font-semibold ${isLow ? 'text-red-500 dark:text-red-400' : 'text-[#64748B] dark:text-muted-foreground'}`}>
-                          {p.stock} kg{isLow ? ` (${t('products.table.stock_low')})` : ` ${t('products.table.in_stock')}`}
+                          {Number(p.stock).toFixed(2)} kg{isLow ? ` (${t('products.table.stock_low')})` : ` ${t('products.table.in_stock')}`}
                         </p>
                       </div>
                     </td>
@@ -412,7 +412,7 @@ export default function Products() {
                 <td className="border border-black p-2 text-sm font-semibold">{p.name}</td>
                 <td className="border border-black p-2 text-sm">{p.category}</td>
                 <td className="border border-black p-2 text-sm text-right font-bold">{p.price.toFixed(2)} DH</td>
-                <td className="border border-black p-2 text-sm text-right">{p.stock} kg</td>
+                <td className="border border-black p-2 text-sm text-right">{Number(p.stock).toFixed(2)} kg</td>
                 <td className="border border-black p-2 text-sm text-center">kg</td>
               </tr>
             ))}

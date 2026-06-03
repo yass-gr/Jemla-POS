@@ -60,6 +60,7 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     transition: background-color 0.2s ease, color 0.2s ease;
+    overflow-x: hidden;
   }
 
   html[lang="ar"] body,
@@ -68,6 +69,12 @@
   html[lang="ar"] select,
   html[lang="ar"] textarea {
     font-family: 'Noto Kufi Arabic', sans-serif;
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   ::-webkit-scrollbar {
@@ -184,5 +191,65 @@
 
   .print\\:hidden {
     display: none !important;
+  }
+}
+
+/* UX Improvements - Smooth Transitions */
+@layer utilities {
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Better focus states for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Smooth transitions for interactive elements */
+  button, a, input, select, textarea {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Better touch targets for mobile */
+  @media (max-width: 640px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Improve text readability */
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent content shift during loading */
+  img {
+    aspect-ratio: attr(width) / attr(height);
+  }
+
+  /* Better selection color */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.2);
+    color: hsl(var(--foreground));
   }
 }
