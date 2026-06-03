@@ -1,12 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NumpadModal from '@/components/ui/NumpadModal';
 import { useTranslation } from 'react-i18next';
-
-const TAX_RATE = 0.05;
 
 export default function POS() {
   const { t } = useTranslation();
@@ -49,6 +47,23 @@ export default function POS() {
 
   const [newCustomerName, setNewCustomerName] = useState('');
   const [newCustomerPhone, setNewCustomerPhone] = useState('');
+  const [barcodeInput, setBarcodeInput] = useState('');
+
+  function handleBarcode(e) {
+    const code = e.target.value.trim();
+    if (!code) return;
+    const product = products.find(p => p.barcode === code);
+    if (product) {
+      addToCart(product);
+      toast.success(`${product.name} ${t('pos.added')}`);
+    } else {
+      toast.error(t('pos.barcode_not_found'));
+    }
+    setBarcodeInput('');
+  }
+  const [settings, setSettings] = useState({});
+  const settingsRef = useRef({});
+  const taxRate = parseFloat(settings.tax_rate || '5') / 100;
 
   useEffect(() => {
     Promise.all([
@@ -56,11 +71,14 @@ export default function POS() {
       api.customers.list(),
       api.favorites.list(),
       api.sales.recent(5),
-    ]).then(([prods, custs, favs, recent]) => {
+      api.settings.get(),
+    ]).then(([prods, custs, favs, recent, s]) => {
       setProducts(prods);
       setCustomers(custs);
       setFavorites(new Set(favs.map(f => f.id)));
       setRecentSales(recent);
+      setSettings(s);
+      settingsRef.current = s;
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
@@ -77,6 +95,10 @@ export default function POS() {
   );
 
   function addToCart(product) {
+    if (product.stock <= 0) {
+      toast.error(t('pos.out_of_stock'));
+      return;
+    }
     setCart(prev => {
       const existing = prev.find(item => item.product_id === product.id);
       if (existing) {
@@ -99,6 +121,7 @@ export default function POS() {
         unit: product.unit,
         discount: 0,
         discount_type: 'fixed',
+        tax_exempt: false,
         note: '',
         barcode: product.barcode,
       }];
@@ -112,6 +135,10 @@ export default function POS() {
       const newQty = item.qty + delta;
       if (newQty <= 0) return prev.filter(i => i.product_id !== productId);
       const product = products.find(p => p.id === productId);
+      if (delta > 0 && product && product.stock < newQty) {
+        toast.error(t('pos.insufficient_stock') + product.name);
+        return prev;
+      }
       let price = item.original_price;
       if (product && product.price_wholesale && product.wholesale_min_qty && newQty >= product.wholesale_min_qty) {
         price = product.price_wholesale;
@@ -147,6 +174,22 @@ export default function POS() {
   function updateItemDiscount(productId, discount) {
     setCart(prev => prev.map(item =>
       item.product_id === productId ? { ...item, discount: Math.max(0, parseFloat(discount) || 0) } : item
+    ));
+  }
+
+  function toggleDiscountType(productId) {
+    setCart(prev => prev.map(item =>
+      item.product_id === productId
+        ? { ...item, discount_type: item.discount_type === 'fixed' ? 'percentage' : 'fixed', discount: 0 }
+        : item
+    ));
+  }
+
+  function toggleTaxExempt(productId) {
+    setCart(prev => prev.map(item =>
+      item.product_id === productId
+        ? { ...item, tax_exempt: !item.tax_exempt }
+        : item
     ));
   }
 
@@ -207,6 +250,16 @@ export default function POS() {
     if (cart.length === 0) return;
     setSubmitting(true);
     try {
+      const freshProducts = await api.products.list();
+      for (const item of cart) {
+        const product = freshProducts.find(p => p.id === item.product_id);
+        if (!product || product.stock < item.qty) {
+          toast.error(t('pos.insufficient_stock') + (product?.name || item.product_name));
+          setSubmitting(false);
+          return;
+        }
+      }
+      const rate = parseFloat(settingsRef.current.tax_rate || '5') / 100;
       const sale = await api.sales.create({
         customer_id: selectedCustomer?.id || null,
         payment_method: paymentMethod,
@@ -224,7 +277,9 @@ export default function POS() {
           qty: item.qty,
           unit: item.unit,
           discount: item.discount,
-          discount_type: 'fixed',
+          discount_type: item.discount_type || 'fixed',
+          tax_exempt: item.tax_exempt ? 1 : 0,
+          tax_rate: rate,
           note: item.note || null,
           original_price: item.original_price,
         })),
@@ -262,6 +317,9 @@ export default function POS() {
           qty: item.qty,
           unit: item.unit,
           discount: item.discount,
+          discount_type: item.discount_type || 'fixed',
+          tax_exempt: item.tax_exempt ? 1 : 0,
+          tax_rate: parseFloat(settingsRef.current.tax_rate || '5') / 100,
           note: item.note,
           original_price: item.original_price,
         })),
@@ -286,6 +344,7 @@ export default function POS() {
         unit: i.unit,
         discount: i.discount || 0,
         discount_type: i.discount_type || 'fixed',
+        tax_exempt: !!i.tax_exempt,
         note: i.note || '',
       })));
       if (sale.customer_id) {
@@ -339,8 +398,25 @@ export default function POS() {
   }
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const totalDiscount = cart.reduce((sum, item) => sum + (item.discount || 0), 0) + saleDiscount;
-  const tax = Math.max(0, (subtotal - totalDiscount) * TAX_RATE);
+
+  const totalItemDiscount = cart.reduce((sum, item) => {
+    if (item.discount_type === 'percentage') {
+      return sum + (item.price * item.qty * (item.discount || 0) / 100);
+    }
+    return sum + (item.discount || 0);
+  }, 0);
+  const totalDiscount = totalItemDiscount + saleDiscount;
+
+  const taxableSubtotal = cart.reduce((sum, item) => {
+    if (item.tax_exempt) return sum;
+    const lineTotal = item.price * item.qty;
+    let lineDiscount = item.discount || 0;
+    if (item.discount_type === 'percentage') {
+      lineDiscount = lineTotal * lineDiscount / 100;
+    }
+    return sum + (lineTotal - lineDiscount);
+  }, 0);
+  const tax = Math.max(0, taxableSubtotal * taxRate);
   const total = Math.max(0, subtotal - totalDiscount + tax);
   const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
 
@@ -373,14 +449,25 @@ export default function POS() {
               <span className="text-[11px] font-medium whitespace-nowrap">{cat}</span>
             </button>
           ))}
-          <div className="relative shrink-0 ms-auto sticky end-0">
+          <div className="relative shrink-0 sticky end-0">
             <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-sm text-[#64748B] dark:text-muted-foreground">search</span>
             <input
               type="text"
               placeholder={t('pos.search')}
               value={productSearch}
               onChange={e => setProductSearch(e.target.value)}
-              className="w-36 sm:w-48 ps-9 pe-3 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
+              className="w-24 sm:w-32 ps-9 pe-3 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
+            />
+          </div>
+          <div className="relative shrink-0 sticky end-0">
+            <span className="material-symbols-outlined absolute start-2 top-1/2 -translate-y-1/2 text-sm text-[#64748B] dark:text-muted-foreground">qr_code_scanner</span>
+            <input
+              type="text"
+              placeholder={t('pos.barcode')}
+              value={barcodeInput}
+              onChange={e => setBarcodeInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleBarcode(e)}
+              className="w-28 ps-8 pe-2 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
             />
           </div>
         </div>
@@ -398,7 +485,7 @@ export default function POS() {
 
         {/* Recent sales panel */}
         {showRecentSales && (
-          <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] p-3 shrink-0 max-h-48 overflow-y-auto">
+          <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-3 shrink-0 max-h-48 overflow-y-auto">
             <h3 className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-2">{t('pos.recent_sales')}</h3>
             {recentSales.map(s => (
               <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-[#F1F5F9] dark:border-border last:border-0">
@@ -449,7 +536,7 @@ export default function POS() {
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
-                className="group bg-white dark:bg-card rounded-2xl p-3 bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-sm hover:shadow-lg transition-all border border-[#F1F5F9] dark:border-border relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
+                className="group bg-white dark:bg-card rounded-2xl p-3 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-sm hover:shadow-lg transition-all border border-[#F1F5F9] dark:border-border relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
               >
                 {p.stock <= 0 && (
                   <div className="absolute inset-0 z-10 bg-white/60 dark:bg-card/60 flex items-center justify-center rounded-2xl">
@@ -528,6 +615,9 @@ export default function POS() {
           onNewCustomerName={setNewCustomerName}
           onNewCustomerPhone={setNewCustomerPhone}
           onAddNewCustomer={addNewCustomer}
+          onToggleDiscountType={toggleDiscountType}
+          onToggleTaxExempt={toggleTaxExempt}
+          selectedCustomerDebt={selectedCustomer?.debt_balance || 0}
         />
       </div>
 
@@ -575,7 +665,7 @@ export default function POS() {
                 </span>
               </div>
               {showCustomerDropdown && (
-                <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+                <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
                   <div className="p-2">
                     <input
                       type="text"
@@ -647,114 +737,67 @@ export default function POS() {
             {cart.length === 0 ? (
               <p className="text-[#64748B] dark:text-muted-foreground text-xs text-center py-8">{t('pos.add_items')}</p>
             ) : (
-              cart.map((item) => (
-                <div key={item.product_id} className="bg-[#f8fafc] dark:bg-background rounded-xl p-2.5">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
-                        <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
-                        {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => openNumpad('discount', item.product_id)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded">
-                        <span className="material-symbols-outlined text-sm">sell</span>
-                      </button>
-                      <button onClick={() => updateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">
-                      <button onClick={() => updateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
-                        <span className="material-symbols-outlined text-sm">remove</span>
-                      </button>
-                      <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
-                      <button onClick={() => updateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
-                        <span className="material-symbols-outlined text-sm">add</span>
-                      </button>
-                    </div>
-                    <p className="font-bold text-xs text-[#0F766E] dark:text-teal-400">{(item.price * item.qty).toFixed(2)} DH</p>
+          cart.map((item) => (
+            <div key={item.product_id} className="bg-[#f8fafc] dark:bg-background rounded-xl p-2.5">
+              <div className="flex justify-between items-start mb-2">
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
+                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
+                    {item.discount > 0 && (
+                      <Badge variant="destructive" className="text-[8px] px-1 py-0">
+                        -{item.discount}{item.discount_type === 'percentage' ? '%' : ' DH'}
+                      </Badge>
+                    )}
+                    {item.tax_exempt && <Badge variant="secondary" className="text-[8px] px-1 py-0">{t('pos.tax_exempt')}</Badge>}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-          <div className="p-4 bg-[#f8fafc] dark:bg-background border-t border-[#F1F5F9] dark:border-border">
-            <div className="space-y-1 mb-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span>
-                <span className="font-semibold text-[#0f172a] dark:text-foreground">{subtotal.toFixed(2)} DH</span>
-              </div>
-              {totalDiscount > 0 && (
-                <div className="flex justify-between text-xs">
-                  <span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span>
-                  <span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span>
-                </div>
-              )}
-              <div className="flex justify-between text-xs">
-                <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.tax')}</span>
-                <span className="font-semibold text-[#0f172a] dark:text-foreground">{tax.toFixed(2)} DH</span>
-              </div>
-              <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-[#F1F5F9] dark:border-border">
-                <span className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.total')}</span>
-                <span className="font-bold text-sm text-[#0F766E] dark:text-teal-400">{total.toFixed(2)} DH</span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={clearCart} className="flex-1 py-2 rounded-xl text-sm">{t('pos.clear')}</Button>
-              <Button variant="outline" onClick={holdOrder} className="py-2 rounded-xl text-sm" disabled={cart.length === 0}>
-                <span className="material-symbols-outlined text-sm">pause</span>
-              </Button>
-              <Button onClick={openPaymentModal} disabled={cart.length === 0} className="flex-1 py-2 rounded-xl text-sm">
-                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>...</> : t('pos.confirm')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-card rounded-[20px] bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
-            <div className="p-5 border-b border-[#F1F5F9] dark:border-border flex justify-between items-center">
-              <h2 className="font-bold text-lg text-[#0f172a] dark:text-foreground">{t('pos.checkout')}</h2>
-              <button onClick={() => setShowPaymentModal(false)} className="p-1 hover:bg-[#f8fafc] dark:hover:bg-accent rounded-full">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4">
-
-              {/* Payment method */}
-              <div>
-                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-2">{t('pos.payment_method')}</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {[
-                    { key: 'cash', label: t('pos.cash'), icon: 'payments' },
-                    { key: 'card', label: t('pos.card'), icon: 'credit_card' },
-                    { key: 'check', label: t('pos.check'), icon: 'receipt' },
-                    { key: 'credit', label: t('pos.credit'), icon: 'account_balance' },
-                  ].map(m => (
-                    <button
-                      key={m.key}
-                      onClick={() => setPaymentMethod(m.key)}
-                      className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
-                        paymentMethod === m.key
-                          ? 'border-[#0F766E] dark:border-teal-600 bg-[#0F766E]/5 dark:bg-teal-500/10 text-[#0F766E] dark:text-teal-400'
-                          : 'border-[#F1F5F9] dark:border-border text-[#64748B] dark:text-muted-foreground hover:border-[#F1F5F9]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-lg">{m.icon}</span>
-                      <span className="text-[10px] font-medium">{m.label}</span>
-                    </button>
-                  ))}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => toggleDiscountType(item.product_id)}
+                    className={`p-0.5 rounded ${item.discount_type === 'percentage' ? 'text-[#f59e0b] dark:text-amber-400' : 'text-[#64748B] dark:text-muted-foreground'} hover:bg-[#f8fafc] dark:hover:bg-accent/50`}
+                    title={item.discount_type === 'percentage' ? t('pos.fixed') : t('pos.percentage')}
+                  >
+                    <span className="text-[9px] font-bold">{item.discount_type === 'percentage' ? '%' : 'DH'}</span>
+                  </button>
+                  <button onClick={() => openNumpad('discount', item.product_id)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded" title={t('pos.discount')}>
+                    <span className="material-symbols-outlined text-sm">sell</span>
+                  </button>
+                  <button onClick={() => toggleTaxExempt(item.product_id)} className={`p-0.5 rounded ${item.tax_exempt ? 'text-[#f59e0b] dark:text-amber-400' : 'text-[#64748B] dark:text-muted-foreground'} hover:bg-[#f8fafc] dark:hover:bg-accent/50`} title={item.tax_exempt ? t('pos.taxable') : t('pos.tax_exempt')}>
+                    <span className="material-symbols-outlined text-sm">{item.tax_exempt ? 'block' : 'check_circle'}</span>
+                  </button>
+                  <button onClick={() => updateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded ms-1 shrink-0">
+                    <span className="material-symbols-outlined text-sm">delete</span>
+                  </button>
                 </div>
               </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">
+                  <button onClick={() => updateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
+                    <span className="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
+                  <button onClick={() => updateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
+                    <span className="material-symbols-outlined text-sm">add</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="flex gap-0.5">
+                    {[1, 2, 5, 10].map(preset => (
+                      <button
+                        key={preset}
+                        onMouseDown={(e) => { e.preventDefault(); updateQty(item.product_id, preset - item.qty); }}
+                        className="text-[8px] px-1 py-0.5 rounded bg-[#f1f5f9] dark:bg-muted hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 text-[#64748B] dark:text-muted-foreground"
+                      >{preset}{item.unit}</button>
+                    ))}
+                  </div>
+                  <p className="font-bold text-xs text-[#0F766E] dark:text-teal-400">{(item.price * item.qty).toFixed(2)} DH</p>
+                </div>
+              </div>
+            </div>
+          )))}
+          </div>
 
               {/* Amount received (only for cash) */}
               {paymentMethod === 'cash' && (
@@ -867,6 +910,158 @@ export default function POS() {
                 </div>
               </div>
 
+            <div className="p-5 border-t border-[#F1F5F9] dark:border-border flex gap-3">
+              <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="flex-1 py-2.5 rounded-xl">{t('pos.cancel')}</Button>
+              <Button onClick={confirmPayment} disabled={submitting} className="flex-1 py-2.5 rounded-xl">
+                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span> {t('pos.processing')}</> : `${t('pos.confirm')} ${total.toFixed(2)} DH`}
+              </Button>
+            </div>
+          </div>
+      )}
+
+      {/* Payment Modal (desktop) */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+            <div className="p-5 border-b border-[#F1F5F9] dark:border-border flex justify-between items-center">
+              <h2 className="font-bold text-lg text-[#0f172a] dark:text-foreground">{t('pos.checkout')}</h2>
+              <button onClick={() => setShowPaymentModal(false)} className="p-1 hover:bg-[#f8fafc] dark:hover:bg-accent rounded-full">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+
+              <div>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-2">{t('pos.payment_method')}</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { key: 'cash', label: t('pos.cash'), icon: 'payments' },
+                    { key: 'card', label: t('pos.card'), icon: 'credit_card' },
+                    { key: 'check', label: t('pos.check'), icon: 'receipt' },
+                    { key: 'credit', label: t('pos.credit'), icon: 'account_balance' },
+                  ].map(m => (
+                    <button
+                      key={m.key}
+                      onClick={() => setPaymentMethod(m.key)}
+                      className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
+                        paymentMethod === m.key
+                          ? 'border-[#0F766E] dark:border-teal-600 bg-[#0F766E]/5 dark:bg-teal-500/10 text-[#0F766E] dark:text-teal-400'
+                          : 'border-[#F1F5F9] dark:border-border text-[#64748B] dark:text-muted-foreground hover:border-[#F1F5F9]'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">{m.icon}</span>
+                      <span className="text-[10px] font-medium">{m.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {paymentMethod === 'cash' && (
+                <div>
+                  <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.amount_received')}</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={amountReceived || ''}
+                      onChange={e => setAmountReceived(parseFloat(e.target.value) || 0)}
+                      className="flex-1 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
+                      placeholder="0.00"
+                    />
+                    {[total, Math.ceil(total / 10) * 10, Math.ceil(total / 50) * 50, Math.ceil(total / 100) * 100].map(amt => (
+                      amt > 0 && amt !== amountReceived && (
+                        <button
+                          key={amt}
+                          onClick={() => setAmountReceived(amt)}
+                          className="px-2 py-1 bg-[#f1f5f9] dark:bg-muted rounded-lg text-xs font-semibold hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20"
+                        >{amt.toFixed(0)}</button>
+                      )
+                    )).slice(0, 3)}
+                  </div>
+                  {changeDue > 0 && (
+                    <p className="mt-2 text-lg font-bold text-[#10b981] dark:text-emerald-400 flex items-center gap-2">
+                      <span className="material-symbols-outlined">currency_exchange</span>
+                      {t('pos.change')}: {changeDue.toFixed(2)} DH
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {paymentMethod === 'credit' && (
+                <div>
+                  <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.deposit')}</p>
+                  <input
+                    type="number"
+                    value={amountReceived || ''}
+                    onChange={e => setAmountReceived(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
+                    placeholder={t('pos.credit_info')}
+                  />
+                  {amountReceived > 0 && (
+                    <p className="mt-1 text-xs text-[#ef4444] dark:text-red-400">{t('pos.remaining')}: {(total - amountReceived).toFixed(2)} DH</p>
+                  )}
+                </div>
+              )}
+
+              <div>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.discount_total')}</p>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={saleDiscount || ''}
+                    onChange={e => setSaleDiscount(parseFloat(e.target.value) || 0)}
+                    className="w-24 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
+                    placeholder="0"
+                  />
+                  <span className="text-xs text-[#64748B] dark:text-muted-foreground self-center">DH</span>
+                  {[10, 20, 50].map(d => (
+                    <button
+                      key={d}
+                      onClick={() => setSaleDiscount(d)}
+                      className={`px-2 py-1 rounded-lg text-xs font-semibold ${saleDiscount === d ? 'bg-[#0F766E] dark:bg-teal-600 text-white' : 'bg-[#f1f5f9] dark:bg-muted hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20'}`}
+                    >-{d}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.note')}</p>
+                <textarea
+                  value={saleNote}
+                  onChange={e => setSaleNote(e.target.value)}
+                  className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 resize-none"
+                  rows={2}
+                  placeholder={t('pos.optional')}
+                />
+              </div>
+
+              <div>
+                <button onClick={() => setShowDelivery(prev => !prev)} className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:text-[#0f172a] dark:hover:text-foreground transition-colors">
+                  <span className="material-symbols-outlined text-sm">{showDelivery ? 'expand_less' : 'expand_more'}</span>
+                  {t('pos.delivery')}
+                </button>
+                {showDelivery && (
+                  <div className="mt-2 space-y-2 ps-4">
+                    <input type="text" placeholder={t('pos.delivery_address')} value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                    <div className="flex gap-2">
+                      <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} className="flex-1 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                      <input type="number" placeholder={t('pos.fee')} value={deliveryFee || ''} onChange={e => setDeliveryFee(parseFloat(e.target.value) || 0)} className="w-24 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 space-y-1.5">
+                <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span><span className="font-semibold">{subtotal.toFixed(2)} DH</span></div>
+                {totalDiscount > 0 && <div className="flex justify-between text-sm"><span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span><span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span></div>}
+                <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.tax')}</span><span className="font-semibold">{tax.toFixed(2)} DH</span></div>
+                {deliveryFee > 0 && <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.delivery')}</span><span className="font-semibold">{deliveryFee.toFixed(2)} DH</span></div>}
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-[#F1F5F9] dark:border-border">
+                  <span className="font-bold text-base">{t('pos.total')}</span>
+                  <span className="font-bold text-base text-[#0F766E] dark:text-teal-400">{total.toFixed(2)} DH</span>
+                </div>
+              </div>
+
             </div>
 
             <div className="p-5 border-t border-[#F1F5F9] dark:border-border flex gap-3">
@@ -882,7 +1077,7 @@ export default function POS() {
       {/* Invoice Modal */}
       {showInvoiceModal && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-card rounded-[20px] bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg mx-4">
+          <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg mx-4">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-[#10b981]/10 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="material-symbols-outlined text-3xl text-[#10b981] dark:text-emerald-400">check_circle</span>
@@ -900,7 +1095,7 @@ export default function POS() {
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => { setShowInvoiceModal(false); setLastSale(null); }} className="flex-1 py-2.5 rounded-xl">{t('pos.close')}</Button>
-                <Button onClick={() => { setShowInvoiceModal(false); setLastSale(null); printBon(lastSale); }} className="flex-1 py-2.5 rounded-xl">
+                <Button onClick={() => { setShowInvoiceModal(false); setLastSale(null); printBon(lastSale, settingsRef.current); }} className="flex-1 py-2.5 rounded-xl">
                   <span className="material-symbols-outlined text-sm">print</span> {t('pos.print')}
                 </Button>
               </div>
@@ -928,10 +1123,11 @@ function CartPanel({
   onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch, onOpenNumpad,
   printTicket, onTogglePrint,
   newCustomerName, newCustomerPhone, onNewCustomerName, onNewCustomerPhone, onAddNewCustomer,
+  onToggleDiscountType, onToggleTaxExempt, selectedCustomerDebt,
 }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] flex flex-col h-full">
+    <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] flex flex-col h-full">
       <div className="p-3 border-b border-[#F1F5F9] dark:border-border space-y-2">
         <div className="flex justify-between items-center">
           <h2 className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.cart')}</h2>
@@ -965,7 +1161,7 @@ function CartPanel({
             </span>
           </div>
           {showCustomerDropdown && (
-            <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+            <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
               <div className="p-2">
                 <input
                   type="text"
@@ -1054,6 +1250,15 @@ function CartPanel({
         )}
       </div>
 
+      {selectedCustomer && selectedCustomerDebt > 0 && (
+        <div className="mx-3 mb-2 flex items-center gap-2 bg-[#fef3c7] dark:bg-amber-950/40 rounded-lg p-2">
+          <span className="material-symbols-outlined text-[#d97706] dark:text-amber-400 text-sm">warning</span>
+          <span className="text-xs font-medium text-[#92400e] dark:text-amber-300">
+            {t('pos.debt_warning', { amount: selectedCustomerDebt.toFixed(2) })}
+          </span>
+        </div>
+      )}
+
       <div className="p-4 bg-[#f8fafc] dark:bg-background rounded-b-2xl border-t border-[#F1F5F9] dark:border-border">
         <div className="space-y-1 mb-3">
           <div className="flex justify-between text-xs">
@@ -1088,70 +1293,79 @@ function CartPanel({
   );
 }
 
-function printBon(sale) {
+function printBon(sale, settings = {}) {
   if (!sale) return;
   const date = new Date().toLocaleDateString('fr-FR', {
     day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
   });
   const customerName = sale.customer_name || 'Client Libre';
   const items = sale.items || [];
+  const width = settings.receipt_width || '48';
+  const showLogo = settings.receipt_show_logo !== 'false';
+  const showTax = settings.receipt_show_tax !== 'false';
+  const taxRate = parseFloat(settings.tax_rate || '5');
+
+  const taxHtml = showTax ? `<div><span>TVA (${taxRate}%)</span><span>${sale.tax.toFixed(2)} DH</span></div>` : '';
+  const logoHtml = showLogo
+    ? `<div class="header"><h1>Simi Shop</h1><p>Grossiste en fruits et légumes</p></div>`
+    : `<div class="title">BON DE VENTE</div>`;
+  const titleHtml = showLogo ? `<div class="title">BON DE VENTE</div>` : '';
 
   const w = window.open('', '_blank');
   w.document.write(`
     <html><head><title>Bon de vente</title>
     <style>
-      body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 40px; color: #222; }
-      .header { text-align: center; margin-bottom: 30px; }
-      .header h1 { margin: 0; font-size: 24px; }
-      .header p { margin: 4px 0 0; color: #666; font-size: 12px; }
-      .title { text-align: center; font-size: 20px; font-weight: bold; border-top: 2px solid #333; border-bottom: 2px solid #333; padding: 10px 0; margin-bottom: 24px; }
-      .info { display: flex; justify-content: space-between; margin-bottom: 24px; font-size: 14px; flex-wrap: wrap; gap: 8px; }
-      table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-      th { background: #f5f5f5; text-align: left; padding: 8px 12px; font-size: 13px; border-bottom: 2px solid #ddd; }
-      td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+      body { font-family: 'Courier New', monospace; margin: 0; padding: ${width > 58 ? '40px' : '10px'}; color: #222; font-size: ${width > 58 ? '14px' : '11px'}; width: ${width}mm; }
+      .header { text-align: center; margin-bottom: 20px; }
+      .header h1 { margin: 0; font-size: ${width > 58 ? '24px' : '16px'}; }
+      .header p { margin: 4px 0 0; color: #666; font-size: ${width > 58 ? '12px' : '9px'}; }
+      .title { text-align: center; font-size: ${width > 58 ? '20px' : '13px'}; font-weight: bold; border-top: 2px solid #333; border-bottom: 2px solid #333; padding: 8px 0; margin-bottom: 16px; }
+      .info { margin-bottom: 16px; font-size: ${width > 58 ? '13px' : '10px'}; }
+      .info div { display: flex; justify-content: space-between; padding: 2px 0; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: ${width > 58 ? '12px' : '10px'}; }
+      th { background: #f5f5f5; text-align: left; padding: 4px 6px; font-size: ${width > 58 ? '12px' : '9px'}; border-bottom: 2px solid #ddd; }
+      td { padding: 4px 6px; border-bottom: 1px solid #eee; }
       .right { text-align: right; }
-      .totals { margin-left: auto; width: 300px; }
-      .totals div { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; }
-      .totals .grand { font-weight: bold; font-size: 16px; border-top: 2px solid #333; padding-top: 8px; margin-top: 4px; }
-      .signatures { display: flex; justify-content: space-between; margin-top: 60px; }
-      .signature-box { text-align: center; }
-      .signature-box .line { width: 200px; border-top: 1px solid #333; margin-top: 60px; padding-top: 8px; font-size: 13px; }
-      .note { margin-top: 16px; font-size: 12px; color: #666; font-style: italic; }
-      @media print { body { padding: 20px; } }
+      .totals { width: 100%; }
+      .totals div { display: flex; justify-content: space-between; padding: 3px 0; font-size: ${width > 58 ? '13px' : '10px'}; }
+      .totals .grand { font-weight: bold; font-size: ${width > 58 ? '15px' : '12px'}; border-top: 2px solid #333; padding-top: 6px; margin-top: 3px; }
+      .note { margin-top: 12px; font-size: ${width > 58 ? '11px' : '9px'}; color: #666; font-style: italic; }
+      hr { border: none; border-top: 1px dashed #999; margin: 12px 0; }
+      @media print { body { padding: ${width > 58 ? '20px' : '5px'}; } }
     </style></head><body>
-      <div class="header">
-        <h1>Simi Shop</h1>
-        <p>Grossiste en fruits et légumes</p>
-      </div>
-      <div class="title">BON DE VENTE</div>
+      ${logoHtml}
+      ${titleHtml}
+      <hr>
       <div class="info">
-        <span>N°: INV-${String(sale.id).padStart(4, '0')}</span>
-        <span>Date: ${date}</span>
-        <span>Client: ${customerName}</span>
-        <span>Paiement: ${sale.payment_method || 'cash'}</span>
+        <div><span>N°:</span><span>INV-${String(sale.id).padStart(4, '0')}</span></div>
+        <div><span>Date:</span><span>${date}</span></div>
+        <div><span>Client:</span><span>${customerName}</span></div>
+        <div><span>Paiement:</span><span>${sale.payment_method || 'cash'}</span></div>
       </div>
+      <hr>
       <table>
-        <tr><th>Produit</th><th class="right">Qté</th><th class="right">Prix unitaire</th><th class="right">Total</th></tr>
+        <tr><th>Produit</th><th class="right">Qté</th><th class="right">P.U.</th><th class="right">Total</th></tr>
         ${items.map(item => `
           <tr>
-            <td>${item.product_name}${item.discount > 0 ? ' (remise ' + item.discount + ' DH)' : ''}</td>
+            <td>${item.product_name}${item.discount > 0 ? ' (-' + item.discount + (item.discount_type === 'percentage' ? '%)' : ' DH)') : ''}</td>
             <td class="right">${item.qty} ${item.unit}</td>
-            <td class="right">${item.price.toFixed(2)} DH</td>
-            <td class="right">${(item.price * item.qty).toFixed(2)} DH</td>
+            <td class="right">${item.price.toFixed(2)}</td>
+            <td class="right">${(item.price * item.qty).toFixed(2)}</td>
           </tr>
         `).join('')}
       </table>
+      <hr>
       <div class="totals">
         <div><span>Sous-total</span><span>${items.reduce((s, i) => s + i.price * i.qty, 0).toFixed(2)} DH</span></div>
         ${sale.discount_total > 0 ? `<div><span>Remise</span><span>-${sale.discount_total.toFixed(2)} DH</span></div>` : ''}
-        <div><span>TVA (5%)</span><span>${sale.tax.toFixed(2)} DH</span></div>
+        ${taxHtml}
         ${sale.delivery_fee > 0 ? `<div><span>Livraison</span><span>${sale.delivery_fee.toFixed(2)} DH</span></div>` : ''}
         <div class="grand"><span>Total</span><span>${sale.total.toFixed(2)} DH</span></div>
       </div>
       ${sale.note ? `<div class="note">Note: ${sale.note}</div>` : ''}
-      <div class="signatures">
-        <div class="signature-box"><div class="line">Signature du vendeur</div></div>
-        <div class="signature-box"><div class="line">Signature du client</div></div>
+      <hr>
+      <div style="text-align: center; font-size: ${width > 58 ? '11px' : '9px'}; color: #999; margin-top: 8px;">
+        Merci de votre confiance
       </div>
     </body></html>
   `);
