@@ -482,11 +482,11 @@ export default function POS() {
         {/* Stats bar */}
         <div className="flex items-center gap-4 mb-3 text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
           <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">today</span> {t('pos.today')}: {recentSales.filter(s => new Date(s.created_at).toDateString() === new Date().toDateString()).length} {t('pos.sales')}</span>
-          <button onClick={() => { loadHeldOrders(); setShowHeldOrders(prev => !prev); }} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors">
-            <span className="material-symbols-outlined text-sm">pause_circle</span> {t('pos.suspended')} ({heldOrders.length})
-          </button>
-          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors ms-auto">
+          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors">
             <span className="material-symbols-outlined text-sm">history</span> {t('pos.recent')}
+          </button>
+          <button onClick={() => { loadHeldOrders(); setShowHeldOrders(prev => !prev); }} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors ms-auto">
+            <span className="material-symbols-outlined text-sm">pause_circle</span> {t('pos.suspended')} ({heldOrders.length})
           </button>
         </div>
 
