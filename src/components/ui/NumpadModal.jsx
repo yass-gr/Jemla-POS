@@ -60,7 +60,6 @@ export default function NumpadModal({ open, title, value, allowDecimal, onConfir
                 {row.map((key) => (
                   <button
                     key={key}
-                    onTouchStart={() => handleKey(key)}
                     onClick={() => handleKey(key)}
                     className={`h-16 rounded-2xl text-2xl font-bold transition-all active:scale-90 select-none ${
                       key === '⌫'

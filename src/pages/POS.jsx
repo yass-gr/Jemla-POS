@@ -205,6 +205,10 @@ export default function POS() {
       if (!item) return prev;
       if (newQty <= 0) return prev.filter(i => i.product_id !== productId);
       const product = products.find(p => p.id === productId);
+      if (product && product.stock < newQty) {
+        toast.error(t('pos.insufficient_stock') + product.name);
+        return prev;
+      }
       let price = item.original_price;
       if (product && product.price_wholesale && product.wholesale_min_qty && newQty >= product.wholesale_min_qty) {
         price = product.price_wholesale;
@@ -268,7 +272,7 @@ export default function POS() {
     setNumpadInitValue(currentValue);
     const titles = { price: t('pos.edit_price'), qty: t('pos.edit_qty'), discount: t('pos.discount') };
     setNumpadTitle(titles[type] || '');
-    setNumpadAllowDecimal(type !== 'qty');
+    setNumpadAllowDecimal(true);
     setNumpadOpen(true);
   }
 
@@ -1366,18 +1370,6 @@ function CartPanel({
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
                 </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <button onClick={() => onUpdateQty(item.product_id, -1)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded">
-                    <span className="material-symbols-outlined text-sm">remove</span>
-                  </button>
-                  <span className="text-sm font-semibold text-foreground">{item.qty}</span>
-                  <button onClick={() => onUpdateQty(item.product_id, 1)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded">
-                    <span className="material-symbols-outlined text-sm">add</span>
-                  </button>
-                </div>
-                <span className="text-sm font-semibold text-foreground">{(item.price * item.qty).toFixed(2)} DH</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">

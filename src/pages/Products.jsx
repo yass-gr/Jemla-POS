@@ -23,6 +23,7 @@ export default function Products() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
   const [form, setForm] = useState({
     name: '', category: '', price: '', price_wholesale: '', unit: 'kg',
     stock: '', wholesale_min_qty: '', barcode: '', image_url: ''
@@ -77,12 +78,14 @@ export default function Products() {
 
   const openAdd = () => {
     setEditingProduct(null);
+    setFormErrors({});
     setForm({ name: '', category: '', price: '', price_wholesale: '', unit: 'kg', stock: '', wholesale_min_qty: '10', barcode: '', image_url: '' });
     setDialogOpen(true);
   };
 
   const openEdit = (product) => {
     setEditingProduct(product);
+    setFormErrors({});
     setForm({
       name: product.name,
       category: product.category,
@@ -98,10 +101,19 @@ export default function Products() {
   };
 
   const handleSave = async () => {
-    if (!form.name || !form.category || !form.price) {
+    // Validate form and collect errors
+    const errors = {};
+    if (!form.name || form.name.trim() === '') errors.name = 'Le nom est requis';
+    if (!form.category || form.category.trim() === '') errors.category = 'La catégorie est requise';
+    if (!form.price || isNaN(parseFloat(form.price)) || parseFloat(form.price) <= 0) errors.price = 'Le prix doit être supérieur à 0';
+    
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       toast.error(t('products.form.required'));
       return;
     }
+    
+    setFormErrors({});
     
     const payload = {
       ...form, unit: 'kg',
@@ -139,6 +151,7 @@ export default function Products() {
 
   const categories = ['all', ...new Set(products.map(p => p.category))];
   const lowStockCount = products.filter(p => p.stock < (p.wholesale_min_qty || 10)).length;
+  const outOfStockCount = products.filter(p => !p.stock || p.stock <= 0).length;
 
   const filtered = products.filter(p => {
     const minQty = p.wholesale_min_qty || 10;
@@ -200,6 +213,15 @@ export default function Products() {
           <div className="flex items-end justify-between">
             <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{lowStockCount}</span>
             <span className="material-symbols-outlined text-2xl text-red-300 dark:text-red-400">warning</span>
+          </div>
+        </div>
+        <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-orange-500/10 dark:to-orange-950/40">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('products.out_of_stock')}</span>
+          </div>
+          <div className="flex items-end justify-between">
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{outOfStockCount}</span>
+            <span className="material-symbols-outlined text-2xl text-orange-300 dark:text-orange-400">block</span>
           </div>
         </div>
       </div>
@@ -309,8 +331,32 @@ export default function Products() {
                 );
               })}
               {paginated.length === 0 && !loading && (
-                <tr><td colSpan="6" className="px-4 py-8 text-xs text-[#64748B] dark:text-muted-foreground text-center">{t('products.no_results')}</td></tr>
+                <tr>
+                  <td colSpan="6" className="px-4 py-12">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="w-16 h-16 mb-3 rounded-full bg-surface-container flex items-center justify-center">
+                        <span className="material-symbols-outlined text-3xl text-muted-foreground">inventory_2</span>
+                      </div>
+                      <p className="text-sm font-medium text-foreground mb-1">{t('products.no_results')}</p>
+                      <p className="text-xs text-muted-foreground max-w-[250px]">
+                        {search || filter !== 'all' 
+                          ? 'Essayez de modifier vos critères de recherche'
+                          : 'Commencez par ajouter votre premier produit'}
+                      </p>
+                      {!search && filter === 'all' && (
+                        <button
+                          onClick={openAdd}
+                          className="mt-3 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-base">add</span>
+                          Ajouter un produit
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
               )}
+
             </tbody>
           </table>
         </div>
@@ -383,15 +429,33 @@ export default function Products() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
             <div className="space-y-1">
               <label className="text-sm font-medium">{t('products.form.name')}</label>
-              <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+              <Input 
+                value={form.name} 
+                onChange={e => { setForm({ ...form, name: e.target.value }); if (formErrors.name) setFormErrors({...formErrors, name: null}); }}
+                className={formErrors.name ? 'border-destructive focus:ring-destructive' : ''}
+              />
+              {formErrors.name && <p className="text-xs text-destructive mt-1">{formErrors.name}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">{t('products.form.category')}</label>
-              <Input value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} placeholder="Fruits, Légumes..." />
+              <Input 
+                value={form.category} 
+                onChange={e => { setForm({ ...form, category: e.target.value }); if (formErrors.category) setFormErrors({...formErrors, category: null}); }}
+                placeholder="Fruits, Légumes..."
+                className={formErrors.category ? 'border-destructive focus:ring-destructive' : ''}
+              />
+              {formErrors.category && <p className="text-xs text-destructive mt-1">{formErrors.category}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">{t('products.form.price')}</label>
-              <Input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
+              <Input 
+                type="number" 
+                step="0.01" 
+                value={form.price} 
+                onChange={e => { setForm({ ...form, price: e.target.value }); if (formErrors.price) setFormErrors({...formErrors, price: null}); }}
+                className={formErrors.price ? 'border-destructive focus:ring-destructive' : ''}
+              />
+              {formErrors.price && <p className="text-xs text-destructive mt-1">{formErrors.price}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">{t('products.form.price_wholesale')}</label>
@@ -411,7 +475,7 @@ export default function Products() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">{t('products.form.stock')}</label>
-              <Input type="number" step="0.1" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} disabled={!!editingProduct} placeholder={editingProduct ? "Use Inventory tab" : "Initial stock"} />
+              <Input type="number" step="0.1" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} placeholder={t('products.form.stock')} />
             </div>
             <div className="space-y-1 md:col-span-2">
               <label className="text-sm font-medium">{t('products.form.image_url')}</label>
