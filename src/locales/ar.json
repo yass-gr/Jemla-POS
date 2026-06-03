@@ -232,7 +232,7 @@
   "purchases.filter_without_supplier": "بدون مورد",
   "purchases.table.product": "المنتج",
   "purchases.table.supplier": "المورد",
-  "purchases.table.qty": "الكمية",
+  "purchases.table.qty": "الكمية (kg)",
   "purchases.table.unit_price": "سعر الوحدة",
   "purchases.table.total": "المجموع",
   "purchases.table.date": "التاريخ",

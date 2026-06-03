@@ -232,7 +232,7 @@
   "purchases.filter_without_supplier": "Sans fournisseur",
   "purchases.table.product": "Produit",
   "purchases.table.supplier": "Fournisseur",
-  "purchases.table.qty": "Qté",
+  "purchases.table.qty": "Qté (kg)",
   "purchases.table.unit_price": "Prix unitaire",
   "purchases.table.total": "Total",
   "purchases.table.date": "Date",

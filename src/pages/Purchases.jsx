@@ -198,7 +198,7 @@ export default function Purchases() {
             <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('purchases.total_qty')}</span>
           </div>
           <div className="flex items-end justify-between">
-            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalQty}</span>
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalQty} kg</span>
             <span className="material-symbols-outlined text-2xl text-blue-300 dark:text-blue-400">package_2</span>
           </div>
         </div>
@@ -258,7 +258,7 @@ export default function Purchases() {
                       <span className="text-xs text-[#64748B] dark:text-muted-foreground">{t('purchases.none')}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.qty}</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.qty} kg</td>
                   <td className="px-4 py-3 text-xs text-[#0F766E] dark:text-teal-400 text-end font-semibold">{p.unit_price.toFixed(2)} DH</td>
                   <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground text-end">{p.total.toFixed(2)} DH</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">
@@ -368,7 +368,7 @@ export default function Purchases() {
               <label className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-1 block">{t('purchases.form.qty')} *</label>
               <button type="button" onClick={() => openNumpad('qty', form.qty)}
                 className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-start text-sm text-[#0f172a] dark:text-foreground">
-                {form.qty}
+                {form.qty} kg
               </button>
             </div>
             <div>
@@ -423,7 +423,7 @@ export default function Purchases() {
               <tr key={p.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">{p.product_name}</td>
                 <td className="border border-black p-2 text-sm">{p.supplier}</td>
-                <td className="border border-black p-2 text-sm text-right">{p.qty}</td>
+                <td className="border border-black p-2 text-sm text-right">{p.qty} kg</td>
                 <td className="border border-black p-2 text-sm text-right">{p.unit_price.toFixed(2)} DH</td>
                 <td className="border border-black p-2 text-sm text-right font-bold">{p.total.toFixed(2)} DH</td>
               </tr>
