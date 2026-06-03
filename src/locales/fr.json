@@ -579,6 +579,8 @@
   "settings.stock_threshold.label": "Seuil d'alerte de stock",
   "settings.stock_threshold.desc": "Notification lorsque le stock d'un produit passe sous ce seuil",
   "settings.backup": "Sauvegarde",
+  "settings.backup.database": "Base de données",
+  "settings.backup.database_desc": "Contient tous les produits, ventes, achats et données clients",
   "settings.backup.download": "Télécharger la sauvegarde",
   "settings.backup.desc": "Télécharger une copie complète de la base de données",
   "settings.backup.success": "Sauvegarde téléchargée",

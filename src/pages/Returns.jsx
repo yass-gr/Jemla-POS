@@ -1,33 +1,33 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
-} from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import NumpadModal from '@/components/ui/NumpadModal';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import NumpadModal from '@/components/ui/NumpadModal';
 import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Returns() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [returns, setReturns] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [products, setProducts] = useState([]);
+  const [sales, setSales] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [loading, setLoading] = useState(true);
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingReturn, setEditingReturn] = useState(null);
   const [form, setForm] = useState({ product_id: '', qty: 1, reason: '', sale_id: '' });
-  const [products, setProducts] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const [numpadOpen, setNumpadOpen] = useState(false);
@@ -40,11 +40,26 @@ export default function Returns() {
     Promise.all([
       api.returns.list(),
       api.products.list(),
-    ]).then(([r, prods]) => {
+      api.sales.list(),
+    ]).then(([r, prods, s]) => {
       setReturns(r);
       setProducts(prods);
+      setSales(s);
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  // Scroll to highlighted return
+  useEffect(() => {
+    if (highlightedId && returns.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`return-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, returns]);
 
   let filtered = search
     ? returns.filter(r =>
@@ -249,7 +264,13 @@ export default function Returns() {
             </thead>
             <tbody>
               {paginated.map(r => (
-                <tr key={r.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
+                <tr 
+                  key={r.id} 
+                  id={`return-${r.id}`}
+                  className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors ${
+                    highlightedId === r.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                  }`}
+                >
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{r.product_name}</td>
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{r.qty}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground text-end">{r.price ? `${r.price.toFixed(2)} MAD` : '-'}</td>

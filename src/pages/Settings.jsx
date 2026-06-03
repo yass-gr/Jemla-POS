@@ -283,44 +283,62 @@ export default function Settings() {
               />
               <div>
                 <SettingRow 
-                  label={t('settings.theme.light')}
-                  description={t('settings.theme.light_desc', 'Light color scheme')}
+                  label={t('settings.appearance')}
+                  description={t('settings.appearance_desc', 'Customize application appearance')}
                 >
-                  <button
-                    onClick={() => setTheme('light')}
-                    className={theme === 'light'
-                      ? 'px-4 h-8 bg-[#0F766E] text-white rounded-xl text-xs font-semibold'
-                      : 'px-4 h-8 border border-[#F1F5F9] dark:border-border text-muted-foreground rounded-xl text-xs font-medium hover:bg-accent transition-colors'}
-                  >
-                    {t('settings.theme.light')}
-                  </button>
-                </SettingRow>
-                <SettingRow 
-                  label={t('settings.theme.dark')}
-                  description={t('settings.theme.dark_desc', 'Dark color scheme')}
-                >
-                  <button
-                    onClick={() => setTheme('dark')}
-                    className={theme === 'dark'
-                      ? 'px-4 h-8 bg-[#0F766E] text-white rounded-xl text-xs font-semibold'
-                      : 'px-4 h-8 border border-[#F1F5F9] dark:border-border text-muted-foreground rounded-xl text-xs font-medium hover:bg-accent transition-colors'}
-                  >
-                    {t('settings.theme.dark')}
-                  </button>
+                  <div className="flex bg-[#f1f5f9] dark:bg-muted p-0.5 rounded-lg">
+                    <button
+                      onClick={() => setTheme('light')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                        theme === 'light'
+                          ? 'bg-white dark:bg-card shadow-sm text-[#0F766E] dark:text-teal-400'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">light_mode</span>
+                      {t('settings.theme.light')}
+                    </button>
+                    <button
+                      onClick={() => setTheme('dark')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                        theme === 'dark'
+                          ? 'bg-white dark:bg-card shadow-sm text-[#0F766E] dark:text-teal-400'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">dark_mode</span>
+                      {t('settings.theme.dark')}
+                    </button>
+                  </div>
                 </SettingRow>
                 <SettingRow 
                   label={t('settings.language')}
                   description={t('settings.language_desc', 'Application language')}
                 >
-                  <Select value={i18n.language} onValueChange={v => i18n.changeLanguage(v)}>
-                    <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fr">{t('settings.language.fr')}</SelectItem>
-                      <SelectItem value="ar">{t('settings.language.ar')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex bg-[#f1f5f9] dark:bg-muted p-0.5 rounded-lg">
+                    <button
+                      onClick={() => i18n.changeLanguage('fr')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                        i18n.language === 'fr'
+                          ? 'bg-white dark:bg-card shadow-sm text-[#0F766E] dark:text-teal-400'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="text-[15px]">🇫🇷</span>
+                      Français
+                    </button>
+                    <button
+                      onClick={() => i18n.changeLanguage('ar')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                        i18n.language === 'ar'
+                          ? 'bg-white dark:bg-card shadow-sm text-[#0F766E] dark:text-teal-400'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="text-[15px]">🇲🇦</span>
+                      العربية
+                    </button>
+                  </div>
                 </SettingRow>
                 <SettingRow 
                   label={t('settings.receipt.width')}
@@ -364,42 +382,43 @@ export default function Settings() {
                 title={t('settings.account.change_password')} 
                 description={t('settings.account.change_password_desc', 'Update your account password')}
               />
-              <div className="space-y-4 pt-2">
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">{t('settings.account.current_password')}</label>
+              <div className="bg-[#f8fafc] dark:bg-muted/30 rounded-2xl p-5 space-y-4 mt-2">
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">lock</span>
                   <Input
                     type="password"
                     placeholder={t('settings.account.current_password')}
                     value={currentPassword}
                     onChange={e => setCurrentPassword(e.target.value)}
-                    className="h-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-[20px] text-sm"
+                    className="h-11 ps-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-sm"
                   />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">{t('settings.account.new_password')}</label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">key</span>
                   <Input
                     type="password"
                     placeholder={t('settings.account.new_password')}
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
-                    className="h-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-[20px] text-sm"
+                    className="h-11 ps-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-sm"
                   />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">{t('settings.account.confirm_password')}</label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">check</span>
                   <Input
                     type="password"
                     placeholder={t('settings.account.confirm_password')}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    className="h-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-[20px] text-sm"
+                    className="h-11 ps-10 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-sm"
                   />
                 </div>
-                <div className="pt-2">
+                <div className="pt-1">
                   <button
                     onClick={handleChangePassword}
-                    className="px-4 h-9 bg-[#0F766E] text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors"
+                    className="flex items-center gap-2 px-5 h-10 bg-[#0F766E] text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors"
                   >
+                    <span className="material-symbols-outlined text-[16px]">save</span>
                     {t('settings.account.change_password')}
                   </button>
                 </div>
@@ -414,13 +433,26 @@ export default function Settings() {
                 title={t('settings.backup')} 
                 description={t('settings.backup.desc')}
               />
-              <button
-                onClick={handleDownloadBackup}
-                className="flex items-center gap-2 px-4 h-9 bg-[#0F766E] text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors"
-              >
-                <span className="material-symbols-outlined">download</span>
-                {t('settings.backup.download')}
-              </button>
+              <div className="bg-[#f8fafc] dark:bg-muted/30 rounded-2xl p-5 space-y-4 mt-2">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[#0F766E] dark:text-teal-400">database</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{t('settings.backup.database')}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t('settings.backup.database_desc', 'Contains all products, sales, purchases, and customer data')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleDownloadBackup}
+                    className="flex items-center gap-2 px-5 h-10 bg-[#0F766E] text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">download</span>
+                    {t('settings.backup.download')}
+                  </button>
+                </div>
+              </div>
             </SettingsCard>
           )}
 
@@ -453,21 +485,23 @@ export default function Settings() {
                   <tbody>
                     {users.map(u => (
                       <tr key={u.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
-                        <td className="px-4 py-3 font-semibold text-foreground">{u.username}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{u.name}</td>
                         <td className="px-4 py-3">
-                          <Select value={u.role} onValueChange={v => api.users.update(u.id, { role: v }).then(() => {
-                            setUsers(prev => prev.map(x => x.id === u.id ? { ...x, role: v } : x));
-                            toast.success(t('settings.account.user_updated'));
-                          }).catch(err => toast.error(err.message))}>
-                            <SelectTrigger className="w-[140px] h-8 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="admin">{t('settings.account.admin')}</SelectItem>
-                              <SelectItem value="cashier">{t('settings.account.cashier')}</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0">
+                              {u.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-xs font-semibold text-foreground">{u.username}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground">{u.name}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            u.role === 'admin'
+                              ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300'
+                              : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                          }`}>
+                            {u.role === 'admin' ? t('settings.account.admin') : t('settings.account.cashier')}
+                          </span>
                         </td>
                         <td className="px-4 py-3 text-end">
                           <DropdownMenu>
@@ -506,7 +540,7 @@ export default function Settings() {
           <DialogHeader>
             <DialogTitle>{editingUser ? t('settings.account.manage_users') : t('settings.account.add_user')}</DialogTitle>
             <DialogDescription>
-              {editingUser ? t('settings.account.user_updated') : t('settings.account.user_created')}
+              {editingUser ? 'Modifier les informations de l\'utilisateur' : 'Créer un nouveau compte utilisateur'}
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">

@@ -1,30 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
-} from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import NumpadModal from '@/components/ui/NumpadModal';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import NumpadModal from '@/components/ui/NumpadModal';
 import { exportToCSV, exportToPDF } from '@/lib/utils';
 
 export default function Purchases() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [purchases, setPurchases] = useState([]);
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [loading, setLoading] = useState(true);
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ product_id: '', supplier: '', qty: 1, unit_price: 0, supplier_mode: 'select' });
@@ -50,6 +49,19 @@ export default function Purchases() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  // Scroll to highlighted purchase
+  useEffect(() => {
+    if (highlightedId && purchases.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`purchase-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, purchases]);
 
   let filtered = search
     ? purchases.filter(p =>
@@ -246,7 +258,13 @@ export default function Purchases() {
             </thead>
             <tbody>
               {paginated.map(p => (
-                <tr key={p.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+                <tr 
+                  key={p.id} 
+                  id={`purchase-${p.id}`}
+                  className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0 ${
+                    highlightedId === p.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                  }`}
+                >
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{p.product_name}</td>
                   <td className="px-4 py-3">
                     {p.supplier ? (

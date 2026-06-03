@@ -579,6 +579,8 @@
   "settings.stock_threshold.label": "حد تنبيه المخزون",
   "settings.stock_threshold.desc": "إشعار عندما ينخفض مخزون المنتج عن هذا الحد",
   "settings.backup": "النسخ الاحتياطي",
+  "settings.backup.database": "قاعدة البيانات",
+  "settings.backup.database_desc": "يحتوي على جميع المنتجات والمبيعات والمشتريات وبيانات العملاء",
   "settings.backup.download": "تحميل النسخة الاحتياطية",
   "settings.backup.desc": "تحميل نسخة كاملة من قاعدة البيانات",
   "settings.backup.success": "تم تحميل النسخة الاحتياطية",
