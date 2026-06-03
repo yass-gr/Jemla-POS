@@ -215,7 +215,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
       time: new Date(s.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       initials,
       name: s.customer_name,
-      items: `${Math.ceil(totalItems)} Items`,
+      items: totalItems,
       total: `${s.total.toFixed(2)} DH`,
       payment_method: s.payment_method,
       payment_status: s.payment_status,

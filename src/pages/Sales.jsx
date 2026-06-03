@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '@/services/api';
 import SaleDetail from '@/components/SaleDetail';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -81,11 +82,12 @@ async function reprintSale(saleId) {
 }
 
 export default function Sales() {
+  const [searchParams] = useSearchParams();
   const [sales, setSales] = useState([]);
   const [stats, setStats] = useState(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
-  const [selectedSaleId, setSelectedSaleId] = useState(null);
+  const [selectedSaleId, setSelectedSaleId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [loading, setLoading] = useState(true);
@@ -100,6 +102,19 @@ export default function Sales() {
       setStats(st);
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  // Scroll to highlighted sale
+  useEffect(() => {
+    if (highlightedId && sales.length > 0) {
+      setTimeout(() => {
+        const element = document.getElementById(`sale-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 3000);
+        }
+      }, 500);
+    }
+  }, [highlightedId, sales]);
 
   let filtered = search
     ? sales.filter(s =>
@@ -335,8 +350,8 @@ export default function Sales() {
             {(search || filter !== 'all' ? filtered : sales).map(s => (
               <tr key={s.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">#{s.id}</td>
-                <td className="border border-black p-2 text-sm">{s.customer_name || '-'}</td>
-                <td className="border border-black p-2 text-sm text-right font-bold">{s.total.toFixed(2)} DH</td>
+                <td className="border border-black p-2 text-sm">{s.name || '-'}</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{s.total}</td>
                 <td className="border border-black p-2 text-sm">{s.payment_method}</td>
                 <td className="border border-black p-2 text-sm">{s.payment_status}</td>
               </tr>
