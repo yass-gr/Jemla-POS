@@ -87,7 +87,8 @@ export default function Sales() {
   const [stats, setStats] = useState(null);
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [filter, setFilter] = useState('all');
-  const [selectedSaleId, setSelectedSaleId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
+  const [selectedSaleId, setSelectedSaleId] = useState(null);
+  const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [loading, setLoading] = useState(true);
@@ -241,7 +242,14 @@ export default function Sales() {
             </thead>
             <tbody>
               {paginated.map((s) => (
-                <tr key={s.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors cursor-pointer border-b border-[#F1F5F9] dark:border-border" onClick={() => setSelectedSaleId(s.id)}>
+                <tr 
+                  key={s.id} 
+                  id={`sale-${s.id}`}
+                  className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors cursor-pointer border-b border-[#F1F5F9] dark:border-border ${
+                    highlightedId === s.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                  }`} 
+                  onClick={() => setSelectedSaleId(s.id)}
+                >
                   <td className="px-4 py-3 text-xs font-semibold text-[#0F766E] dark:text-teal-400">{s.invoice}</td>
                   <td className="px-4 py-3">
                     <span className="text-xs font-semibold text-[#0f172a] dark:text-foreground">{s.date}</span>
