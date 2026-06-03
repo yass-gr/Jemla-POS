@@ -62,7 +62,11 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  html[lang="ar"] {
+  html[lang="ar"] body,
+  html[lang="ar"] input,
+  html[lang="ar"] button,
+  html[lang="ar"] select,
+  html[lang="ar"] textarea {
     font-family: 'Noto Kufi Arabic', sans-serif;
   }
 
