@@ -21,7 +21,7 @@ function NavItem({ to, icon, label, showLabel, onClick }) {
       to={to}
       onClick={onClick}
       className={({ isActive }) =>
-        `flex items-center h-10 px-2.5 rounded-lg transition-colors whitespace-nowrap ${
+        `flex items-center h-10 px-2.5 rounded-lg transition-colors duration-150 whitespace-nowrap ${
           showLabel ? 'gap-3.5' : 'gap-0 justify-center'
         } ${
           isActive
@@ -31,7 +31,7 @@ function NavItem({ to, icon, label, showLabel, onClick }) {
       }
     >
       <span className="material-symbols-outlined text-xl min-w-[22px] text-center shrink-0">{icon}</span>
-      <span className={`text-sm font-medium truncate transition-all duration-200 overflow-hidden ${
+      <span className={`text-sm font-medium truncate overflow-hidden transition-all duration-200 ease-in-out ${
         showLabel ? 'opacity-100 w-auto' : 'opacity-0 w-0'
       }`}>
         {label}
@@ -46,22 +46,24 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      <div
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ease-in-out ${
+          open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex flex-col h-screen bg-white border-r border-[#e2e8f0] transition-all duration-200 ease-linear
+        className={`fixed left-0 top-0 z-50 flex flex-col h-screen bg-white border-r border-[#e2e8f0] transition-all duration-300 ease-in-out
           ${open ? 'w-[260px] translate-x-0 shadow-xl' : '-translate-x-full'}
           ${expanded ? 'lg:w-[260px] lg:shadow-lg' : 'lg:w-[60px] lg:shadow-none'}
           lg:translate-x-0`}
       >
         {/* Logo row */}
         <div className={`flex items-center h-14 px-3 mt-1 ${showLabel ? 'justify-between' : 'justify-center'}`}>
-          <div className={`flex items-center gap-3 overflow-hidden transition-all duration-200 ${showLabel ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+          <div className={`flex items-center gap-3 overflow-hidden transition-all duration-300 ease-in-out ${
+            showLabel ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+          }`}>
             <div className="w-7 h-7 rounded-lg bg-[#0F766E] flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-white text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>storefront</span>
             </div>
@@ -69,9 +71,11 @@ export default function Sidebar({ open, onClose }) {
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="hidden lg:flex w-9 h-9 items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#0F766E] hover:bg-[#0F766E]/8 transition-colors shrink-0"
+            className="hidden lg:flex w-9 h-9 items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#0F766E] hover:bg-[#0F766E]/8 transition-colors duration-150 shrink-0"
           >
-            <span className="material-symbols-outlined text-lg">{expanded ? 'chevron_left' : 'chevron_right'}</span>
+            <span className="material-symbols-outlined text-lg transition-transform duration-300 ease-in-out" style={{
+              transform: expanded ? 'rotate(0deg)' : 'rotate(180deg)',
+            }}>{expanded ? 'chevron_left' : 'chevron_right'}</span>
           </button>
         </div>
 
