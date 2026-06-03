@@ -16,7 +16,7 @@ function formatPrice(v) {
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`bg-card border border-border rounded-3xl shadow-lg shadow-black/5 bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] ${className}`}>
+    <div className={`bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] ${className}`}>
       {children}
     </div>
   );
@@ -114,7 +114,7 @@ export default function Dashboard() {
       badge: stats ? `${stats.todayTransactions} transaction${stats.todayTransactions > 1 ? 's' : ''}` : "—",
       badgeColor: trendPercent != null && trendPercent > 0 ? "text-emerald-600 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/40" : "text-slate-600 bg-slate-100 dark:text-muted-foreground dark:bg-muted",
       icon: "payments",
-      gradient: "from-white to-[#10B981] dark:border-emerald-700/50 dark:from-card dark:to-emerald-900/60",
+      gradient: "dark:border-emerald-700/50 dark:from-card dark:to-emerald-900/60",
       hoverBorder: "hover:border-emerald-200 dark:hover:border-emerald-800",
       sparkColor: "bg-emerald-400 dark:bg-emerald-500",
       iconBg: "text-emerald-300 dark:text-emerald-400",
@@ -125,7 +125,7 @@ export default function Dashboard() {
       badge: stats ? `${stats.overdueAccounts} compte${stats.overdueAccounts > 1 ? 's' : ''}` : "—",
       badgeColor: stats?.overdueAccounts > 0 ? "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/40" : "text-slate-600 bg-slate-100 dark:text-muted-foreground dark:bg-muted",
       icon: "receipt_long",
-      gradient: "from-white to-[#EF4444] dark:border-red-700/50 dark:from-card dark:to-red-900/60",
+      gradient: "dark:border-red-700/50 dark:from-card dark:to-red-900/60",
       hoverBorder: "hover:border-red-200 dark:hover:border-red-800",
       sparkColor: "bg-red-400",
       iconBg: "text-red-300 dark:text-red-400",
@@ -136,7 +136,7 @@ export default function Dashboard() {
       badge: stats?.lowStockItems > 0 ? t('dashboard.need_reorder') : t('dashboard.stock_ok'),
       badgeColor: stats?.lowStockItems > 0 ? "text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/40" : "text-slate-600 bg-slate-100 dark:text-muted-foreground dark:bg-muted",
       icon: "inventory",
-      gradient: "from-white to-[#F59E0B] dark:border-amber-700/50 dark:from-card dark:to-amber-900/60",
+      gradient: "dark:border-amber-700/50 dark:from-card dark:to-amber-900/60",
       hoverBorder: "hover:border-amber-200 dark:hover:border-amber-800",
       sparkColor: "bg-amber-400",
       iconBg: "text-amber-300 dark:text-amber-400",
@@ -147,7 +147,7 @@ export default function Dashboard() {
       badge: trendPercent != null ? `${trendPercent > 0 ? '+' : ''}${trendPercent}%` : "—",
       badgeColor: trendPercent != null && trendPercent >= 0 ? "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/40" : "text-slate-600 bg-slate-100 dark:text-muted-foreground dark:bg-muted",
       icon: "account_balance_wallet",
-      gradient: "from-white to-[#3B82F6] dark:border-blue-700/50 dark:from-card dark:to-blue-900/60",
+      gradient: "dark:border-blue-700/50 dark:from-card dark:to-blue-900/60",
       hoverBorder: "hover:border-blue-200 dark:hover:border-blue-800",
       sparkColor: "bg-blue-400",
       iconBg: "text-blue-300 dark:text-blue-400",
@@ -179,7 +179,7 @@ export default function Dashboard() {
         {kpiCards.map((card, i) => (
           <div
             key={i}
-            className={`h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col justify-between group bg-gradient-to-br ${card.gradient} ${card.hoverBorder} transition-colors`}
+            className={`h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col justify-between group dark:bg-gradient-to-br ${card.gradient} ${card.hoverBorder} transition-colors`}
           >
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em]">{card.title}</span>

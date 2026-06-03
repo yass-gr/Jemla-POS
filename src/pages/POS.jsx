@@ -398,7 +398,7 @@ export default function POS() {
 
         {/* Recent sales panel */}
         {showRecentSales && (
-          <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] p-3 shrink-0 max-h-48 overflow-y-auto">
+          <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-3 shrink-0 max-h-48 overflow-y-auto">
             <h3 className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-2">{t('pos.recent_sales')}</h3>
             {recentSales.map(s => (
               <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-[#F1F5F9] dark:border-border last:border-0">
@@ -449,7 +449,7 @@ export default function POS() {
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
-                className="group bg-white dark:bg-card rounded-2xl p-3 bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-sm hover:shadow-lg transition-all border border-[#F1F5F9] dark:border-border relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
+                className="group bg-white dark:bg-card rounded-2xl p-3 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-sm hover:shadow-lg transition-all border border-[#F1F5F9] dark:border-border relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
               >
                 {p.stock <= 0 && (
                   <div className="absolute inset-0 z-10 bg-white/60 dark:bg-card/60 flex items-center justify-center rounded-2xl">
@@ -575,7 +575,7 @@ export default function POS() {
                 </span>
               </div>
               {showCustomerDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
                   <div className="p-2">
                     <input
                       type="text"
@@ -720,7 +720,7 @@ export default function POS() {
       {/* Payment Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-card rounded-[20px] bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+          <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
             <div className="p-5 border-b border-[#F1F5F9] dark:border-border flex justify-between items-center">
               <h2 className="font-bold text-lg text-[#0f172a] dark:text-foreground">{t('pos.checkout')}</h2>
               <button onClick={() => setShowPaymentModal(false)} className="p-1 hover:bg-[#f8fafc] dark:hover:bg-accent rounded-full">
@@ -882,7 +882,7 @@ export default function POS() {
       {/* Invoice Modal */}
       {showInvoiceModal && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-card rounded-[20px] bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg mx-4">
+          <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg mx-4">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-[#10b981]/10 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="material-symbols-outlined text-3xl text-[#10b981] dark:text-emerald-400">check_circle</span>
@@ -931,7 +931,7 @@ function CartPanel({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] flex flex-col h-full">
+    <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] flex flex-col h-full">
       <div className="p-3 border-b border-[#F1F5F9] dark:border-border space-y-2">
         <div className="flex justify-between items-center">
           <h2 className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.cart')}</h2>
@@ -965,7 +965,7 @@ function CartPanel({
             </span>
           </div>
           {showCustomerDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
               <div className="p-2">
                 <input
                   type="text"
