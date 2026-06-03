@@ -33,8 +33,8 @@ export default function Sidebar({ open, onClose }) {
       />
 
       <aside
-        className={`fixed start-0 top-0 z-50 flex flex-col h-screen bg-card border-e border-border transition-all duration-300 ease-out
-          ${open ? 'w-[240px] translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full'}
+        className={`fixed left-0 top-0 z-50 flex flex-col h-screen bg-card border-r border-border transition-all duration-300 ease-out
+          ${open ? 'w-[240px] translate-x-0' : '-translate-x-full'}
           ${expanded ? 'lg:w-[240px]' : 'lg:w-[60px]'}
           lg:translate-x-0`}
       >
