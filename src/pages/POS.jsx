@@ -1337,7 +1337,15 @@ function CartPanel({
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {cart.length === 0 ? (
-          <p className="text-[#64748B] dark:text-muted-foreground text-xs text-center py-8">{t('pos.add_items')}</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 mb-4 rounded-full bg-surface-container flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl text-muted-foreground">shopping_cart</span>
+            </div>
+            <p className="text-sm font-medium text-foreground mb-1">{t('pos.add_items')}</p>
+            <p className="text-xs text-muted-foreground max-w-[200px]">
+              Cliquez sur un produit ou scannez un code-barres pour commencer
+            </p>
+          </div>
         ) : (
           cart.map((item) => (
             <div key={item.product_id} className="bg-[#f8fafc] dark:bg-background rounded-xl p-2.5">
@@ -1358,6 +1366,18 @@ function CartPanel({
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <button onClick={() => onUpdateQty(item.product_id, -1)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded">
+                    <span className="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <span className="text-sm font-semibold text-foreground">{item.qty}</span>
+                  <button onClick={() => onUpdateQty(item.product_id, 1)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded">
+                    <span className="material-symbols-outlined text-sm">add</span>
+                  </button>
+                </div>
+                <span className="text-sm font-semibold text-foreground">{(item.price * item.qty).toFixed(2)} DH</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">
