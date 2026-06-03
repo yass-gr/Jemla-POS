@@ -3,16 +3,15 @@ import { NavLink } from 'react-router-dom';
 const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
   { to: '/pos', icon: 'point_of_sale', label: 'POS' },
-  { to: '/products', icon: 'inventory_2', label: 'Products' },
-  { to: '/customers', icon: 'group', label: 'Customers' },
-  { to: '/suppliers', icon: 'local_shipping', label: 'Suppliers' },
-  { to: '/purchases', icon: 'shopping_cart', label: 'Purchases' },
-  { to: '/sales', icon: 'payments', label: 'Sales' },
-  { to: '/returns', icon: 'assignment_return', label: 'Returns' },
-  { to: '/inventory', icon: 'warehouse', label: 'Inventory' },
-  { to: '/debts', icon: 'account_balance_wallet', label: 'Debts' },
-  { to: '/reports', icon: 'analytics', label: 'Reports' },
-  { to: '/settings', icon: 'settings', label: 'Settings' },
+  { to: '/products', icon: 'inventory_2', label: 'Produits' },
+  { to: '/customers', icon: 'group', label: 'Clients' },
+  { to: '/suppliers', icon: 'local_shipping', label: 'Fournisseurs' },
+  { to: '/purchases', icon: 'shopping_cart', label: 'Achats' },
+  { to: '/sales', icon: 'payments', label: 'Ventes' },
+  { to: '/returns', icon: 'assignment_return', label: 'Retours' },
+  { to: '/inventory', icon: 'warehouse', label: 'Stock' },
+  { to: '/debts', icon: 'account_balance_wallet', label: 'Dettes' },
+  { to: '/reports', icon: 'assessment', label: 'Rapports' },
 ];
 
 export default function Sidebar({ open, onClose }) {
@@ -26,50 +25,55 @@ export default function Sidebar({ open, onClose }) {
       )}
 
       <aside
-        className={`
-          group fixed left-0 top-0 h-screen bg-inverse-surface flex flex-col z-50 shadow-xl
-          transition-[width] duration-200 ease-in-out
-          w-[260px] lg:w-[72px] lg:hover:w-[260px]
-          lg:translate-x-0
-          ${open ? 'translate-x-0' : '-translate-x-full'}
-        `}
+        className={`fixed left-0 top-0 z-50 flex flex-col py-6 px-4 h-screen w-[260px] -translate-x-full lg:w-[88px] lg:hover:w-64 lg:translate-x-0 transition-all duration-300 ease-in-out overflow-hidden bg-white border-r border-[#e2e8f0] shadow-[0_8px_40px_rgba(15,23,42,0.04)] group ${open ? 'translate-x-0' : ''}`}
       >
-        <div className="mb-8 flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-3 lg:gap-0 lg:group-hover:gap-3 mt-margin px-4 lg:px-0 lg:group-hover:px-4">
-          <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-on-primary text-headline-sm">storefront</span>
+        {/* Logo */}
+        <div className="flex items-center gap-4 mb-8 overflow-hidden">
+          <div className="min-w-[52px] h-[52px] flex items-center justify-center bg-[#0F766E] rounded-2xl shrink-0">
+            <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>storefront</span>
           </div>
-          <div className="lg:hidden lg:group-hover:block overflow-hidden">
-            <h1 className="text-headline-md font-bold text-primary-fixed leading-tight whitespace-nowrap">Simi Shop</h1>
-            <p className="text-label-md text-on-secondary-container/60 whitespace-nowrap">Retail Management</p>
+          <div className="flex flex-col whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span className="text-lg font-extrabold text-[#0F766E] leading-none">Jemla POS</span>
+            <span className="text-xs text-[#64748B] font-medium">Enterprise</span>
           </div>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden">
+
+        {/* Nav items */}
+        <div className="flex flex-col gap-1 flex-grow overflow-y-auto no-scrollbar">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-3 lg:gap-0 lg:group-hover:gap-3 py-3.5 px-4 lg:px-0 lg:group-hover:px-4 mx-2 rounded-xl transition-all whitespace-nowrap ${
+                `flex items-center gap-4 p-3 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   isActive
-                    ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20'
-                    : 'text-on-secondary-container hover:bg-primary-container/20 hover:text-on-primary'
+                    ? 'bg-[#0F766E] text-white font-bold shadow-sm'
+                    : 'text-[#64748B] hover:text-[#0F766E] hover:bg-[#f1f5f9]'
                 }`
               }
             >
-              <span className="material-symbols-outlined shrink-0">{item.icon}</span>
-              <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline truncate">{item.label}</span>
+              <span className="material-symbols-outlined min-w-[28px] text-center shrink-0">{item.icon}</span>
+              <span className="whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium">{item.label}</span>
             </NavLink>
           ))}
-        </nav>
+        </div>
+
+        {/* Settings */}
         <div className="mt-auto">
           <NavLink
-            to="/login"
+            to="/settings"
             onClick={onClose}
-            className="flex items-center justify-start lg:justify-center lg:group-hover:justify-start gap-3 lg:gap-0 lg:group-hover:gap-3 py-3.5 px-4 lg:px-0 lg:group-hover:px-4 mx-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-xl transition-all whitespace-nowrap"
+            className={({ isActive }) =>
+              `flex items-center gap-4 p-3 rounded-xl transition-all duration-200 whitespace-nowrap ${
+                isActive
+                  ? 'bg-[#0F766E] text-white font-bold shadow-sm'
+                  : 'text-[#64748B] hover:text-[#0F766E] hover:bg-[#f1f5f9]'
+              }`
+            }
           >
-            <span className="material-symbols-outlined shrink-0">logout</span>
-            <span className="font-label-md text-label-md lg:hidden lg:group-hover:inline">Logout</span>
+            <span className="material-symbols-outlined min-w-[28px] text-center shrink-0">settings</span>
+            <span className="whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium">Paramètres</span>
           </NavLink>
         </div>
       </aside>
