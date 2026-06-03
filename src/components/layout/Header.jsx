@@ -205,11 +205,7 @@ export default function Header({ onMenuClick }) {
                     <span className="material-symbols-outlined text-base text-muted-foreground">close</span>
                   </button>
                 )}
-                {!searchQuery && (
-                  <kbd className="absolute end-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
-                    ⌘K
-                  </kbd>
-                )}
+
               </div>
             </form>
 

@@ -272,7 +272,7 @@ export default function Sales() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground">{s.total.toFixed(2)} DH</td>
+                  <td className="px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-foreground">{s.total}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       s.payment_status === 'paid' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' :
@@ -359,7 +359,7 @@ export default function Sales() {
               <tr key={s.id} className="break-inside-avoid">
                 <td className="border border-black p-2 text-sm font-semibold">#{s.id}</td>
                 <td className="border border-black p-2 text-sm">{s.name || '-'}</td>
-                <td className="border border-black p-2 text-sm text-right font-bold">{s.total.toFixed(2)} DH</td>
+                <td className="border border-black p-2 text-sm text-right font-bold">{s.total}</td>
                 <td className="border border-black p-2 text-sm">{s.payment_method}</td>
                 <td className="border border-black p-2 text-sm">{s.payment_status}</td>
               </tr>

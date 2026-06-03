@@ -1,0 +1,35 @@
+
+=== 📊 Database Verification ===
+
+✅ products       : 62 records
+✅ customers      : 20 records
+✅ suppliers      : 8 records
+✅ sales          : 8,459 records
+✅ purchases      : 6,074 records
+✅ returns        : 172 records
+
+📅 Sales date range:
+   From: 2025-06-03 08:11:00
+   To:   2026-06-03 18:48:00
+
+🥬 Sample products (first 10):
+   - Tomate                    (Légumes ) - 6 DH
+   - Pomme de terre            (Légumes ) - 4 DH
+   - Oignon                    (Légumes ) - 3.5 DH
+   - Carotte                   (Légumes ) - 5 DH
+   - Courgette                 (Légumes ) - 7 DH
+   - Aubergine                 (Légumes ) - 6.5 DH
+   - Poivron vert              (Légumes ) - 9 DH
+   - Poivron rouge             (Légumes ) - 12 DH
+   - Chou vert                 (Légumes ) - 4 DH
+   - Chou rouge                (Légumes ) - 5 DH
+
+📦 Products by category:
+   - Fruits    : 32 items
+   - Légumes   : 30 items
+
+💰 Average sale: 894.16 DH
+💵 Total revenue (1 year): 7.56M DH
+
+✨ Database successfully regenerated with realistic 1-year data!
+

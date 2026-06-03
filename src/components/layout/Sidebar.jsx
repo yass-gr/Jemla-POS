@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import gsap from 'gsap';
 
 const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'nav.dashboard' },
@@ -18,10 +19,21 @@ const navItems = [
 
 export default function Sidebar({ open, onClose }) {
   const [expanded, setExpanded] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
   const showLabel = expanded || open;
-  const isRtl = i18n.language === 'ar';
+  const labelsRef = useRef([]);
+
+  useEffect(() => {
+    const labels = labelsRef.current.filter(Boolean);
+    if (!labels.length) return;
+    if (showLabel) {
+      gsap.fromTo(labels,
+        { opacity: 0, x: -6 },
+        { opacity: 1, x: 0, duration: 0.25, stagger: 0.03, ease: 'power2.out' }
+      );
+    }
+  }, [showLabel]);
 
   return (
     <>
@@ -49,16 +61,20 @@ export default function Sidebar({ open, onClose }) {
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="hidden lg:flex w-8 h-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shrink-0"
+            className={`hidden lg:flex items-center justify-center rounded-xl border border-border/50 bg-gradient-to-br from-card to-muted/50 text-muted-foreground hover:text-foreground hover:border-border hover:shadow-md hover:shadow-teal-500/5 active:scale-95 transition-all duration-200 shrink-0 ${
+              expanded ? 'w-8 h-8' : 'w-8 h-8 ring-1 ring-teal-500/20'
+            }`}
+            title={expanded ? t('nav.collapse') : t('nav.expand')}
           >
-            <span className="material-symbols-outlined text-lg transition-transform duration-300" style={{
-              transform: `rotate(${expanded !== isRtl ? 0 : 180}deg)`,
-            }}>{expanded !== isRtl ? 'chevron_left' : 'chevron_right'}</span>
+            <span className="material-symbols-outlined text-lg transition-all duration-300" style={{
+              transform: `rotate(${expanded ? 0 : 180}deg)`,
+              fontVariationSettings: "'FILL' 1",
+            }}>chevron_left</span>
           </button>
         </div>
 
         <div className="flex flex-col gap-0.5 flex-1 overflow-y-auto px-2 mt-1">
-          {navItems.map((item) => (
+          {navItems.map((item, idx) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -72,7 +88,7 @@ export default function Sidebar({ open, onClose }) {
               }`}
             >
               <span className="material-symbols-outlined text-xl min-w-[22px] text-center shrink-0">{item.icon}</span>
-              <span className={`text-sm font-medium truncate overflow-hidden transition-all duration-200 ${
+              <span ref={el => labelsRef.current[idx] = el} className={`text-sm font-medium truncate overflow-hidden transition-all duration-200 ${
                 showLabel ? 'opacity-100 w-auto' : 'opacity-0 w-0'
               }`}>
                 {t(item.label)}

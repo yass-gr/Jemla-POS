@@ -1,10 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import gsap from 'gsap';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
 export default function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const mainRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    gsap.fromTo(el,
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
+    );
+    const cards = el.querySelectorAll('[data-reveal]');
+    if (cards.length > 0) {
+      gsap.fromTo(cards,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: 'power2.out' }
+      );
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +44,7 @@ export default function AppLayout({ children }) {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-[60px] print:!ml-0 print:w-full">
         <Header onMenuClick={() => setSidebarOpen(prev => !prev)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-gutter space-y-4 sm:space-y-6 lg:space-y-gutter overflow-y-auto print:overflow-visible print:p-0 print:m-0">
+        <main ref={mainRef} className="flex-1 p-4 sm:p-6 lg:p-gutter space-y-4 sm:space-y-6 lg:space-y-gutter overflow-y-auto print:overflow-visible print:p-0 print:m-0">
           {children}
         </main>
         

@@ -35,22 +35,32 @@ export default function Dashboard() {
   const [chartInterval, setChartInterval] = useState("week");
 
   useEffect(() => {
-    Promise.all([
-      api.dashboard.stats(),
-      api.dashboard.salesTrend(),
-      api.dashboard.topProducts(),
-      api.dashboard.topCustomers(),
-      api.dashboard.recentTransactions(),
-    ])
-      .then(([s, t, p, c, r]) => {
-        setStats(s);
-        setSalesTrend(t);
-        setTopProducts(p);
-        setTopCustomer(c);
-        setRecentTx(r);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      try {
+        const [s, t, p, c, r] = await Promise.allSettled([
+          api.dashboard.stats(),
+          api.dashboard.salesTrend(),
+          api.dashboard.topProducts(),
+          api.dashboard.topCustomers(),
+          api.dashboard.recentTransactions(),
+        ]);
+        if (s.status === 'fulfilled') setStats(s.value);
+        else console.error('stats failed:', s.reason);
+        if (t.status === 'fulfilled') setSalesTrend(t.value);
+        else console.error('salesTrend failed:', t.reason);
+        if (p.status === 'fulfilled') setTopProducts(p.value);
+        else console.error('topProducts failed:', p.reason);
+        if (c.status === 'fulfilled') setTopCustomer(c.value);
+        else console.error('topCustomers failed:', c.reason);
+        if (r.status === 'fulfilled') setRecentTx(r.value);
+        else console.error('recentTransactions failed:', r.reason);
+      } catch (e) {
+        console.error('Dashboard fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const trendData = useMemo(
@@ -176,6 +186,7 @@ export default function Dashboard() {
         {kpiCards.map((card, i) => (
           <div
             key={i}
+            data-reveal
             className={`h-[105px] p-3 sm:p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between group bg-gradient-to-br ${card.gradient} transition-colors`}
           >
             <div className="flex justify-between items-start">
@@ -199,7 +210,7 @@ export default function Dashboard() {
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-5">
         {/* Vercel-style Chart */}
-        <Card className="lg:col-span-7 p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
+        <Card data-reveal className="lg:col-span-7 p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-base font-bold text-foreground">{t('dashboard.sales_analysis')}</h2>
@@ -265,7 +276,7 @@ export default function Dashboard() {
         {/* Right Panel */}
         <div className="lg:col-span-3 flex flex-col gap-5">
           {/* Top Products */}
-          <Card className="p-4">
+          <Card data-reveal className="p-4">
             <h3 className="text-xs font-bold text-foreground mb-3 uppercase tracking-wider">{t('dashboard.top_products')}</h3>
             <div className="space-y-2">
               {topProducts.slice(0, 3).map((p, i) => (

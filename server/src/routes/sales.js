@@ -192,6 +192,7 @@ router.get('/:id', ensureAuthenticated, (req, res) => {
 });
 
 router.get('/', ensureAuthenticated, (req, res) => {
+  const limit = parseInt(req.query.limit) || 200;
   const sales = queryAll(`
     SELECT s.id, s.total, s.tax, s.status, s.created_at,
            s.payment_method, s.payment_status,
@@ -200,7 +201,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
     FROM sales s
     LEFT JOIN customers c ON s.customer_id = c.id
     ORDER BY s.created_at DESC
-  `);
+    LIMIT ?
+  `, [limit]);
 
   const result = sales.map(s => {
     const items = queryAll('SELECT product_name, qty, unit FROM sale_items WHERE sale_id = ?', [s.id]);

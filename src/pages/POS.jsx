@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,15 @@ export default function POS() {
   const [newCustomerName, setNewCustomerName] = useState('');
   const [newCustomerPhone, setNewCustomerPhone] = useState('');
   const [barcodeInput, setBarcodeInput] = useState('');
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const dateStr = useMemo(() => now.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }), [now]);
+  const timeStr = useMemo(() => now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }), [now]);
 
   function handleBarcode(e) {
     const code = e.target.value.trim();
@@ -537,6 +546,8 @@ export default function POS() {
 
         {/* Stats bar */}
         <div className="flex items-center gap-4 mb-3 text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
+          <span className="flex items-center gap-1 font-semibold text-[#0f172a] dark:text-foreground"><span className="material-symbols-outlined text-sm text-[#64748B] dark:text-muted-foreground">schedule</span> {dateStr} | {timeStr}</span>
+          <span className="w-px h-4 bg-border" />
           <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">today</span> {t('pos.today')}: {recentSales.filter(s => new Date(s.created_at).toDateString() === new Date().toDateString()).length} {t('pos.sales')}</span>
           <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors">
             <span className="material-symbols-outlined text-sm">history</span> {t('pos.recent')}

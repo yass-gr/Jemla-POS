@@ -17,6 +17,7 @@ export default function Reports() {
   const [summary, setSummary] = useState(null);
   const [salesTrend, setSalesTrend] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [salesByCategory, setSalesByCategory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('week');
 
@@ -25,11 +26,13 @@ export default function Reports() {
     Promise.all([
       api.reports.summary(period),
       api.dashboard.salesTrend(period),
-      api.dashboard.topProducts(period)
-    ]).then(([sum, trend, top]) => {
+      api.dashboard.topProducts(period),
+      api.reports.salesByCategory(period)
+    ]).then(([sum, trend, top, cats]) => {
       setSummary(sum);
       setSalesTrend(trend);
       setTopProducts(top);
+      setSalesByCategory(cats);
     }).catch(console.error).finally(() => setLoading(false));
   }, [period]);
 
@@ -122,6 +125,7 @@ export default function Reports() {
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {kpis.map((k, i) => (
           <div key={i}
+            data-reveal
             className={`h-[105px] p-3 sm:p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between bg-gradient-to-br ${k.gradient} transition-colors`}>
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{k.label}</span>
@@ -136,7 +140,7 @@ export default function Reports() {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-        <div className="lg:col-span-2 bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
+        <div data-reveal className="lg:col-span-2 bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-base font-bold text-foreground">{t('dashboard.sales_analysis')}</h2>
@@ -187,7 +191,7 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5">
+        <div data-reveal className="bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5">
           <h3 className="text-xs font-bold text-foreground mb-1 uppercase tracking-wider">{t('dashboard.top_products')}</h3>
           <p className="text-[10px] text-muted-foreground mb-4">{t('reports.subtitle')}</p>
           {topProducts.length > 0 ? (
@@ -252,41 +256,107 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-bold text-foreground">{t('reports.revenue')}</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">{t(period === 'week' ? 'dashboard.week' : period === 'all' ? 'dashboard.all_time' : `dashboard.${period}`)}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+        <div data-reveal className="bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5">
+          <div className="mb-4">
+            <h3 className="text-sm font-bold text-foreground">{t('reports.revenue')}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{t(period === 'week' ? 'dashboard.week' : period === 'all' ? 'dashboard.all_time' : `dashboard.${period}`)}</p>
+          </div>
+          <div className="h-[260px] w-full">
+            {salesTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={salesTrend} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:opacity-20" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} dy={8} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#18181b',
+                      border: '1px solid #27272a',
+                      borderRadius: 12,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                      fontSize: 12,
+                      color: '#f4f4f5',
+                    }}
+                    formatter={(value) => [`${Number(value).toFixed(1)}k DH`, t('reports.badge_revenue')]}
+                  />
+                  <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={56}>
+                    {salesTrend.map((entry, idx) => {
+                      const maxVal = Math.max(...salesTrend.map(d => d.value));
+                      return (
+                        <Cell key={idx} fill={entry.value >= maxVal ? '#14b8a6' : '#14b8a640'} />
+                      );
+                    })}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-xs text-muted-foreground">{t('dashboard.no_product_data')}</div>
+            )}
+          </div>
         </div>
-        <div className="h-[260px] w-full">
-          {salesTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={salesTrend} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:opacity-20" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} dy={8} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#18181b',
-                    border: '1px solid #27272a',
-                    borderRadius: 12,
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                    fontSize: 12,
-                    color: '#f4f4f5',
-                  }}
-                  formatter={(value) => [`${Number(value).toFixed(1)}k DH`, t('reports.badge_revenue')]}
-                />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={56}>
-                  {salesTrend.map((entry, idx) => {
-                    const maxVal = Math.max(...salesTrend.map(d => d.value));
-                    return (
-                      <Cell key={idx} fill={entry.value >= maxVal ? '#14b8a6' : '#14b8a640'} />
-                    );
-                  })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+
+        <div data-reveal className="bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-4 sm:p-5">
+          <div className="mb-4">
+            <h3 className="text-sm font-bold text-foreground">{t('reports.sales_by_category')}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{t(period === 'week' ? 'dashboard.week' : period === 'all' ? 'dashboard.all_time' : `dashboard.${period}`)}</p>
+          </div>
+          {salesByCategory.length > 0 ? (
+            <>
+              <div className="flex justify-center mb-4">
+                <div className="w-44 h-44">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={salesByCategory}
+                        cx="50%" cy="50%"
+                        innerRadius={48}
+                        outerRadius={72}
+                        dataKey="revenue"
+                        strokeWidth={2}
+                        stroke="#09090B"
+                        paddingAngle={3}
+                      >
+                        {salesByCategory.map((_, idx) => (
+                          <Cell key={idx} fill={DONUT_COLORS[idx % DONUT_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          background: '#18181b',
+                          border: '1px solid #27272a',
+                          borderRadius: 12,
+                          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                          fontSize: 12,
+                          color: '#f4f4f5',
+                        }}
+                        formatter={(value) => [`${Number(value).toFixed(0)} DH`]}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                {salesByCategory.map((cat, idx) => {
+                  const totalRevenue = salesByCategory.reduce((s, c) => s + c.revenue, 0);
+                  const share = totalRevenue > 0 ? ((cat.revenue / totalRevenue) * 100).toFixed(1) : 0;
+                  return (
+                    <div key={idx} className="flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: DONUT_COLORS[idx % DONUT_COLORS.length] }} />
+                        <span className="text-xs text-foreground truncate">{cat.category}</span>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-[10px] text-muted-foreground">{share}%</span>
+                        <span className="text-xs font-bold text-foreground w-[80px] text-right">{Number(cat.revenue).toFixed(0)} DH</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           ) : (
-            <div className="flex items-center justify-center h-full text-xs text-muted-foreground">{t('dashboard.no_product_data')}</div>
+            <div className="flex items-center justify-center h-[260px] text-xs text-muted-foreground">{t('dashboard.no_product_data')}</div>
           )}
         </div>
       </div>

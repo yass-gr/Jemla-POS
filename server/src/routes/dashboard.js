@@ -22,12 +22,28 @@ router.get('/stats', ensureAuthenticated, (req, res) => {
     SELECT COUNT(*) as count FROM products WHERE stock < 10
   `);
 
+  const paymentBreakdown = queryAll(`
+    SELECT COALESCE(payment_method, 'cash') as method, COUNT(*) as count
+    FROM sales WHERE date(created_at) = date('now')
+    GROUP BY payment_method
+  `);
+  const totalPayments = paymentBreakdown.reduce((s, r) => s + r.count, 0) || 1;
+  const getPct = (method) => {
+    const row = paymentBreakdown.find(r => r.method === method);
+    return row ? Math.round((row.count / totalPayments) * 100) : 0;
+  };
+
   res.json({
     todaySales: todaySales.total,
     todayTransactions: todaySales.count,
     pendingDebts: pendingDebts.total,
     overdueAccounts: overdueCount.count,
     lowStockItems: lowStock.count,
+    cashPercent: getPct('cash'),
+    cardPercent: getPct('card'),
+    transferPercent: getPct('transfer'),
+    creditPercent: getPct('credit'),
+    otherPercent: getPct('check'),
   });
 });
 

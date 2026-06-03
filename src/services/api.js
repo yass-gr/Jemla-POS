@@ -1,16 +1,24 @@
 const BASE = '/api';
+const TIMEOUT = 15000;
 
 async function request(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    ...options,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || 'Request failed');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT);
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      signal: controller.signal,
+      ...options,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err.error || 'Request failed');
+    }
+    return res.json();
+  } finally {
+    clearTimeout(timer);
   }
-  return res.json();
 }
 
 export const api = {
@@ -77,6 +85,7 @@ export const api = {
 
   reports: {
     summary: (period) => request(`/reports/summary?period=${period || 'all'}`),
+    salesByCategory: (period) => request(`/reports/sales-by-category?period=${period || 'all'}`),
   },
 
   returns: {
