@@ -16,7 +16,7 @@ function formatPrice(v) {
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] ${className}`}>
+    <div className={`bg-white dark:bg-card border border-border rounded-3xl shadow-lg shadow-black/5 bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] ${className}`}>
       {children}
     </div>
   );
