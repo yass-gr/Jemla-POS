@@ -168,28 +168,29 @@ async function seed() {
   }
 
   // Seed returns - realistic return scenarios
-  const allSales = all('SELECT id FROM sales');
+  const allSales = all('SELECT id FROM sales ORDER BY id');
   const reasons = ['Produit abîmé', 'Mauvaise qualité', 'Trop mûr', 'Erreur de commande', 'Client insatisfait', null, null, null];
   
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 20; i++) {
     const sale = allSales[Math.floor(Math.random() * allSales.length)];
-    const saleItems = all('SELECT product_id, price FROM sale_items WHERE sale_id = ?', [sale.id]);
+    const saleItems = all('SELECT product_id, qty FROM sale_items WHERE sale_id = ?', [sale.id]);
     
     if (saleItems.length > 0) {
       const item = saleItems[Math.floor(Math.random() * saleItems.length)];
-      const returnQty = Math.min(2, item.qty);
+      const returnQty = Math.min(Math.max(0.5, item.qty * (0.2 + Math.random() * 0.5)), item.qty);
       const reason = reasons[Math.floor(Math.random() * reasons.length)];
       
       const returnDate = new Date();
-      returnDate.setDate(returnDate.getDate() - Math.floor(Math.random() * 7));
+      returnDate.setDate(returnDate.getDate() - Math.floor(Math.random() * 5));
       returnDate.setHours(10 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 60), 0, 0);
       const dateStr = returnDate.toISOString().slice(0, 19).replace('T', ' ');
       
       exec('INSERT INTO returns (sale_id, product_id, qty, reason, created_at) VALUES (?, ?, ?, ?, ?)',
-        [sale.id, item.product_id, returnQty, reason, dateStr]);
+        [sale.id, item.product_id, Math.round(returnQty * 10) / 10, reason, dateStr]);
       
-      // Update stock to reflect the return
-      exec('UPDATE products SET stock = stock + ? WHERE id = ?', [returnQty, item.product_id]);
+      exec('UPDATE products SET stock = stock + ? WHERE id = ?', [Math.round(returnQty * 10) / 10, item.product_id]);
+      exec('INSERT INTO inventory_log (product_id, change_qty, reason) VALUES (?, ?, ?)',
+        [item.product_id, Math.round(returnQty * 10) / 10, 'return']);
     }
   }
 
