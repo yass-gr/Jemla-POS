@@ -45,8 +45,8 @@ export default function Inventory() {
   return (
     <div className="space-y-5 pb-8">
       <div className="py-2">
-        <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('inventory.title')}</h1>
-        <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('inventory.subtitle')}</p>
+        <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('inventory.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('inventory.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -101,7 +101,7 @@ export default function Inventory() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+        <div className="lg:col-span-2 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -157,7 +157,7 @@ export default function Inventory() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+        <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] overflow-hidden">
           <div className="px-4 py-3 border-b border-[#F1F5F9] dark:border-border">
             <h3 className="text-sm font-extrabold text-[#0f172a] dark:text-foreground">{t('inventory.recent_activity')}</h3>
           </div>

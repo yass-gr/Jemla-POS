@@ -36,8 +36,8 @@ export default function Customers() {
   return (
     <div className="space-y-5 pb-8">
       <div className="py-2">
-        <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('customers.title')}</h1>
-        <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('customers.subtitle')}</p>
+        <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('customers.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('customers.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -90,7 +90,7 @@ export default function Customers() {
         </Select>
       </div>
 
-      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#F1F5F9] dark:border-border">

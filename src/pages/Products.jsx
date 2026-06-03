@@ -33,8 +33,8 @@ export default function Products() {
     <div className="space-y-5 pb-8">
       <div className="flex items-start justify-between">
         <div className="py-2">
-          <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('products.title')}</h1>
-          <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('products.subtitle')}</p>
+          <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('products.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('products.subtitle')}</p>
         </div>
         <div className="flex items-center gap-3 pt-2">
           <button className="flex items-center gap-1.5 px-4 py-2 border border-[#F1F5F9] dark:border-border text-[#64748B] dark:text-muted-foreground rounded-xl text-xs font-semibold hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
@@ -94,7 +94,7 @@ export default function Products() {
         </label>
       </div>
 
-      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#F1F5F9] dark:border-border">

@@ -23,8 +23,8 @@ export default function Reports() {
   return (
     <div className="space-y-5 pb-8">
       <div className="py-2">
-        <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('reports.title')}</h1>
-        <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('reports.subtitle')}</p>
+        <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('reports.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('reports.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

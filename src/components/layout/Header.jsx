@@ -1,49 +1,102 @@
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header({ onMenuClick }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
 
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#e2e8f0] dark:bg-card/80 dark:border-border shadow-sm">
-      <div className="flex items-center justify-between h-[72px] lg:h-[80px] px-4 lg:px-8">
-        <div className="flex items-center gap-6 flex-1 min-w-0">
+    <header className="sticky top-0 z-30 border-b border-border bg-background transition-all duration-200">
+      <div className="flex items-center justify-between h-14 px-4 lg:px-6">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
           <button
             onClick={onMenuClick}
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors text-[#64748B] dark:text-muted-foreground"
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent transition-colors text-muted-foreground"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <div className="relative w-full max-w-md">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]">
-              search
-            </span>
-            <input
-              className="w-full pl-12 pr-4 py-2.5 bg-[#f1f5f9] dark:bg-muted border-none rounded-2xl focus:ring-2 focus:ring-[#0F766E]/20 text-sm text-[#0f172a] dark:text-foreground transition-all outline-none placeholder:text-[#64748B] dark:placeholder:text-muted-foreground"
-              placeholder={t('header.search')}
-              type="text"
-            />
+          <div className={`relative w-full max-w-sm transition-all duration-200 ${
+            searchFocused ? 'lg:max-w-lg' : ''
+          }`}>
+            <div className="flex items-center w-full h-9 pl-3 pr-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
+              <span className="material-symbols-outlined text-base text-muted-foreground mr-2">search</span>
+              <input
+                className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                placeholder={t('header.search')}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+              />
+              <kbd className="absolute right-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
+                ⌘K
+              </kbd>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <button className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors text-[#64748B] dark:text-muted-foreground relative" title={t('header.notifications')}>
-            <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-2.5 right-2.5 lg:top-3 lg:right-3 w-2 h-2 bg-[#dc2626] rounded-full border-2 border-white dark:border-card" />
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent transition-colors text-muted-foreground"
+            title={theme === 'dark' ? t('header.light_mode') : t('header.dark_mode')}
+          >
+            <span className="material-symbols-outlined text-xl">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
           </button>
-          <div className="h-8 lg:h-10 w-px bg-[#e2e8f0] dark:bg-muted mx-1" />
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-semibold text-[#0f172a] dark:text-foreground leading-tight">{user?.name || t('header.user')}</p>
-              <p className="text-[11px] text-[#64748B] dark:text-muted-foreground font-medium uppercase tracking-wider">{user?.role || ''}</p>
-            </div>
-            <button onClick={logout} className="flex items-center gap-2 group">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#f1f5f9] dark:bg-muted flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-sm border-2 border-white dark:border-card shadow-sm group-hover:ring-2 group-hover:ring-[#dc2626]/30 transition-all shrink-0">
+          <button
+            onClick={() => i18n.changeLanguage(i18n.language === 'fr' ? 'ar' : 'fr')}
+            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent transition-colors text-muted-foreground font-semibold text-xs tracking-wider"
+            title={i18n.language === 'fr' ? t('header.switch_ar') : t('header.switch_fr')}
+          >
+            {i18n.language === 'fr' ? 'AR' : 'FR'}
+          </button>
+          <button className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent transition-colors text-muted-foreground relative">
+            <span className="material-symbols-outlined text-xl">notifications</span>
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full ring-2 ring-card" />
+          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2 group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-teal-400 font-bold text-xs ring-1 ring-border group-hover:ring-teal-500/30 transition-all shrink-0">
                 {initials}
               </div>
+              <div className="text-left hidden sm:block">
+                <p className="text-sm font-semibold text-foreground leading-tight">{user?.name || t('header.user')}</p>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{user?.role || ''}</p>
+              </div>
             </button>
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-1 z-50">
+                <div className="px-3 py-2 border-b border-border">
+                  <p className="text-sm font-semibold text-foreground">{user?.name}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{user?.role || ''}</p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">logout</span>
+                  {t('header.logout')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

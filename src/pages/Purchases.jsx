@@ -94,8 +94,8 @@ export default function Purchases() {
     <div className="space-y-5 pb-8">
       <div className="flex justify-between items-center">
         <div className="py-2">
-          <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('purchases.title')}</h1>
-          <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('purchases.subtitle')}</p>
+          <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">{t('purchases.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('purchases.subtitle')}</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] dark:bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-[#0F766E]/90 transition-colors">
           <span className="material-symbols-outlined text-sm">add_circle</span>
@@ -153,7 +153,7 @@ export default function Purchases() {
         </Select>
       </div>
 
-      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
