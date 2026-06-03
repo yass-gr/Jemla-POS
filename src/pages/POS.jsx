@@ -521,7 +521,7 @@ export default function POS() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-5 gap-3">
             {[1,2,3,4,5,6,7,8,9,10].map(i => (
               <div key={i} className="bg-white dark:bg-card rounded-2xl p-3 shadow-sm border border-[#F1F5F9] dark:border-border animate-pulse flex flex-col">
                 <div className="aspect-square mb-2 rounded-xl bg-[#f8fafc] dark:bg-background" />
@@ -531,7 +531,7 @@ export default function POS() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3 pe-2 pb-6">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pe-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
@@ -743,7 +743,7 @@ export default function POS() {
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
+                    <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
                     <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / kg</span>
                     {item.discount > 0 && (
                       <Badge variant="destructive" className="text-[8px] px-1 py-0">
@@ -1121,7 +1121,6 @@ function CartPanel({
   submitting, onUpdateQty, onUpdatePrice, onClear, onConfirm, onHold,
   selectedCustomer, showCustomerDropdown, customerSearch, filteredCustomers,
   onToggleCustomer, onSelectCustomer, onClearCustomer, onCustomerSearch, onOpenNumpad,
-  printTicket, onTogglePrint,
   newCustomerName, newCustomerPhone, onNewCustomerName, onNewCustomerPhone, onAddNewCustomer,
   onToggleDiscountType, onToggleTaxExempt, selectedCustomerDebt,
 }) {
