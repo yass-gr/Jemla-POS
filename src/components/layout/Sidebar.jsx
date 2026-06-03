@@ -25,8 +25,8 @@ function NavItem({ to, icon, label, expanded, onClick }) {
           expanded ? 'gap-3.5' : 'gap-0 justify-center'
         } ${
           isActive
-            ? 'bg-white/[0.12] text-white'
-            : 'text-white/60 hover:text-white hover:bg-white/[0.08]'
+            ? 'bg-[#0F766E] text-white'
+            : 'text-white/60 hover:text-[#a3faef] hover:bg-[#0F766E]/10'
         }`
       }
     >
@@ -59,14 +59,14 @@ export default function Sidebar({ open, onClose }) {
         {/* Logo row */}
         <div className={`flex items-center h-14 px-3 mt-1 ${expanded ? 'justify-between' : 'justify-center'}`}>
           <div className={`flex items-center gap-3 overflow-hidden ${expanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'} transition-all duration-200`}>
-            <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[#171717] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>storefront</span>
+            <div className="w-7 h-7 rounded-lg bg-[#0F766E] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-white text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>storefront</span>
             </div>
-            <span className="text-sm font-semibold text-white whitespace-nowrap">Jemla POS</span>
+            <span className="text-sm font-semibold text-[#a3faef] whitespace-nowrap">Jemla POS</span>
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/40 hover:text-[#a3faef] hover:bg-[#0F766E]/10 transition-colors shrink-0"
           >
             <span className="material-symbols-outlined text-lg">{expanded ? 'chevron_left' : 'chevron_right'}</span>
           </button>
@@ -80,7 +80,7 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         {/* Bottom section */}
-        <div className="px-2 pb-3 mt-auto border-t border-white/[0.06] pt-2">
+        <div className="px-2 pb-3 mt-auto border-t border-[#0F766E]/20 pt-2">
           <NavItem to="/settings" icon="settings" label="Paramètres" expanded={expanded} onClick={onClose} />
         </div>
       </aside>
