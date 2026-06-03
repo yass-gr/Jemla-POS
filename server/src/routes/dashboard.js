@@ -58,11 +58,12 @@ router.get('/sales-trend', ensureAuthenticated, (req, res) => {
 router.get('/top-products', ensureAuthenticated, (req, res) => {
   const products = queryAll(`
     SELECT si.product_name as name, COUNT(*) as sales, si.price,
-           p.stock, p.image_url as img
+           p.stock, p.image_url as img,
+           COALESCE(SUM(si.qty * si.price), 0) as revenue
     FROM sale_items si
     JOIN products p ON si.product_id = p.id
     GROUP BY si.product_id
-    ORDER BY sales DESC
+    ORDER BY revenue DESC
     LIMIT 4
   `);
   res.json(products);

@@ -267,29 +267,23 @@ export default function Dashboard() {
           {/* Top Products */}
           <Card className="p-4">
             <h3 className="text-xs font-bold text-foreground mb-3 uppercase tracking-wider">{t('dashboard.top_products')}</h3>
-            <div className="space-y-3">
-              {topProducts.slice(0, 3).map((p, i) => {
-                const pct = Math.round((Number(p.sales) / maxSales) * 100);
-                return (
-                  <div key={p.name} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center text-muted-foreground font-bold text-xs shrink-0">
-                      {i + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <p className="text-xs font-semibold text-foreground truncate">{p.name}</p>
-                        <span className="text-[10px] text-muted-foreground font-medium">{pct}%</span>
-                      </div>
-                      <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
+            <div className="space-y-2">
+              {topProducts.slice(0, 3).map((p, i) => (
+                <div key={p.name} className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors">
+                  <div className="w-9 h-9 rounded-xl bg-muted overflow-hidden shrink-0 flex items-center justify-center">
+                    {p.img ? (
+                      <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="material-symbols-outlined text-base text-muted-foreground">inventory_2</span>
+                    )}
                   </div>
-                );
-              })}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate">{p.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{Number(p.sales).toFixed(0)} {t('dashboard.sales_unit')}</p>
+                  </div>
+                  <span className="text-xs font-bold text-teal-500 dark:text-teal-400 shrink-0">{Number(p.revenue).toFixed(0)} DH</span>
+                </div>
+              ))}
               {topProducts.length === 0 && (
                 <p className="text-muted-foreground text-xs text-center py-3">{t('dashboard.no_product_data')}</p>
               )}

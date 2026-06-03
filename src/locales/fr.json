@@ -85,6 +85,7 @@
   "dashboard.week": "Semaine",
   "dashboard.month": "Mois",
   "dashboard.recent_sales": "Ventes récentes",
+  "dashboard.sales_unit": "ventes",
   "dashboard.best_customer": "Meilleur client",
   "dashboard.total_amount": "Total: {{amount}}",
   "dashboard.no_customer_data": "Aucune donnée client",

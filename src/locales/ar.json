@@ -85,6 +85,7 @@
   "dashboard.week": "أسبوع",
   "dashboard.month": "شهر",
   "dashboard.recent_sales": "أحدث المبيعات",
+  "dashboard.sales_unit": "مبيعات",
   "dashboard.best_customer": "أفضل عميل",
   "dashboard.total_amount": "الإجمالي: {{amount}}",
   "dashboard.no_customer_data": "لا توجد بيانات للعملاء",
