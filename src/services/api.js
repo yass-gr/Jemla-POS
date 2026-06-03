@@ -101,6 +101,10 @@ export const api = {
     changeMyPassword: (currentPassword, newPassword) => request('/users/password/me', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }),
   },
 
+  notifications: {
+    list: () => request('/notifications'),
+  },
+
   backup: {
     download: () => `${BASE}/backup`,
   },

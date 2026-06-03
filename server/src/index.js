@@ -17,6 +17,7 @@ import favoriteRoutes from './routes/favorites.js';
 import settingsRoutes from './routes/settings.js';
 import usersRoutes from './routes/users.js';
 import backupRoutes from './routes/backup.js';
+import notificationRoutes from './routes/notifications.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -53,6 +54,7 @@ app.use('/api/favorites', favoriteRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/backup', backupRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
