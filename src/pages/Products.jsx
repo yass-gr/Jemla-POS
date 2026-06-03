@@ -245,7 +245,13 @@ export default function Products() {
                 const minQty = p.wholesale_min_qty || 10;
                 const isLow = p.stock < minQty;
                 return (
-                  <tr key={p.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+                  <tr 
+                    key={p.id} 
+                    id={`product-${p.id}`}
+                    className={`group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0 ${
+                      highlightedId === p.id ? 'bg-yellow-100 dark:bg-yellow-900/40 animate-pulse' : ''
+                    }`}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0 overflow-hidden">
@@ -360,7 +366,7 @@ export default function Products() {
                 <td className="border border-black p-2 text-sm font-semibold">{p.name}</td>
                 <td className="border border-black p-2 text-sm">{p.category}</td>
                 <td className="border border-black p-2 text-sm text-right font-bold">{p.price.toFixed(2)} DH</td>
-                <td className="border border-black p-2 text-sm text-right">{p.stock}</td>
+                <td className="border border-black p-2 text-sm text-right">{p.stock} kg</td>
                 <td className="border border-black p-2 text-sm text-center">kg</td>
               </tr>
             ))}
