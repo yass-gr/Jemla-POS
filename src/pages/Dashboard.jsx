@@ -172,11 +172,11 @@ export default function Dashboard() {
       </section>
 
       {/* KPI Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {kpiCards.map((card, i) => (
           <div
             key={i}
-            className={`h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between group bg-gradient-to-br ${card.gradient} transition-colors`}
+            className={`h-[105px] p-3 sm:p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between group bg-gradient-to-br ${card.gradient} transition-colors`}
           >
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em]">{card.title}</span>
@@ -187,9 +187,9 @@ export default function Dashboard() {
               )}
             </div>
             <div className="flex items-end justify-between">
-              <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{card.value}</span>
+              <span className="text-lg sm:text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{card.value}</span>
               {i === 0 ? sparklineBars() : (
-                <span className={`material-symbols-outlined text-2xl ${card.iconBg}`}>{card.icon}</span>
+                <span className={`material-symbols-outlined text-xl sm:text-2xl ${card.iconBg}`}>{card.icon}</span>
               )}
             </div>
           </div>
@@ -197,9 +197,9 @@ export default function Dashboard() {
       </section>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-5">
         {/* Vercel-style Chart */}
-        <Card className="lg:col-span-7 p-5 min-h-[300px] flex flex-col">
+        <Card className="lg:col-span-7 p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-base font-bold text-foreground">{t('dashboard.sales_analysis')}</h2>
