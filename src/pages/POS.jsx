@@ -20,6 +20,8 @@ export default function POS() {
   const [showCartMobile, setShowCartMobile] = useState(false);
   const [productSearch, setProductSearch] = useState('');
   const [favorites, setFavorites] = useState(new Set());
+  const [productPage, setProductPage] = useState(1);
+  const pageSize = 15;
 
   const [numpadOpen, setNumpadOpen] = useState(false);
   const [numpadTarget, setNumpadTarget] = useState(null);
@@ -89,6 +91,11 @@ export default function POS() {
     if (productSearch && !p.name.toLowerCase().includes(productSearch.toLowerCase())) return false;
     return true;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((productPage - 1) * pageSize, productPage * pageSize);
+
+  useEffect(() => { setProductPage(1); }, [activeCategory, productSearch]);
 
   const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(customerSearch.toLowerCase())
@@ -532,7 +539,7 @@ export default function POS() {
           </div>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pe-2 pb-6">
-            {filtered.map((p) => (
+            {paginated.map((p) => (
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
@@ -582,6 +589,29 @@ export default function POS() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-between px-1 pb-4 shrink-0">
+            <button
+              onClick={() => setProductPage(p => Math.max(1, p - 1))}
+              disabled={productPage === 1}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <span className="material-symbols-outlined text-sm">chevron_left</span>
+              {t('pos.prev_page')}
+            </button>
+            <span className="text-xs text-muted-foreground">
+              {productPage}/{totalPages}
+            </span>
+            <button
+              onClick={() => setProductPage(p => Math.min(totalPages, p + 1))}
+              disabled={productPage === totalPages}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            >
+              {t('pos.next_page')}
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
           </div>
         )}
       </div>
