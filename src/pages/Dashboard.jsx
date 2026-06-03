@@ -317,8 +317,8 @@ export default function Dashboard() {
                     {t('dashboard.total_amount', { amount: formatPrice(topCustomer.total_spent) })}
                   </p>
                   <div className="flex gap-3 mt-0.5 text-[10px] text-muted-foreground">
-                    <span>{topCustomer.total_orders} achats</span>
-                    <span>dette {formatPrice(topCustomer.debt_balance)}</span>
+                    <span>{t('dashboard.purchases_count', { count: topCustomer.total_orders })}</span>
+                    <span>{t('dashboard.debt_label')} {formatPrice(topCustomer.debt_balance)}</span>
                   </div>
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function Dashboard() {
 
           {/* Donut Chart */}
           <Card className="p-4">
-            <h3 className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">Paiements</h3>
+            <h3 className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">{t('dashboard.payments_title')}</h3>
             <div className="flex items-center gap-3">
               <div className="shrink-0">
                 <ResponsiveContainer width={100} height={100}>

@@ -165,7 +165,7 @@ export default function Header({ onMenuClick }) {
   const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background transition-all duration-200 print:hidden">
+    <header className="fixed top-0 inset-x-0 z-40 border-b border-border bg-background/95 backdrop-blur-md transition-all duration-200 print:hidden">
       <div className="flex items-center justify-between h-14 px-4 lg:px-6">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <button

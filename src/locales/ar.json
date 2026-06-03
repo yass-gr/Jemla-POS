@@ -65,6 +65,8 @@
   "dashboard.weekly_trends": "الاتجاهات الأسبوعية",
   "dashboard.week": "أسبوع",
   "dashboard.month": "شهر",
+  "dashboard.year": "سنة",
+  "dashboard.all_time": "الكل",
   "dashboard.this_week": "هذا الأسبوع",
   "dashboard.last_week": "الأسبوع الماضي",
   "dashboard.top_products": "أفضل المنتجات",
@@ -84,6 +86,9 @@
   "dashboard.status_held": "معلقة",
   "dashboard.status_cancelled": "ملغاة",
   "dashboard.no_recent_transactions": "لا توجد معاملات حديثة",
+  "dashboard.purchases_count": "{{count}} مشتريات",
+  "dashboard.debt_label": "دين",
+  "dashboard.payments_title": "المدفوعات",
 
   "pos.title": "نقطة البيع",
   "pos.search": "البحث عن منتج...",

@@ -488,7 +488,7 @@ export default function POS() {
   const changeDue = amountReceived > total ? amountReceived - total : 0;
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4 lg:gap-gutter h-full min-h-0">
+    <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4 lg:gap-gutter h-full min-h-0 pb-20 lg:pb-0">
 
       {/* Products */}
       <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
@@ -718,9 +718,19 @@ export default function POS() {
         />
       </div>
 
-      {/* Mobile cart button + drawer */}
+      {/* Mobile cart button - always fixed at bottom */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white/95 dark:bg-card/95 backdrop-blur-md border-t border-[#F1F5F9] dark:border-border shadow-2xl print:hidden">
+        <Button
+          onClick={() => setShowCartMobile(true)}
+          className="w-full h-auto py-2.5 rounded-xl text-sm"
+        >
+          {t('pos.cart')} ({totalItems})
+        </Button>
+      </div>
+
+      {/* Mobile cart drawer */}
       {cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white dark:bg-card border-t border-[#F1F5F9] dark:border-border shadow-2xl">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white/80 dark:bg-card/80 backdrop-blur-md border-t border-[#F1F5F9] dark:border-border shadow-2xl">
           <Button
             onClick={() => setShowCartMobile(true)}
             className="w-full h-auto py-2.5 rounded-xl text-sm"

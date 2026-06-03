@@ -44,7 +44,7 @@ export default function AppLayout({ children }) {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-[60px] print:!ml-0 print:w-full">
         <Header onMenuClick={() => setSidebarOpen(prev => !prev)} />
-        <main ref={mainRef} className="flex-1 p-4 sm:p-6 lg:p-gutter space-y-4 sm:space-y-6 lg:space-y-gutter overflow-y-auto print:overflow-visible print:p-0 print:m-0">
+        <main ref={mainRef} className="flex-1 p-4 sm:p-6 lg:p-gutter pt-20 sm:pt-20 lg:pt-[72px] space-y-4 sm:space-y-6 lg:space-y-gutter overflow-y-auto print:overflow-visible print:p-0 print:m-0">
           {children}
         </main>
         

@@ -19,7 +19,7 @@ export default function Reports() {
   const [topProducts, setTopProducts] = useState([]);
   const [salesByCategory, setSalesByCategory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState('week');
+  const [period, setPeriod] = useState('month');
 
   useEffect(() => {
     setLoading(true);
@@ -206,8 +206,8 @@ export default function Reports() {
                         innerRadius={44}
                         outerRadius={68}
                         dataKey="revenue"
-                        strokeWidth={2}
-                        stroke="#09090B"
+                        strokeWidth={0}
+                        stroke="none"
                         paddingAngle={3}
                       >
                         {topProducts.slice(0, 6).map((_, idx) => (
@@ -227,12 +227,6 @@ export default function Reports() {
                       />
                     </PieChart>
                   </ResponsiveContainer>
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="text-center">
-                      <p className="text-lg font-extrabold text-foreground">{topProductShare}%</p>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('dashboard.best_customer')}</p>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div className="space-y-1">
@@ -313,8 +307,8 @@ export default function Reports() {
                         innerRadius={48}
                         outerRadius={72}
                         dataKey="revenue"
-                        strokeWidth={2}
-                        stroke="#09090B"
+                        strokeWidth={0}
+                        stroke="none"
                         paddingAngle={3}
                       >
                         {salesByCategory.map((_, idx) => (
