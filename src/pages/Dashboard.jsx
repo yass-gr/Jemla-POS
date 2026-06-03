@@ -111,6 +111,8 @@ export default function Dashboard() {
     {
       title: t('dashboard.daily_sales'),
       value: stats ? `${formatPrice(stats.todaySales)} DH` : "0 DH",
+      badge: stats ? `${stats.todayTransactions} transaction${stats.todayTransactions > 1 ? 's' : ''}` : "—",
+      badgeColor: trendPercent != null && trendPercent > 0 ? "text-emerald-600 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/40" : "text-slate-600 bg-slate-100 dark:text-muted-foreground dark:bg-muted",
       icon: "payments",
       gradient: "from-white to-emerald-500/10 dark:from-card dark:to-emerald-900/60",
       sparkColor: "bg-emerald-400 dark:bg-emerald-500",
@@ -171,6 +173,11 @@ export default function Dashboard() {
           >
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em]">{card.title}</span>
+              {card.badge && (
+                <span className={`flex items-center font-bold text-[10px] px-2 py-0.5 rounded-full ${card.badgeColor}`}>
+                  {card.badge}
+                </span>
+              )}
             </div>
             <div className="flex items-end justify-between">
               <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{card.value}</span>
