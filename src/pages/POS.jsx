@@ -46,6 +46,7 @@ export default function POS() {
   const [showHeldOrders, setShowHeldOrders] = useState(false);
   const [recentSales, setRecentSales] = useState([]);
   const [showRecentSales, setShowRecentSales] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const [newCustomerName, setNewCustomerName] = useState('');
   const [newCustomerPhone, setNewCustomerPhone] = useState('');
@@ -83,6 +84,48 @@ export default function POS() {
       settingsRef.current = s;
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  // Keyboard shortcuts for POS
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // F1 - Show shortcuts help
+      if (e.key === 'F1') {
+        e.preventDefault();
+        setShowShortcuts(prev => !prev);
+      }
+      // F2 - Focus search
+      if (e.key === 'F2') {
+        e.preventDefault();
+        document.getElementById('product-search-input')?.focus();
+      }
+      // F4 - Show/hide cart on mobile
+      if (e.key === 'F4') {
+        e.preventDefault();
+        setShowCartMobile(prev => !prev);
+      }
+      // Escape - Close modals
+      if (e.key === 'Escape') {
+        setShowCustomerDropdown(false);
+        setShowHeldOrders(false);
+        setShowRecentSales(false);
+        setShowShortcuts(false);
+        if (showPaymentModal) setShowPaymentModal(false);
+      }
+      // Ctrl+H - Hold order
+      if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        if (cart.length > 0) handleHoldOrder();
+      }
+      // Ctrl+P - Payment
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        if (cart.length > 0) openPaymentModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cart.length, showPaymentModal]);
 
   const categories = ['Tous', ...new Set(products.map(p => p.category))];
   const filtered = products.filter(p => {
@@ -296,6 +339,7 @@ export default function POS() {
       setCart([]);
       setShowCartMobile(false);
       toast.success(t('pos.sale_success'));
+      window.dispatchEvent(new Event('notifications:refresh'));
 
       const [prods, recent] = await Promise.all([
         api.products.list(),
@@ -362,6 +406,7 @@ export default function POS() {
       loadHeldOrders();
       setShowHeldOrders(false);
       toast.success(t('pos.restore_success'));
+      window.dispatchEvent(new Event('notifications:refresh'));
     } catch (err) {
       toast.error(t('pos.error') + err.message);
     }
@@ -438,6 +483,13 @@ export default function POS() {
           <h2 className="font-bold text-[18px] text-[#0f172a] dark:text-foreground">
             {t('pos.products')} <span className="text-[#64748B] dark:text-muted-foreground font-normal text-sm ms-2">({filtered.length} {t('pos.articles')})</span>
           </h2>
+          <button 
+            onClick={() => setShowShortcuts(true)}
+            className="p-2 hover:bg-surface-container rounded-lg transition-colors group"
+            title={t('pos.shortcuts') + ' (F1)'}
+          >
+            <span className="material-symbols-outlined text-xl text-muted-foreground group-hover:text-foreground">keyboard</span>
+          </button>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-3 shrink-0">
           {categories.map((cat) => (
@@ -1142,6 +1194,51 @@ export default function POS() {
         onConfirm={handleNumpadConfirm}
         onClose={handleNumpadClose}
       />
+
+      {/* Keyboard Shortcuts Help Modal */}
+      {showShortcuts && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowShortcuts(false)}>
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#F1F5F9] dark:border-border" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-foreground">{t('pos.shortcuts')}</h3>
+              <button onClick={() => setShowShortcuts(false)} className="p-2 hover:bg-surface-container rounded-lg transition-colors">
+                <span className="material-symbols-outlined text-xl text-muted-foreground">close</span>
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Aide Raccourcis</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">F1</kbd>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Rechercher Produit</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">F2</kbd>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Afficher/Masquer Panier</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">F4</kbd>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Mettre en Attente</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">Ctrl+H</kbd>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Paiement</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">Ctrl+P</kbd>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+                <span className="text-sm text-foreground">Fermer Modales</span>
+                <kbd className="px-2 py-1 bg-white dark:bg-background border border-border rounded text-xs font-mono">Esc</kbd>
+              </div>
+            </div>
+            <div className="mt-6 pt-4 border-t border-border">
+              <p className="text-xs text-muted-foreground text-center">
+                Appuyez sur F1 pour masquer cette aide
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

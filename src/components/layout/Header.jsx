@@ -50,9 +50,28 @@ export default function Header({ onMenuClick }) {
         .catch(() => {});
     }
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 60000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchNotifs, 10000);
+    window.addEventListener('notifications:refresh', fetchNotifs);
+    window.addEventListener('focus', fetchNotifs);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('notifications:refresh', fetchNotifs);
+      window.removeEventListener('focus', fetchNotifs);
+    };
   }, []);
+
+  useEffect(() => {
+    if (showNotif) {
+      api.notifications.list()
+        .then(data => {
+          setNotifications(data);
+          const count = (data.lowStock?.length || 0) + (data.outOfStock?.length || 0) +
+            (data.debtors?.length || 0) + (data.heldSales?.length || 0);
+          setNotifCount(count);
+        })
+        .catch(() => {});
+    }
+  }, [showNotif]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -159,8 +178,8 @@ export default function Header({ onMenuClick }) {
             searchFocused ? 'lg:max-w-lg' : ''
           }`} ref={searchRef}>
             <form onSubmit={handleSearchSubmit} className="relative">
-              <div className="flex items-center w-full h-9 ps-3 pe-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
-                <span className="material-symbols-outlined text-base text-muted-foreground me-2">search</span>
+              <div className="flex items-center w-full h-9 ps-3 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all overflow-hidden">
+                <span className="material-symbols-outlined text-base text-muted-foreground me-2 shrink-0">search</span>
                 <input
                   type="text"
                   value={searchQuery}
@@ -170,7 +189,7 @@ export default function Header({ onMenuClick }) {
                     if (searchQuery.trim()) setShowSuggestions(true);
                   }}
                   onBlur={() => setSearchFocused(false)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
                   placeholder={t('header.search')}
                 />
                 {searchQuery && (
