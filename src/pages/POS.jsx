@@ -4,10 +4,12 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NumpadModal from '@/components/ui/NumpadModal';
+import { useTranslation } from 'react-i18next';
 
 const TAX_RATE = 0.05;
 
 export default function POS() {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Tous');
@@ -171,7 +173,7 @@ export default function POS() {
     const currentValue = type === 'price' ? item.price : type === 'discount' ? item.discount : item.qty;
     setNumpadTarget({ type, productId });
     setNumpadInitValue(currentValue);
-    const titles = { price: 'Modifier le prix', qty: 'Modifier la quantité', discount: 'Remise' };
+    const titles = { price: t('pos.edit_price'), qty: t('pos.edit_qty'), discount: t('pos.discount') };
     setNumpadTitle(titles[type] || '');
     setNumpadAllowDecimal(type !== 'qty');
     setNumpadOpen(true);
@@ -210,7 +212,7 @@ export default function POS() {
         payment_method: paymentMethod,
         amount_paid: amountReceived || 0,
         discount_total: saleDiscount,
-        discount_note: saleDiscount > 0 ? 'Remise manuelle' : null,
+        discount_note: saleDiscount > 0 ? t('pos.discount_note') : null,
         note: saleNote || null,
         delivery_address: deliveryAddress || null,
         delivery_date: deliveryDate || null,
@@ -231,7 +233,7 @@ export default function POS() {
       setShowPaymentModal(false);
       setCart([]);
       setShowCartMobile(false);
-      toast.success('Vente confirmée !');
+      toast.success(t('pos.sale_success'));
 
       const [prods, recent] = await Promise.all([
         api.products.list(),
@@ -241,7 +243,7 @@ export default function POS() {
       setRecentSales(recent);
       setShowInvoiceModal(true);
     } catch (err) {
-      toast.error('Erreur: ' + err.message);
+      toast.error(t('pos.error') + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -264,11 +266,11 @@ export default function POS() {
           original_price: item.original_price,
         })),
       });
-      toast.success('Commande suspendue');
+      toast.success(t('pos.suspend_success'));
       setCart([]);
       loadHeldOrders();
     } catch (err) {
-      toast.error('Erreur: ' + err.message);
+      toast.error(t('pos.error') + err.message);
     }
   }
 
@@ -293,9 +295,9 @@ export default function POS() {
       await api.sales.restore(sale.id);
       loadHeldOrders();
       setShowHeldOrders(false);
-      toast.success('Commande restaurée');
+      toast.success(t('pos.restore_success'));
     } catch (err) {
-      toast.error('Erreur: ' + err.message);
+      toast.error(t('pos.error') + err.message);
     }
   }
 
@@ -317,7 +319,7 @@ export default function POS() {
         setFavorites(prev => { const n = new Set(prev); n.add(productId); return n; });
       }
     } catch (err) {
-      toast.error('Erreur: ' + err.message);
+      toast.error(t('pos.error') + err.message);
     }
   }
 
@@ -330,9 +332,9 @@ export default function POS() {
       setNewCustomerName('');
       setNewCustomerPhone('');
       setShowCustomerDropdown(false);
-      toast.success('Client ajouté');
+      toast.success(t('pos.customer_added'));
     } catch (err) {
-      toast.error('Erreur: ' + err.message);
+      toast.error(t('pos.error') + err.message);
     }
   }
 
@@ -350,8 +352,8 @@ export default function POS() {
       {/* Products */}
       <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
         <div className="flex items-center justify-between mb-3 shrink-0">
-          <h2 className="font-headline-md text-headline-md text-on-surface">
-            Produits <span className="text-on-surface-variant font-normal text-body-lg ml-2">({filtered.length} Articles)</span>
+          <h2 className="font-bold text-[18px] text-[#0f172a] dark:text-foreground">
+            {t('pos.products')} <span className="text-[#64748B] dark:text-muted-foreground font-normal text-sm ml-2">({filtered.length} {t('pos.articles')})</span>
           </h2>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-3 shrink-0">
@@ -361,48 +363,48 @@ export default function POS() {
               onClick={() => setActiveCategory(cat)}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shrink-0 text-sm whitespace-nowrap ${
                 activeCategory === cat
-                  ? 'bg-primary text-on-primary shadow'
-                  : 'text-on-surface-variant hover:bg-surface-container border border-outline-variant/20'
+                  ? 'bg-[#0F766E] dark:bg-teal-600 text-white shadow-sm'
+                  : 'text-[#64748B] dark:text-muted-foreground hover:bg-[#f8fafc] dark:hover:bg-accent border border-[#F1F5F9] dark:border-border'
               }`}
             >
               <span className="material-symbols-outlined text-sm">
                 {cat === 'Tous' ? 'apps' : cat === 'Favoris' ? 'favorite' : cat === 'Fruits' ? 'nutrition' : 'eco'}
               </span>
-              <span className="text-label-md whitespace-nowrap">{cat}</span>
+              <span className="text-[11px] font-medium whitespace-nowrap">{cat}</span>
             </button>
           ))}
           <div className="relative shrink-0 ml-auto sticky right-0">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">search</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#64748B] dark:text-muted-foreground">search</span>
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder={t('pos.search')}
               value={productSearch}
               onChange={e => setProductSearch(e.target.value)}
-              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-surface-container rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
             />
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="flex items-center gap-4 mb-3 text-xs text-on-surface-variant shrink-0">
-          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">today</span> Aujourd'hui: {recentSales.filter(s => new Date(s.created_at).toDateString() === new Date().toDateString()).length} ventes</span>
-          <button onClick={() => { loadHeldOrders(); setShowHeldOrders(prev => !prev); }} className="flex items-center gap-1 hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-sm">pause_circle</span> Suspendues ({heldOrders.length})
+        <div className="flex items-center gap-4 mb-3 text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
+          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">today</span> {t('pos.today')}: {recentSales.filter(s => new Date(s.created_at).toDateString() === new Date().toDateString()).length} {t('pos.sales')}</span>
+          <button onClick={() => { loadHeldOrders(); setShowHeldOrders(prev => !prev); }} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors">
+            <span className="material-symbols-outlined text-sm">pause_circle</span> {t('pos.suspended')} ({heldOrders.length})
           </button>
-          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-primary transition-colors ml-auto">
-            <span className="material-symbols-outlined text-sm">history</span> Récentes
+          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors ml-auto">
+            <span className="material-symbols-outlined text-sm">history</span> {t('pos.recent')}
           </button>
         </div>
 
         {/* Recent sales panel */}
         {showRecentSales && (
-          <div className="mb-3 bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-3 shrink-0 max-h-48 overflow-y-auto">
-            <h3 className="text-xs font-bold text-on-surface mb-2">Dernières ventes</h3>
+          <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border p-3 shrink-0 max-h-48 overflow-y-auto">
+            <h3 className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-2">{t('pos.recent_sales')}</h3>
             {recentSales.map(s => (
-              <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-outline-variant/10 last:border-0">
-                <span className="text-on-surface-variant">#{String(s.id).padStart(4, '0')}</span>
-                <span className="text-on-surface font-medium">{s.customer_name}</span>
-                <span className="text-primary font-bold">{s.total.toFixed(2)} DH</span>
+              <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-[#F1F5F9] dark:border-border last:border-0">
+                <span className="text-[#64748B] dark:text-muted-foreground">#{String(s.id).padStart(4, '0')}</span>
+                <span className="text-[#0f172a] dark:text-foreground font-medium">{s.customer_name}</span>
+                <span className="text-[#0F766E] dark:text-teal-400 font-bold">{s.total.toFixed(2)} DH</span>
               </div>
             ))}
           </div>
@@ -411,19 +413,19 @@ export default function POS() {
         {/* Held orders panel */}
         {showHeldOrders && (
           <div className="mb-3 bg-amber-50/80 dark:bg-amber-950/30 rounded-xl border border-amber-200/50 p-3 shrink-0 max-h-48 overflow-y-auto">
-            <h3 className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-2">Commandes suspendues</h3>
+            <h3 className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-2">{t('pos.suspended')}</h3>
             {heldOrders.length === 0 ? (
-              <p className="text-xs text-amber-600/60">Aucune commande suspendue</p>
+              <p className="text-xs text-amber-600/60">{t('pos.no_suspended')}</p>
             ) : (
               heldOrders.map(s => (
                 <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-amber-200/20 last:border-0">
                   <div>
                     <span className="text-amber-800 dark:text-amber-300 font-medium">{s.customer_name}</span>
-                    <span className="text-amber-600/60 ml-2">{s.items?.length || 0} articles</span>
+                    <span className="text-amber-600/60 ml-2">{s.items?.length || 0} {t('pos.items')}</span>
                   </div>
                   <div className="flex gap-2">
                     <span className="text-amber-800 dark:text-amber-300 font-bold">{s.total.toFixed(2)} DH</span>
-                    <button onClick={() => restoreHeldOrder(s)} className="text-primary hover:underline text-xs">Restaurer</button>
+                    <button onClick={() => restoreHeldOrder(s)} className="text-[#0F766E] dark:text-teal-400 hover:underline text-xs">{t('pos.restore')}</button>
                   </div>
                 </div>
               ))
@@ -434,10 +436,10 @@ export default function POS() {
         {loading ? (
           <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3">
             {[1,2,3,4,5,6,7,8,9,10].map(i => (
-              <div key={i} className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 animate-pulse flex flex-col">
-                <div className="aspect-square mb-2 rounded-xl bg-surface-container" />
-                <div className="h-2 w-12 bg-surface-container mx-auto mb-1 rounded" />
-                <div className="h-3 w-16 bg-surface-container mx-auto rounded" />
+              <div key={i} className="bg-white dark:bg-card rounded-2xl p-3 shadow-sm border border-[#F1F5F9] dark:border-border animate-pulse flex flex-col">
+                <div className="aspect-square mb-2 rounded-xl bg-[#f8fafc] dark:bg-background" />
+                <div className="h-2 w-12 bg-[#f8fafc] dark:bg-background mx-auto mb-1 rounded" />
+                <div className="h-3 w-16 bg-[#f8fafc] dark:bg-background mx-auto rounded" />
               </div>
             ))}
           </div>
@@ -447,24 +449,24 @@ export default function POS() {
               <div
                 key={p.id}
                 onClick={() => addToCart(p)}
-                className="group bg-surface-container-lowest rounded-2xl p-3 shadow-sm hover:shadow-lg transition-all border border-outline-variant/20 relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
+                className="group bg-white dark:bg-card rounded-2xl p-3 shadow-sm hover:shadow-lg transition-all border border-[#F1F5F9] dark:border-border relative overflow-hidden cursor-pointer active:scale-[0.97] flex flex-col"
               >
                 {p.stock <= 0 && (
-                  <div className="absolute inset-0 z-10 bg-surface-container-lowest/60 flex items-center justify-center rounded-2xl">
-                    <Badge variant="destructive" className="text-[10px] px-3 py-1">Rupture</Badge>
+                  <div className="absolute inset-0 z-10 bg-white/60 dark:bg-card/60 flex items-center justify-center rounded-2xl">
+                    <Badge variant="destructive" className="text-[10px] px-3 py-1">{t('pos.out_of_stock')}</Badge>
                   </div>
                 )}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleFavorite(p.id); }}
-                  className={`absolute top-1.5 left-1.5 z-10 p-0.5 rounded-full transition-colors ${favorites.has(p.id) ? 'text-error' : 'text-on-surface-variant/30 opacity-0 group-hover:opacity-100'}`}
+                  className={`absolute top-1.5 left-1.5 z-10 p-0.5 rounded-full transition-colors ${favorites.has(p.id) ? 'text-[#ef4444] dark:text-red-400' : 'text-[#64748B]/30 dark:text-muted-foreground/30 opacity-0 group-hover:opacity-100'}`}
                 >
                   <span className="material-symbols-outlined text-sm">{favorites.has(p.id) ? 'favorite' : 'favorite_border'}</span>
                 </button>
-                <div className="aspect-square mb-1.5 rounded-xl overflow-hidden bg-surface-container flex items-center justify-center relative">
+                <div className="aspect-square mb-1.5 rounded-xl overflow-hidden bg-[#f8fafc] dark:bg-background flex items-center justify-center relative">
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
-                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-primary/30">inventory_2</span>
+                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#0F766E]/30 dark:text-teal-400/30">inventory_2</span>
                   )}
                   {p.stock > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
@@ -475,18 +477,18 @@ export default function POS() {
                     </div>
                   )}
                 </div>
-                <p className="text-[9px] text-on-surface-variant uppercase tracking-wider text-center truncate">{p.category}</p>
-                <h3 className="font-bold text-xs text-on-surface text-center truncate">{p.name}</h3>
+                <p className="text-[9px] text-[#64748B] dark:text-muted-foreground uppercase tracking-wider text-center truncate">{p.category}</p>
+                <h3 className="font-bold text-xs text-[#0f172a] dark:text-foreground text-center truncate">{p.name}</h3>
                 <div className="flex items-center justify-between mt-1">
                   <div className="flex flex-col">
-                    <p className="text-primary font-bold text-[13px]">{p.price.toFixed(2)} <span className="text-[9px]">DH</span></p>
+                    <p className="text-[#0F766E] dark:text-teal-400 font-bold text-[13px]">{p.price.toFixed(2)} <span className="text-[9px]">DH</span></p>
                     {p.price_wholesale && (
-                      <p className="text-[9px] text-on-surface-variant">Gros: {p.price_wholesale.toFixed(2)} DH</p>
+                      <p className="text-[9px] text-[#64748B] dark:text-muted-foreground">{t('pos.wholesale')}: {p.price_wholesale.toFixed(2)} DH</p>
                     )}
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); addToCart(p); }}
-                    className="bg-primary-container text-on-primary w-7 h-7 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform"
+                    className="bg-[#0F766E] dark:bg-teal-600 text-white w-7 h-7 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform"
                   >
                     <span className="material-symbols-outlined text-xl">add</span>
                   </button>
@@ -531,109 +533,109 @@ export default function POS() {
 
       {/* Mobile cart button + drawer */}
       {cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-surface border-t border-outline-variant/30 shadow-2xl">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white dark:bg-card border-t border-[#F1F5F9] dark:border-border shadow-2xl">
           <Button
             onClick={() => setShowCartMobile(true)}
             className="w-full h-auto py-2.5 rounded-xl text-sm"
           >
             <span className="material-symbols-outlined text-sm">shopping_cart</span>
-            Panier ({totalItems}) — {total.toFixed(2)} DH
+            {t('pos.cart')} ({totalItems}) — {total.toFixed(2)} DH
           </Button>
         </div>
       )}
 
       {/* Mobile cart drawer */}
       {showCartMobile && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-surface">
-          <div className="flex items-center justify-between p-4 border-b border-outline-variant/30">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Panier</h2>
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-white dark:bg-card">
+          <div className="flex items-center justify-between p-4 border-b border-[#F1F5F9] dark:border-border">
+            <h2 className="font-bold text-[15px] text-[#0f172a] dark:text-foreground">{t('pos.cart')}</h2>
             <button
               onClick={() => setShowCartMobile(false)}
-              className="p-2 hover:bg-surface-container-high rounded-full transition-colors"
+              className="p-2 hover:bg-[#f1f5f9] dark:hover:bg-accent rounded-full transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
-          <div className="px-3 pt-3 pb-1 border-b border-outline-variant/20">
+          <div className="px-3 pt-3 pb-1 border-b border-[#F1F5F9] dark:border-border">
             <div className="relative">
               <div
-                className="flex items-center gap-2 bg-surface-container p-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
+                className="flex items-center gap-2 bg-[#f8fafc] dark:bg-background p-2 rounded-xl cursor-pointer hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors"
                 onClick={() => setShowCustomerDropdown(prev => !prev)}
               >
-                <div className="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-xs text-secondary">person</span>
+                <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-xs text-[#0F766E] dark:text-teal-400">person</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-xs text-on-surface truncate leading-tight">
-                    {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
+                  <p className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate leading-tight">
+                    {selectedCustomer ? selectedCustomer.name : t('pos.general')}
                   </p>
                 </div>
-                <span className="material-symbols-outlined text-xs text-on-surface-variant shrink-0">
+                <span className="material-symbols-outlined text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
                   {showCustomerDropdown ? 'expand_less' : 'expand_more'}
                 </span>
               </div>
               {showCustomerDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl shadow-xl overflow-hidden">
                   <div className="p-2">
                     <input
                       type="text"
-                      placeholder="Rechercher un client..."
+                      placeholder={t('pos.search_customer')}
                       value={customerSearch}
                       onChange={e => setCustomerSearch(e.target.value)}
-                      className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                       autoFocus
                     />
                   </div>
                   <div className="max-h-40 overflow-y-auto">
                     <button
                       onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                      className="w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2"
                     >
-                      <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-[#f1f5f9] dark:bg-muted flex items-center justify-center">
                         <span className="material-symbols-outlined text-xs">person_off</span>
                       </div>
                       <div>
-                        <p className="font-semibold text-xs">Client Libre</p>
-                        <p className="text-[10px] text-on-surface-variant">Vente sans compte</p>
+                        <p className="font-semibold text-xs">{t('pos.general')}</p>
+                        <p className="text-[10px] text-[#64748B] dark:text-muted-foreground">{t('pos.without_account')}</p>
                       </div>
                     </button>
                     {filteredCustomers.map(c => (
                       <button
                         key={c.id}
                         onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                        className={`w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2 ${
-                          selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''
+                        className={`w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${
+                          selectedCustomer?.id === c.id ? 'bg-[#0F766E]/10 dark:bg-teal-500/20' : ''
                         }`}
                       >
-                        <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                          <span className="text-[10px] font-bold text-secondary">
+                        <div className="w-6 h-6 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-[10px] font-bold text-[#0F766E] dark:text-teal-400">
                             {c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                           </span>
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-xs truncate">{c.name}</p>
-                          <p className="text-[10px] text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                          <p className="text-[10px] text-[#64748B] dark:text-muted-foreground truncate">{c.phone || t('pos.no_phone')}</p>
                         </div>
                       </button>
                     ))}
-                    <div className="border-t border-outline-variant/20 p-2 space-y-2">
-                      <p className="text-[10px] text-on-surface-variant font-semibold">Nouveau client</p>
+                    <div className="border-t border-[#F1F5F9]/50 dark:border-border/50 p-2 space-y-2">
+                      <p className="text-[10px] text-[#64748B] dark:text-muted-foreground font-semibold">{t('pos.new_customer')}</p>
                       <input
                         type="text"
-                        placeholder="Nom"
+                        placeholder={t('pos.name')}
                         value={newCustomerName}
                         onChange={e => setNewCustomerName(e.target.value)}
-                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                       />
                       <input
                         type="text"
-                        placeholder="Téléphone (optionnel)"
+                        placeholder={t('pos.phone_optional')}
                         value={newCustomerPhone}
                         onChange={e => setNewCustomerPhone(e.target.value)}
-                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                       />
                       <Button size="sm" className="w-full text-xs rounded-lg" onClick={() => { addNewCustomer(); setShowCustomerDropdown(false); }}>
-                        Ajouter
+                        {t('pos.add')}
                       </Button>
                     </div>
                   </div>
@@ -643,72 +645,72 @@ export default function POS() {
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {cart.length === 0 ? (
-              <p className="text-on-surface-variant text-xs text-center py-8">Ajoutez des produits depuis la liste</p>
+              <p className="text-[#64748B] dark:text-muted-foreground text-xs text-center py-8">{t('pos.add_items')}</p>
             ) : (
               cart.map((item) => (
-                <div key={item.product_id} className="bg-surface-container rounded-lg p-2.5">
+                <div key={item.product_id} className="bg-[#f8fafc] dark:bg-background rounded-xl p-2.5">
                   <div className="flex justify-between items-start mb-2">
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
+                      <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right">{item.price.toFixed(2)}</button>
-                        <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
+                        <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-right">{item.price.toFixed(2)}</button>
+                        <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
                         {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => openNumpad('discount', item.product_id)} className="text-primary hover:bg-primary-container/10 p-0.5 rounded">
+                      <button onClick={() => openNumpad('discount', item.product_id)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded">
                         <span className="material-symbols-outlined text-sm">sell</span>
                       </button>
-                      <button onClick={() => updateQty(item.product_id, -item.qty)} className="text-error hover:bg-error-container/20 p-0.5 rounded">
+                      <button onClick={() => updateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded">
                         <span className="material-symbols-outlined text-sm">delete</span>
                       </button>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 bg-surface-container-lowest rounded-md p-0.5">
-                      <button onClick={() => updateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90">
+                    <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">
+                      <button onClick={() => updateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
                         <span className="material-symbols-outlined text-sm">remove</span>
                       </button>
-                      <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</button>
-                      <button onClick={() => updateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90">
+                      <button onClick={() => openNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
+                      <button onClick={() => updateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
                         <span className="material-symbols-outlined text-sm">add</span>
                       </button>
                     </div>
-                    <p className="font-bold text-xs text-primary">{(item.price * item.qty).toFixed(2)} DH</p>
+                    <p className="font-bold text-xs text-[#0F766E] dark:text-teal-400">{(item.price * item.qty).toFixed(2)} DH</p>
                   </div>
                 </div>
               ))
             )}
           </div>
-          <div className="p-4 bg-surface-container-low border-t border-outline-variant/30">
+          <div className="p-4 bg-[#f8fafc] dark:bg-background border-t border-[#F1F5F9] dark:border-border">
             <div className="space-y-1 mb-3">
               <div className="flex justify-between text-xs">
-                <span className="text-on-surface-variant">Sous-total</span>
-                <span className="font-semibold text-on-surface">{subtotal.toFixed(2)} DH</span>
+                <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span>
+                <span className="font-semibold text-[#0f172a] dark:text-foreground">{subtotal.toFixed(2)} DH</span>
               </div>
               {totalDiscount > 0 && (
                 <div className="flex justify-between text-xs">
-                  <span className="text-error">Remise</span>
-                  <span className="font-semibold text-error">-{totalDiscount.toFixed(2)} DH</span>
+                  <span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span>
+                  <span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span>
                 </div>
               )}
               <div className="flex justify-between text-xs">
-                <span className="text-on-surface-variant">TVA (5%)</span>
-                <span className="font-semibold text-on-surface">{tax.toFixed(2)} DH</span>
+                <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.tax')}</span>
+                <span className="font-semibold text-[#0f172a] dark:text-foreground">{tax.toFixed(2)} DH</span>
               </div>
-              <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-outline-variant/20">
-                <span className="font-bold text-sm text-on-surface">Total</span>
-                <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
+              <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-[#F1F5F9] dark:border-border">
+                <span className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.total')}</span>
+                <span className="font-bold text-sm text-[#0F766E] dark:text-teal-400">{total.toFixed(2)} DH</span>
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={clearCart} className="flex-1 py-2 rounded-xl text-sm">Vider</Button>
+              <Button variant="outline" onClick={clearCart} className="flex-1 py-2 rounded-xl text-sm">{t('pos.clear')}</Button>
               <Button variant="outline" onClick={holdOrder} className="py-2 rounded-xl text-sm" disabled={cart.length === 0}>
                 <span className="material-symbols-outlined text-sm">pause</span>
               </Button>
               <Button onClick={openPaymentModal} disabled={cart.length === 0} className="flex-1 py-2 rounded-xl text-sm">
-                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>...</> : 'Confirmer'}
+                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>...</> : t('pos.confirm')}
               </Button>
             </div>
           </div>
@@ -718,10 +720,10 @@ export default function POS() {
       {/* Payment Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
-            <div className="p-5 border-b border-outline-variant/30 flex justify-between items-center">
-              <h2 className="font-bold text-lg text-on-surface">Paiement</h2>
-              <button onClick={() => setShowPaymentModal(false)} className="p-1 hover:bg-surface-container rounded-full">
+          <div className="bg-white dark:bg-card rounded-[20px] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+            <div className="p-5 border-b border-[#F1F5F9] dark:border-border flex justify-between items-center">
+              <h2 className="font-bold text-lg text-[#0f172a] dark:text-foreground">{t('pos.checkout')}</h2>
+              <button onClick={() => setShowPaymentModal(false)} className="p-1 hover:bg-[#f8fafc] dark:hover:bg-accent rounded-full">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
@@ -730,21 +732,21 @@ export default function POS() {
 
               {/* Payment method */}
               <div>
-                <p className="text-xs font-semibold text-on-surface-variant mb-2">Méthode de paiement</p>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-2">{t('pos.payment_method')}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { key: 'cash', label: 'Espèces', icon: 'payments' },
-                    { key: 'card', label: 'Carte', icon: 'credit_card' },
-                    { key: 'check', label: 'Chèque', icon: 'receipt' },
-                    { key: 'credit', label: 'Crédit', icon: 'account_balance' },
+                    { key: 'cash', label: t('pos.cash'), icon: 'payments' },
+                    { key: 'card', label: t('pos.card'), icon: 'credit_card' },
+                    { key: 'check', label: t('pos.check'), icon: 'receipt' },
+                    { key: 'credit', label: t('pos.credit'), icon: 'account_balance' },
                   ].map(m => (
                     <button
                       key={m.key}
                       onClick={() => setPaymentMethod(m.key)}
                       className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
                         paymentMethod === m.key
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-outline-variant/30 text-on-surface-variant hover:border-outline-variant'
+                          ? 'border-[#0F766E] dark:border-teal-600 bg-[#0F766E]/5 dark:bg-teal-500/10 text-[#0F766E] dark:text-teal-400'
+                          : 'border-[#F1F5F9] dark:border-border text-[#64748B] dark:text-muted-foreground hover:border-[#F1F5F9]'
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg">{m.icon}</span>
@@ -757,13 +759,13 @@ export default function POS() {
               {/* Amount received (only for cash) */}
               {paymentMethod === 'cash' && (
                 <div>
-                  <p className="text-xs font-semibold text-on-surface-variant mb-1">Montant reçu</p>
+                  <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.amount_received')}</p>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       value={amountReceived || ''}
                       onChange={e => setAmountReceived(parseFloat(e.target.value) || 0)}
-                      className="flex-1 bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                       placeholder="0.00"
                     />
                     {[total, Math.ceil(total / 10) * 10, Math.ceil(total / 50) * 50, Math.ceil(total / 100) * 100].map(amt => (
@@ -771,15 +773,15 @@ export default function POS() {
                         <button
                           key={amt}
                           onClick={() => setAmountReceived(amt)}
-                          className="px-2 py-1 bg-surface-container-higher rounded-lg text-xs font-semibold hover:bg-primary-container/20"
+                          className="px-2 py-1 bg-[#f1f5f9] dark:bg-muted rounded-lg text-xs font-semibold hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20"
                         >{amt.toFixed(0)}</button>
                       )
                     )).slice(0, 3)}
                   </div>
                   {changeDue > 0 && (
-                    <p className="mt-2 text-lg font-bold text-success flex items-center gap-2">
+                    <p className="mt-2 text-lg font-bold text-[#10b981] dark:text-emerald-400 flex items-center gap-2">
                       <span className="material-symbols-outlined">currency_exchange</span>
-                      Monnaie: {changeDue.toFixed(2)} DH
+                      {t('pos.change')}: {changeDue.toFixed(2)} DH
                     </p>
                   )}
                 </div>
@@ -788,37 +790,37 @@ export default function POS() {
               {/* Credit payment: partial payment */}
               {paymentMethod === 'credit' && (
                 <div>
-                  <p className="text-xs font-semibold text-on-surface-variant mb-1">Acompte (optionnel)</p>
+                  <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.deposit')}</p>
                   <input
                     type="number"
                     value={amountReceived || ''}
                     onChange={e => setAmountReceived(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="0.00 — rien = total à crédit"
+                    className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
+                    placeholder={t('pos.credit_info')}
                   />
                   {amountReceived > 0 && (
-                    <p className="mt-1 text-xs text-error">Reste à payer: {(total - amountReceived).toFixed(2)} DH</p>
+                    <p className="mt-1 text-xs text-[#ef4444] dark:text-red-400">{t('pos.remaining')}: {(total - amountReceived).toFixed(2)} DH</p>
                   )}
                 </div>
               )}
 
               {/* Discount on total */}
               <div>
-                <p className="text-xs font-semibold text-on-surface-variant mb-1">Remise sur total</p>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.discount_total')}</p>
                 <div className="flex gap-2">
                   <input
                     type="number"
                     value={saleDiscount || ''}
                     onChange={e => setSaleDiscount(parseFloat(e.target.value) || 0)}
-                    className="w-24 bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                    className="w-24 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                     placeholder="0"
                   />
-                  <span className="text-xs text-on-surface-variant self-center">DH</span>
+                  <span className="text-xs text-[#64748B] dark:text-muted-foreground self-center">DH</span>
                   {[10, 20, 50].map(d => (
                     <button
                       key={d}
                       onClick={() => setSaleDiscount(d)}
-                      className={`px-2 py-1 rounded-lg text-xs font-semibold ${saleDiscount === d ? 'bg-primary text-on-primary' : 'bg-surface-container-higher hover:bg-primary-container/20'}`}
+                      className={`px-2 py-1 rounded-lg text-xs font-semibold ${saleDiscount === d ? 'bg-[#0F766E] dark:bg-teal-600 text-white' : 'bg-[#f1f5f9] dark:bg-muted hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20'}`}
                     >-{d}</button>
                   ))}
                 </div>
@@ -826,51 +828,51 @@ export default function POS() {
 
               {/* Note */}
               <div>
-                <p className="text-xs font-semibold text-on-surface-variant mb-1">Note</p>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.note')}</p>
                 <textarea
                   value={saleNote}
                   onChange={e => setSaleNote(e.target.value)}
-                  className="w-full bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary resize-none"
+                  className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 resize-none"
                   rows={2}
-                  placeholder="Optionnelle..."
+                  placeholder={t('pos.optional')}
                 />
               </div>
 
               {/* Delivery toggle */}
               <div>
-                <button onClick={() => setShowDelivery(prev => !prev)} className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+                <button onClick={() => setShowDelivery(prev => !prev)} className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:text-[#0f172a] dark:hover:text-foreground transition-colors">
                   <span className="material-symbols-outlined text-sm">{showDelivery ? 'expand_less' : 'expand_more'}</span>
-                  Livraison
+                  {t('pos.delivery')}
                 </button>
                 {showDelivery && (
                   <div className="mt-2 space-y-2 pl-4">
-                    <input type="text" placeholder="Adresse de livraison" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary" />
+                    <input type="text" placeholder={t('pos.delivery_address')} value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
                     <div className="flex gap-2">
-                      <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} className="flex-1 bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary" />
-                      <input type="number" placeholder="Frais" value={deliveryFee || ''} onChange={e => setDeliveryFee(parseFloat(e.target.value) || 0)} className="w-24 bg-surface-container rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary" />
+                      <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} className="flex-1 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                      <input type="number" placeholder={t('pos.fee')} value={deliveryFee || ''} onChange={e => setDeliveryFee(parseFloat(e.target.value) || 0)} className="w-24 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Summary */}
-              <div className="bg-surface-container-low rounded-xl p-4 space-y-1.5">
-                <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Sous-total</span><span className="font-semibold">{subtotal.toFixed(2)} DH</span></div>
-                {totalDiscount > 0 && <div className="flex justify-between text-sm"><span className="text-error">Remise</span><span className="font-semibold text-error">-{totalDiscount.toFixed(2)} DH</span></div>}
-                <div className="flex justify-between text-sm"><span className="text-on-surface-variant">TVA (5%)</span><span className="font-semibold">{tax.toFixed(2)} DH</span></div>
-                {deliveryFee > 0 && <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Livraison</span><span className="font-semibold">{deliveryFee.toFixed(2)} DH</span></div>}
-                <div className="flex justify-between items-center pt-2 mt-2 border-t border-outline-variant/20">
-                  <span className="font-bold text-base">Total</span>
-                  <span className="font-bold text-base text-primary">{total.toFixed(2)} DH</span>
+              <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 space-y-1.5">
+                <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span><span className="font-semibold">{subtotal.toFixed(2)} DH</span></div>
+                {totalDiscount > 0 && <div className="flex justify-between text-sm"><span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span><span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span></div>}
+                <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.tax')}</span><span className="font-semibold">{tax.toFixed(2)} DH</span></div>
+                {deliveryFee > 0 && <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.delivery')}</span><span className="font-semibold">{deliveryFee.toFixed(2)} DH</span></div>}
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-[#F1F5F9] dark:border-border">
+                  <span className="font-bold text-base">{t('pos.total')}</span>
+                  <span className="font-bold text-base text-[#0F766E] dark:text-teal-400">{total.toFixed(2)} DH</span>
                 </div>
               </div>
 
             </div>
 
-            <div className="p-5 border-t border-outline-variant/30 flex gap-3">
-              <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="flex-1 py-2.5 rounded-xl">Annuler</Button>
+            <div className="p-5 border-t border-[#F1F5F9] dark:border-border flex gap-3">
+              <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="flex-1 py-2.5 rounded-xl">{t('pos.cancel')}</Button>
               <Button onClick={confirmPayment} disabled={submitting} className="flex-1 py-2.5 rounded-xl">
-                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span> Traitement...</> : `Confirmer ${total.toFixed(2)} DH`}
+                {submitting ? <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span> {t('pos.processing')}</> : `${t('pos.confirm')} ${total.toFixed(2)} DH`}
               </Button>
             </div>
           </div>
@@ -880,26 +882,26 @@ export default function POS() {
       {/* Invoice Modal */}
       {showInvoiceModal && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+          <div className="bg-white dark:bg-card rounded-[20px] shadow-2xl w-full max-w-lg mx-4">
             <div className="p-6 text-center">
-              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-3xl text-success">check_circle</span>
+              <div className="w-16 h-16 bg-[#10b981]/10 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-3xl text-[#10b981] dark:text-emerald-400">check_circle</span>
               </div>
-              <h2 className="font-bold text-xl text-on-surface mb-1">Vente confirmée</h2>
-              <p className="text-sm text-on-surface-variant mb-2">#{`INV-${String(lastSale.id).padStart(4, '0')}`}</p>
-              <p className="text-3xl font-extrabold text-primary mb-4">{lastSale.total.toFixed(2)} DH</p>
+              <h2 className="font-bold text-xl text-[#0f172a] dark:text-foreground mb-1">{t('pos.sale_success')}</h2>
+              <p className="text-sm text-[#64748B] dark:text-muted-foreground mb-2">#{`INV-${String(lastSale.id).padStart(4, '0')}`}</p>
+              <p className="text-3xl font-extrabold text-[#0F766E] dark:text-teal-400 mb-4">{lastSale.total.toFixed(2)} DH</p>
 
-              <div className="bg-surface-container-low rounded-xl p-4 text-left space-y-2 mb-4 text-sm">
-                <div className="flex justify-between"><span className="text-on-surface-variant">Méthode</span><span className="font-semibold capitalize">{lastSale.payment_method}</span></div>
-                <div className="flex justify-between"><span className="text-on-surface-variant">Statut</span><span className="font-semibold capitalize">{lastSale.payment_status}</span></div>
-                {lastSale.amount_paid > 0 && <div className="flex justify-between"><span className="text-on-surface-variant">Payé</span><span className="font-semibold">{lastSale.amount_paid.toFixed(2)} DH</span></div>}
-                {lastSale.change_due > 0 && <div className="flex justify-between"><span className="text-on-surface-variant">Monnaie</span><span className="font-semibold text-success">{lastSale.change_due.toFixed(2)} DH</span></div>}
+              <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 text-left space-y-2 mb-4 text-sm">
+                <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.method')}</span><span className="font-semibold capitalize">{lastSale.payment_method}</span></div>
+                <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.status')}</span><span className="font-semibold capitalize">{lastSale.payment_status}</span></div>
+                {lastSale.amount_paid > 0 && <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.paid')}</span><span className="font-semibold">{lastSale.amount_paid.toFixed(2)} DH</span></div>}
+                {lastSale.change_due > 0 && <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.change')}</span><span className="font-semibold text-[#10b981] dark:text-emerald-400">{lastSale.change_due.toFixed(2)} DH</span></div>}
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setShowInvoiceModal(false); setLastSale(null); }} className="flex-1 py-2.5 rounded-xl">Fermer</Button>
+                <Button variant="outline" onClick={() => { setShowInvoiceModal(false); setLastSale(null); }} className="flex-1 py-2.5 rounded-xl">{t('pos.close')}</Button>
                 <Button onClick={() => { setShowInvoiceModal(false); setLastSale(null); printBon(lastSale); }} className="flex-1 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-sm">print</span> Imprimer
+                  <span className="material-symbols-outlined text-sm">print</span> {t('pos.print')}
                 </Button>
               </div>
             </div>
@@ -927,17 +929,18 @@ function CartPanel({
   printTicket, onTogglePrint,
   newCustomerName, newCustomerPhone, onNewCustomerName, onNewCustomerPhone, onAddNewCustomer,
 }) {
+  const { t } = useTranslation();
   return (
-    <div className="bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col h-full border border-outline-variant/30">
-      <div className="p-3 border-b border-outline-variant/30 space-y-2">
+    <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col h-full">
+      <div className="p-3 border-b border-[#F1F5F9] dark:border-border space-y-2">
         <div className="flex justify-between items-center">
-          <h2 className="font-bold text-sm text-on-surface">Panier</h2>
+          <h2 className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.cart')}</h2>
           {cart.length > 0 && (
             <div className="flex items-center gap-1">
-              <button onClick={onHold} className="text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/30 p-1 rounded-lg transition-colors" title="Suspendre">
+              <button onClick={onHold} className="text-[#f59e0b] dark:text-amber-400 hover:bg-[#fffbeb] dark:hover:bg-amber-950/30 p-1 rounded-lg transition-colors" title={t('pos.suspend')}>
                 <span className="material-symbols-outlined text-sm">pause_circle</span>
               </button>
-              <button onClick={onClear} className="text-error hover:bg-error-container/20 p-1 rounded-lg transition-colors">
+              <button onClick={onClear} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-1 rounded-lg transition-colors">
                 <span className="material-symbols-outlined text-sm">delete_sweep</span>
               </button>
             </div>
@@ -946,63 +949,63 @@ function CartPanel({
 
         <div className="relative">
           <div
-            className="flex items-center gap-1.5 bg-surface-container p-1.5 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
+            className="flex items-center gap-1.5 bg-[#f8fafc] dark:bg-background p-1.5 rounded-lg cursor-pointer hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors"
             onClick={onToggleCustomer}
           >
-            <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-xs text-secondary">person</span>
+            <div className="w-6 h-6 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-xs text-[#0F766E] dark:text-teal-400">person</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-xs text-on-surface truncate leading-tight">
-                {selectedCustomer ? selectedCustomer.name : 'Client Libre'}
+              <p className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate leading-tight">
+                {selectedCustomer ? selectedCustomer.name : t('pos.general')}
               </p>
             </div>
-            <span className="material-symbols-outlined text-xs text-on-surface-variant shrink-0">
+            <span className="material-symbols-outlined text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
               {showCustomerDropdown ? 'expand_less' : 'expand_more'}
             </span>
           </div>
           {showCustomerDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border rounded-xl shadow-xl overflow-hidden">
               <div className="p-2">
                 <input
                   type="text"
-                  placeholder="Rechercher un client..."
+                  placeholder={t('pos.search_customer')}
                   value={customerSearch}
                   onChange={e => onCustomerSearch(e.target.value)}
-                  className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30"
                   autoFocus
                 />
               </div>
               <div className="max-h-40 overflow-y-auto">
-                <button onClick={onClearCustomer} className="w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
+                <button onClick={onClearCustomer} className="w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-[#f1f5f9] dark:bg-muted flex items-center justify-center">
                     <span className="material-symbols-outlined text-xs">person_off</span>
                   </div>
                   <div>
-                    <p className="font-semibold text-xs">Client Libre</p>
-                    <p className="text-[10px] text-on-surface-variant">Vente sans compte</p>
+                    <p className="font-semibold text-xs">{t('pos.general')}</p>
+                    <p className="text-[10px] text-[#64748B] dark:text-muted-foreground">{t('pos.without_account')}</p>
                   </div>
                 </button>
                 {filteredCustomers.map(c => (
                   <button
                     key={c.id}
                     onClick={() => onSelectCustomer(c)}
-                    className={`w-full text-left px-3 py-2 hover:bg-surface-container flex items-center gap-2 ${selectedCustomer?.id === c.id ? 'bg-primary-container/20' : ''}`}
+                    className={`w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${selectedCustomer?.id === c.id ? 'bg-[#0F766E]/10 dark:bg-teal-500/20' : ''}`}
                   >
-                    <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
-                      <span className="text-[10px] font-bold text-secondary">{c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>
+                    <div className="w-6 h-6 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-[#0F766E] dark:text-teal-400">{c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-xs truncate">{c.name}</p>
-                      <p className="text-[10px] text-on-surface-variant truncate">{c.phone || 'Pas de téléphone'}</p>
+                      <p className="text-[10px] text-[#64748B] dark:text-muted-foreground truncate">{c.phone || t('pos.no_phone')}</p>
                     </div>
                   </button>
                 ))}
-                <div className="border-t border-outline-variant/20 p-2 space-y-2">
-                  <p className="text-[10px] text-on-surface-variant font-semibold">Nouveau client</p>
-                  <input type="text" placeholder="Nom" value={newCustomerName} onChange={e => onNewCustomerName(e.target.value)} className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary" />
-                  <input type="text" placeholder="Téléphone (optionnel)" value={newCustomerPhone} onChange={e => onNewCustomerPhone(e.target.value)} className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary" />
-                  <Button size="sm" className="w-full text-xs rounded-lg" onClick={onAddNewCustomer}>Ajouter</Button>
+                <div className="border-t border-[#F1F5F9]/50 dark:border-border/50 p-2 space-y-2">
+                  <p className="text-[10px] text-[#64748B] dark:text-muted-foreground font-semibold">{t('pos.new_customer')}</p>
+                  <input type="text" placeholder={t('pos.name')} value={newCustomerName} onChange={e => onNewCustomerName(e.target.value)} className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                  <input type="text" placeholder={t('pos.phone_optional')} value={newCustomerPhone} onChange={e => onNewCustomerPhone(e.target.value)} className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
+                  <Button size="sm" className="w-full text-xs rounded-lg" onClick={onAddNewCustomer}>{t('pos.add')}</Button>
                 </div>
               </div>
             </div>
@@ -1012,72 +1015,72 @@ function CartPanel({
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {cart.length === 0 ? (
-          <p className="text-on-surface-variant text-xs text-center py-8">Ajoutez des produits depuis la liste</p>
+          <p className="text-[#64748B] dark:text-muted-foreground text-xs text-center py-8">{t('pos.add_items')}</p>
         ) : (
           cart.map((item) => (
-            <div key={item.product_id} className="bg-surface-container rounded-lg p-2.5">
+            <div key={item.product_id} className="bg-[#f8fafc] dark:bg-background rounded-xl p-2.5">
               <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 flex-1">
-                  <h4 className="font-semibold text-xs text-on-surface truncate">{item.product_name}</h4>
+                  <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-surface-container-highest rounded px-1 py-0.5 text-[10px] font-semibold text-on-surface text-right">{item.price.toFixed(2)}</button>
-                    <span className="text-[10px] text-on-surface-variant">DH / {item.unit}</span>
+                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-right">{item.price.toFixed(2)}</button>
+                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
                     {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => onOpenNumpad('discount', item.product_id)} className="text-primary hover:bg-primary-container/10 p-0.5 rounded" title="Remise">
+                  <button onClick={() => onOpenNumpad('discount', item.product_id)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded" title={t('pos.discount')}>
                     <span className="material-symbols-outlined text-sm">sell</span>
                   </button>
-                  <button onClick={() => onUpdateQty(item.product_id, -item.qty)} className="text-error hover:bg-error-container/20 p-0.5 rounded ml-1 shrink-0">
+                  <button onClick={() => onUpdateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded ml-1 shrink-0">
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 bg-surface-container-lowest rounded-md p-0.5">
-                  <button onClick={() => onUpdateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center hover:bg-surface-container-highest/80 transition-colors active:scale-90">
+                <div className="flex items-center gap-1.5 bg-white dark:bg-card rounded-md p-0.5">
+                  <button onClick={() => onUpdateQty(item.product_id, -1)} className="w-6 h-6 rounded bg-[#f1f5f9] dark:bg-muted flex items-center justify-center hover:bg-[#f1f5f9]/80 dark:hover:bg-accent/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">remove</span>
                   </button>
-                  <button onClick={() => onOpenNumpad('qty', item.product_id)} className="font-bold text-xs text-on-surface min-w-[2ch] text-center">{item.qty}</button>
-                  <button onClick={() => onUpdateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary-container/80 transition-colors active:scale-90">
+                  <button onClick={() => onOpenNumpad('qty', item.product_id)} className="font-bold text-xs text-[#0f172a] dark:text-foreground min-w-[2ch] text-center">{item.qty}</button>
+                  <button onClick={() => onUpdateQty(item.product_id, 1)} className="w-6 h-6 rounded bg-[#0F766E] dark:bg-teal-600 text-white flex items-center justify-center hover:bg-[#0F766E]/80 dark:hover:bg-teal-600/80 transition-colors active:scale-90">
                     <span className="material-symbols-outlined text-sm">add</span>
                   </button>
                 </div>
-                <p className="font-bold text-xs text-primary">{(item.price * item.qty).toFixed(2)} DH</p>
+                <p className="font-bold text-xs text-[#0F766E] dark:text-teal-400">{(item.price * item.qty).toFixed(2)} DH</p>
               </div>
             </div>
           ))
         )}
       </div>
 
-      <div className="p-4 bg-surface-container-low rounded-b-2xl border-t border-outline-variant/30">
+      <div className="p-4 bg-[#f8fafc] dark:bg-background rounded-b-2xl border-t border-[#F1F5F9] dark:border-border">
         <div className="space-y-1 mb-3">
           <div className="flex justify-between text-xs">
-            <span className="text-on-surface-variant">Sous-total</span>
-            <span className="font-semibold text-on-surface">{subtotal.toFixed(2)} DH</span>
+            <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span>
+            <span className="font-semibold text-[#0f172a] dark:text-foreground">{subtotal.toFixed(2)} DH</span>
           </div>
           {totalDiscount > 0 && (
             <div className="flex justify-between text-xs">
-              <span className="text-error">Remise</span>
-              <span className="font-semibold text-error">-{totalDiscount.toFixed(2)} DH</span>
+              <span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span>
+              <span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span>
             </div>
           )}
           <div className="flex justify-between text-xs">
-            <span className="text-on-surface-variant">TVA (5%)</span>
-            <span className="font-semibold text-on-surface">{tax.toFixed(2)} DH</span>
+            <span className="text-[#64748B] dark:text-muted-foreground">{t('pos.tax')}</span>
+            <span className="font-semibold text-[#0f172a] dark:text-foreground">{tax.toFixed(2)} DH</span>
           </div>
-          <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-outline-variant/20">
-            <span className="font-bold text-sm text-on-surface">Total</span>
-            <span className="font-bold text-sm text-primary">{total.toFixed(2)} DH</span>
+          <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-[#F1F5F9] dark:border-border">
+            <span className="font-bold text-sm text-[#0f172a] dark:text-foreground">{t('pos.total')}</span>
+            <span className="font-bold text-sm text-[#0F766E] dark:text-teal-400">{total.toFixed(2)} DH</span>
           </div>
         </div>
 
         <Button onClick={onConfirm} disabled={cart.length === 0 || submitting} className="w-full h-auto py-2.5 rounded-xl text-sm">
           {submitting ? (
-            <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span> Traitement...</>
+            <><span className="material-symbols-outlined animate-spin text-sm">progress_activity</span> {t('pos.processing')}</>
           ) : (
-            <><span className="material-symbols-outlined text-sm">payments</span> Confirmer la vente</>
+            <><span className="material-symbols-outlined text-sm">payments</span> {t('pos.confirm_sale')}</>
           )}
         </Button>
       </div>

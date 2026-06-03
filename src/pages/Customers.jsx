@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/services/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
-} from '@/components/ui/select';
-import {
-  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
-} from '@/components/ui/table';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 export default function Customers() {
+  const { t } = useTranslation();
   const [customers, setCustomers] = useState([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -42,138 +34,130 @@ export default function Customers() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <div className="space-y-gutter pb-xl">
-      <div>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface">Clients</h2>
-        <p className="text-body-md text-on-surface-variant mt-1">Gestion des comptes et des soldes.</p>
+    <div className="space-y-5 pb-8">
+      <div className="py-2">
+        <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground leading-tight">{t('customers.title')}</h1>
+        <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-0.5">{t('customers.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-        <Card className="p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
-            <span className="material-symbols-outlined">group</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-[#f0fdf4] dark:border-emerald-800/60 dark:to-emerald-950/40">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('customers.total')}</span>
+            <span className="flex items-center font-bold text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">{t('customers.active')}</span>
           </div>
-          <div>
-            <p className="text-label-md text-on-surface-variant">Total Clients</p>
-            <p className="text-headline-sm font-bold text-primary">{customers.length}</p>
+          <div className="flex items-end justify-between">
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{customers.length}</span>
+            <span className="material-symbols-outlined text-2xl text-emerald-300 dark:text-emerald-400">group</span>
           </div>
-        </Card>
-        <Card className="p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0">
-            <span className="material-symbols-outlined">account_balance_wallet</span>
+        </div>
+        <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-[#fef2f2] dark:border-red-800/60 dark:to-red-950/40">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('customers.debts')}</span>
+            <span className="flex items-center font-bold text-[10px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">{t('customers.unpaid')}</span>
           </div>
-          <div>
-            <p className="text-label-md text-on-surface-variant">Dettes Impayées</p>
-            <p className="text-headline-sm font-bold text-error">{totalDebt.toFixed(2)} DH</p>
+          <div className="flex items-end justify-between">
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{totalDebt.toFixed(2)} DH</span>
+            <span className="material-symbols-outlined text-2xl text-red-300 dark:text-red-400">account_balance_wallet</span>
           </div>
-        </Card>
-        <Card className="p-6 flex items-center gap-4">
-          <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0">
-            <span className="material-symbols-outlined">warning</span>
+        </div>
+        <div className="h-[105px] p-4 bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border flex flex-col justify-between bg-gradient-to-br from-white dark:from-card to-[#fffbeb] dark:border-amber-800/60 dark:to-amber-950/40">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-[0.08em] uppercase">{t('customers.total')} Dettes</span>
+            <span className="flex items-center font-bold text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">{t('customers.active')}</span>
           </div>
-          <div>
-            <p className="text-label-md text-on-surface-variant">Comptes avec dettes</p>
-            <p className="text-headline-sm font-bold text-on-surface">{activeDebt}</p>
+          <div className="flex items-end justify-between">
+            <span className="text-xl font-extrabold text-[#0f172a] dark:text-foreground leading-none">{activeDebt}</span>
+            <span className="material-symbols-outlined text-2xl text-amber-300 dark:text-amber-400">warning</span>
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-lg">search</span>
-          <Input
-            type="text"
-            placeholder="Rechercher un client..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="pl-10"
-          />
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
+          <input type="text" placeholder={t('customers.search')} value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} className="w-full pl-10 pr-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all" />
         </div>
         <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-10 rounded-[20px] border-[#F1F5F9] dark:border-border text-xs text-[#64748B] dark:text-muted-foreground font-medium">
+            <SelectValue placeholder={t('customers.filter_all')} />
+          </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tous</SelectItem>
-            <SelectItem value="with_debt">Avec dette</SelectItem>
-            <SelectItem value="without_debt">Sans dette</SelectItem>
+            <SelectItem value="all">{t('customers.filter_all')}</SelectItem>
+            <SelectItem value="with_debt">{t('customers.filter_with_debt')}</SelectItem>
+            <SelectItem value="without_debt">{t('customers.filter_without_debt')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <Card className="overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom du Client</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Adresse</TableHead>
-              <TableHead className="text-center">Solde Dette</TableHead>
-              <TableHead />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="bg-white dark:bg-card rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#F1F5F9] dark:border-border overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-[#F1F5F9] dark:border-border">
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('customers.table.name')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('customers.table.phone')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('common.address')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-center">{t('customers.table.debt')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right"></th>
+            </tr>
+          </thead>
+          <tbody>
             {paginated.map((c) => {
               const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
               return (
-                <TableRow key={c.id} className="group">
-                  <TableCell>
+                <tr key={c.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors border-b border-[#F1F5F9] dark:border-border last:border-0">
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-bold text-sm text-on-surface leading-none">{c.name}</p>
-                      </div>
+                      <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0">{initials}</div>
+                      <span className="text-xs font-semibold text-[#0f172a] dark:text-foreground">{c.name}</span>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-sm text-on-surface">{c.phone || '-'}{c.email ? ` · ${c.email}` : ''}</p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-on-surface-variant max-w-[200px] truncate">{c.address || '-'}</p>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant={c.debt_balance > 0 ? 'destructive' : 'success'}>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{c.phone || '-'}{c.email ? ` · ${c.email}` : ''}</td>
+                  <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground max-w-[200px] truncate">{c.address || '-'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${c.debt_balance > 0 ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'}`}>
                       {c.debt_balance.toFixed(2)} DH
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-on-surface-variant">
-                      <span className="material-symbols-outlined">more_vert</span>
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors">
+                      <span className="material-symbols-outlined text-sm">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
               );
             })}
             {paginated.length === 0 && !loading && (
-              <TableRow><TableCell colSpan="5" className="text-center py-8 text-on-surface-variant">Aucun client trouvé</TableCell></TableRow>
+              <tr><td colSpan="5" className="px-4 py-8 text-xs text-[#64748B] dark:text-muted-foreground text-center">{t('customers.no_results')}</td></tr>
             )}
-          </TableBody>
-        </Table>
-
-        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
-          <p className="text-label-md text-on-surface-variant">
+          </tbody>
+        </table>
+        <div className="px-4 py-3 border-t border-[#F1F5F9] dark:border-border flex items-center justify-between">
+          <p className="text-xs text-[#64748B] dark:text-muted-foreground">
             {filtered.length > 0
-              ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} clients`
-              : 'Aucun client'}
+              ? t('customers.showing', { start: (page - 1) * pageSize + 1, end: Math.min(page * pageSize, filtered.length), total: filtered.length })
+              : t('customers.none')}
           </p>
           {totalPages > 1 && (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
-                <span className="material-symbols-outlined">chevron_left</span>
-              </Button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                className="p-1.5 rounded-lg text-[#64748B] dark:text-muted-foreground hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors disabled:opacity-30">
+                <span className="material-symbols-outlined text-sm">chevron_left</span>
+              </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <Button key={p} variant={p === page ? 'default' : 'ghost'} size="icon" onClick={() => setPage(p)}
-                  className={p === page ? '' : 'text-on-surface-variant'}>
+                <button key={p} onClick={() => setPage(p)}
+                  className={`w-7 h-7 rounded-lg text-[11px] font-semibold transition-colors ${p === page ? 'bg-[#0F766E] dark:bg-teal-600 text-white' : 'text-[#64748B] dark:text-muted-foreground hover:bg-[#f1f5f9] dark:hover:bg-accent'}`}>
                   {p}
-                </Button>
+                </button>
               ))}
-              <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
-                <span className="material-symbols-outlined">chevron_right</span>
-              </Button>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                className="p-1.5 rounded-lg text-[#64748B] dark:text-muted-foreground hover:bg-[#f1f5f9] dark:hover:bg-accent transition-colors disabled:opacity-30">
+                <span className="material-symbols-outlined text-sm">chevron_right</span>
+              </button>
             </div>
           )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

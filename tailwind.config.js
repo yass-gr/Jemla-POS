@@ -5,6 +5,43 @@ export default {
   theme: {
     extend: {
       colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--border))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--warning))',
+          foreground: 'hsl(var(--warning-foreground))',
+        },
         'on-secondary-container': '#596373',
         'on-primary': '#ffffff',
         'on-tertiary-fixed': '#191c1e',
@@ -12,7 +49,6 @@ export default {
         tertiary: '#5c5f60',
         outline: '#6d7a6e',
         'surface-variant': '#dce3f0',
-        background: '#f8f9ff',
         'error-container': '#ffdad6',
         'on-secondary-fixed': '#121c2a',
         'tertiary-fixed-dim': '#c5c6c8',
@@ -28,7 +64,6 @@ export default {
         'surface-container-highest': '#dce3f0',
         'surface-container-high': '#e2e8f5',
         'on-secondary': '#ffffff',
-        primary: '#006d37',
         'on-primary-container': '#00391a',
         'primary-container': '#27ae60',
         'inverse-on-surface': '#eaf1fe',

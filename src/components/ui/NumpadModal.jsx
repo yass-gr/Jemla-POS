@@ -45,9 +45,9 @@ export default function NumpadModal({ open, title, value, allowDecimal, onConfir
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50">
-      <div className="w-full max-w-sm bg-surface rounded-t-3xl sm:rounded-3xl shadow-2xl border border-outline-variant/30 overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
-        <div className="p-6 text-center border-b border-outline-variant/30">
-          <p className="text-headline-sm font-headline-sm text-on-surface mb-1">{title}</p>
+      <div className="w-full max-w-sm bg-surface rounded-t-3xl sm:rounded-3xl shadow-2xl border border-outline-variant/30 overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 dark:bg-muted dark:border-border">
+        <div className="p-6 text-center border-b border-outline-variant/30 dark:border-border">
+          <p className="text-headline-sm font-headline-sm text-on-surface mb-1 dark:text-foreground">{title}</p>
           <div className="text-3xl font-bold text-primary tabular-nums tracking-wider min-h-[3rem]">
             {display || '0'}
           </div>
@@ -64,8 +64,8 @@ export default function NumpadModal({ open, title, value, allowDecimal, onConfir
                     onClick={() => handleKey(key)}
                     className={`h-16 rounded-2xl text-2xl font-bold transition-all active:scale-90 select-none ${
                       key === '⌫'
-                        ? 'bg-surface-container-high text-on-surface-variant'
-                        : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                        ? 'bg-surface-container-high text-on-surface-variant dark:bg-muted dark:text-muted-foreground'
+                        : 'bg-surface-container text-on-surface hover:bg-surface-container-high dark:bg-muted dark:text-foreground dark:hover:bg-accent'
                     }`}
                   >
                     {key === '⌫' ? (
