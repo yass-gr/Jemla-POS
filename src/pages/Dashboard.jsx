@@ -1,67 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { api } from "@/services/api";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  LineChart, Line, XAxis, ResponsiveContainer, Tooltip,
 } from "recharts";
-
-function KpiCard({
-  title,
-  value,
-  trend,
-  trendUp,
-  icon,
-  color,
-  loading,
-}) {
-  return (
-    <Card className="p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden group">
-      <div className="z-10">
-        <p className="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider mb-2">
-          {title}
-        </p>
-        {loading ? (
-          <div className="h-10 w-28 bg-surface-container-highest rounded animate-pulse mb-2" />
-        ) : (
-          <h3
-            className={`text-headline-md sm:text-headline-lg font-headline-lg ${color}`}
-          >
-            {value}
-          </h3>
-        )}
-        <div
-          className={`flex items-center gap-1 mt-4 ${trendUp ? "text-primary" : "text-on-surface-variant"} font-bold`}
-        >
-          <span className="material-symbols-outlined text-sm">
-            {trendUp ? "trending_up" : "warning"}
-          </span>
-          <span className="text-label-sm sm:text-label-md">{trend}</span>
-        </div>
-      </div>
-      <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-        <span
-          className={`material-symbols-outlined text-[80px] sm:text-[120px] ${color}`}
-        >
-          {icon}
-        </span>
-      </div>
-    </Card>
-  );
-}
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [salesTrend, setSalesTrend] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -88,363 +35,337 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  const trendData = useMemo(
+    () => salesTrend.map(d => ({ ...d, value: Number(d.value) || 0, previous: Number(d.previous) || 0 })),
+    [salesTrend]
+  );
+
+  const trendPercent = useMemo(() => {
+    if (trendData.length < 2) return null;
+    const current = trendData.reduce((s, d) => s + d.value, 0);
+    const prev = trendData.reduce((s, d) => s + d.previous, 0);
+    if (prev === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - prev) / prev) * 100 * 10) / 10;
+  }, [trendData]);
+
+  function formatPrice(v) {
+    return Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function statusBadge(status) {
+    if (status === "completed") return "bg-emerald-100 text-emerald-700";
+    if (status === "held") return "bg-amber-100 text-amber-700";
+    return "bg-red-100 text-red-700";
+  }
+
+  function statusLabel(status) {
+    if (status === "completed") return "Complété";
+    if (status === "held") return "En attente";
+    return "Annulé";
+  }
+
   const kpiCards = [
     {
-      title: "Today's Sales",
-      value: stats ? `${stats.todaySales.toFixed(2)} DH` : "0 DH",
-      trend: stats
-        ? `${stats.todayTransactions} transactions today`
-        : "No data yet",
-      trendUp: true,
+      title: "VENTES DU JOUR",
+      value: stats ? `${formatPrice(stats.todaySales)} DH` : "0 DH",
+      badge: stats ? `${stats.todayTransactions} transaction${stats.todayTransactions > 1 ? 's' : ''}` : "—",
+      badgeColor: trendPercent != null && trendPercent > 0 ? "text-emerald-600 bg-emerald-100" : "text-slate-600 bg-slate-100",
       icon: "payments",
-      color: "text-primary",
+      gradient: "from-white to-[#F0FDF4]",
+      hoverBorder: "hover:border-emerald-200",
+      sparkColor: "bg-emerald-400",
+      iconBg: "text-emerald-300",
     },
     {
-      title: "Pending Debts",
-      value: stats ? `${stats.pendingDebts.toFixed(2)} DH` : "0 DH",
-      trend: stats
-        ? `${stats.overdueAccounts} accounts with debt`
-        : "No data yet",
-      trendUp: false,
+      title: "CRÉANCES CLIENTS",
+      value: stats ? `${formatPrice(stats.pendingDebts)} DH` : "0 DH",
+      badge: stats ? `${stats.overdueAccounts} compte${stats.overdueAccounts > 1 ? 's' : ''}` : "—",
+      badgeColor: stats?.overdueAccounts > 0 ? "text-red-600 bg-red-100" : "text-slate-600 bg-slate-100",
+      icon: "receipt_long",
+      gradient: "from-white to-[#FEF2F2]",
+      hoverBorder: "hover:border-red-200",
+      sparkColor: "bg-red-400",
+      iconBg: "text-red-300",
+    },
+    {
+      title: "ALERTES STOCK",
+      value: stats ? `${stats.lowStockItems} alerte${stats.lowStockItems > 1 ? 's' : ''}` : "0",
+      badge: stats?.lowStockItems > 0 ? "À réapprovisionner" : "Stock ok",
+      badgeColor: stats?.lowStockItems > 0 ? "text-amber-600 bg-amber-100" : "text-slate-600 bg-slate-100",
+      icon: "inventory",
+      gradient: "from-white to-[#FFFBEB]",
+      hoverBorder: "hover:border-amber-200",
+      sparkColor: "bg-amber-400",
+      iconBg: "text-amber-300",
+    },
+    {
+      title: "TRANSACTIONS",
+      value: stats ? `${stats.todayTransactions}` : "0",
+      badge: trendPercent != null ? `${trendPercent > 0 ? '+' : ''}${trendPercent}%` : "—",
+      badgeColor: trendPercent != null && trendPercent >= 0 ? "text-blue-600 bg-blue-100" : "text-slate-600 bg-slate-100",
       icon: "account_balance_wallet",
-      color: "text-error",
-    },
-    {
-      title: "Low Stock Alerts",
-      value: stats ? `${stats.lowStockItems} Items` : "0 Items",
-      trend:
-        stats && stats.lowStockItems > 0
-          ? "Restock required now"
-          : "All stocked up",
-      trendUp: stats ? stats.lowStockItems === 0 : true,
-      icon: "inventory_2",
-      color:
-        stats && stats.lowStockItems > 0 ? "text-tertiary" : "text-primary",
+      gradient: "from-white to-[#EFF6FF]",
+      hoverBorder: "hover:border-blue-200",
+      sparkColor: "bg-blue-400",
+      iconBg: "text-blue-300",
     },
   ];
 
-  const trendData = salesTrend.map(d => ({ ...d, value: Number(d.value) || 0 }));
-  const bestProduct = topProducts[0];
-  const bestCustomer = topCustomer;
+  const maxSales = useMemo(
+    () => topProducts.length > 0 ? Math.max(...topProducts.map(p => Number(p.sales) || 0)) : 1,
+    [topProducts]
+  );
 
-  return (
-    <div className="space-y-4 sm:space-y-gutter pb-xl">
-      <h2 className="font-headline-lg text-headline-lg text-on-surface">
-        Dashboard
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-gutter">
-        {kpiCards.map((card) => (
-          <KpiCard key={card.title} {...card} loading={loading} />
+  function sparklineBars() {
+    if (!trendData.length) return null;
+    const vals = trendData.map(d => d.value);
+    const mx = Math.max(...vals, 1);
+    return (
+      <div className="w-12 h-6 flex items-end gap-[1.5px]">
+        {vals.map((v, i) => (
+          <div key={i} className="w-full bg-emerald-400 rounded-t-sm" style={{ height: `${(v / mx) * 100}%` }} />
         ))}
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-gutter">
-        <button onClick={() => navigate('/pos')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-2xl">point_of_sale</span>
-            </div>
-            <div>
-              <p className="font-headline-sm text-headline-sm text-on-surface">Nouvelle Vente</p>
-              <p className="text-label-md text-on-surface-variant mt-0.5">Ouvrir le POS</p>
-            </div>
-          </div>
-        </button>
-        <button onClick={() => navigate('/products')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary shrink-0 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-2xl">add_box</span>
-            </div>
-            <div>
-              <p className="font-headline-sm text-headline-sm text-on-surface">Ajouter Produit</p>
-              <p className="text-label-md text-on-surface-variant mt-0.5">Nouveau stock</p>
-            </div>
-          </div>
-        </button>
-        <button onClick={() => navigate('/purchases')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-secondary/30 transition-all text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center text-tertiary shrink-0 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-2xl">shopping_cart</span>
-            </div>
-            <div>
-              <p className="font-headline-sm text-headline-sm text-on-surface">Enregistrer Achat</p>
-              <p className="text-label-md text-on-surface-variant mt-0.5">Approvisionnement</p>
-            </div>
-          </div>
-        </button>
-        <button onClick={() => navigate('/reports')} className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-tertiary/30 transition-all text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-error/10 rounded-xl flex items-center justify-center text-error shrink-0 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-2xl">bar_chart</span>
-            </div>
-            <div>
-              <p className="font-headline-sm text-headline-sm text-on-surface">Rapports</p>
-              <p className="text-label-md text-on-surface-variant mt-0.5">Analytiques</p>
-            </div>
-          </div>
-        </button>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <div className="w-10 h-10 border-4 border-[#0F766E] border-t-transparent rounded-full animate-spin" />
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-gutter">
-        <Card className="lg:col-span-2 p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <h4 className="text-headline-sm font-headline-sm">
-              Sales Revenue Trend
-            </h4>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="rounded-full text-xs sm:text-sm"
-              >
-                Weekly
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full text-xs sm:text-sm"
-              >
-                Monthly
-              </Button>
+  return (
+    <div className="space-y-5 pb-8">
+      {/* Hero */}
+      <section className="py-2">
+        <h1 className="text-[26px] font-extrabold text-[#0f172a] leading-tight">
+          Bonjour, {user?.name || 'Admin'} 👋
+        </h1>
+        <p className="text-sm text-[#64748B] mt-0.5">
+          Votre activité du jour en un coup d'œil
+        </p>
+      </section>
+
+      {/* KPI Section */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpiCards.map((card, i) => (
+          <div
+            key={i}
+            className={`h-[105px] p-4 bg-white rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] border border-[#F1F5F9] flex flex-col justify-between group bg-gradient-to-br ${card.gradient} ${card.hoverBorder} transition-colors`}
+          >
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] font-bold text-[#64748B] tracking-[0.08em]">{card.title}</span>
+              <span className={`flex items-center font-bold text-[10px] px-2 py-0.5 rounded-full ${card.badgeColor}`}>
+                {card.badge}
+              </span>
+            </div>
+            <div className="flex items-end justify-between">
+              <span className="text-xl font-extrabold text-[#0f172a] leading-none">{card.value}</span>
+              {i === 0 ? sparklineBars() : (
+                <span className={`material-symbols-outlined text-2xl ${card.iconBg}`}>{card.icon}</span>
+              )}
             </div>
           </div>
-          <div
-            className="relative w-full"
-            style={{ height: "clamp(180px, 40vw, 300px)" }}
-          >
+        ))}
+      </section>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
+        {/* Chart */}
+        <div className="lg:col-span-7 bg-white rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] border border-[#F1F5F9] p-5 min-h-[260px] flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+            <div>
+              <h2 className="font-headline-sm text-[15px] text-[#0f172a] font-bold">Analyse des Ventes</h2>
+              <p className="text-xs text-[#64748B] mt-0.5">Tendances hebdomadaires de performance</p>
+            </div>
+            <div className="flex bg-[#f1f5f9] p-0.5 rounded-lg">
+              <button className="px-3 py-1.5 bg-white rounded-md shadow-sm text-[#0F766E] font-bold text-[11px]">Semaine</button>
+              <button className="px-3 py-1.5 text-[#64748B] font-medium text-[11px] hover:text-[#0F766E] transition-colors">Mois</button>
+            </div>
+          </div>
+          <div className="flex-1 relative">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trendData} margin={{ top: 8, right: 8, bottom: 8 }}>
-                <CartesianGrid vertical={false} stroke="oklch(0.922 0 0)" />
-                <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="oklch(0.556 0 0)" axisLine={true} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    background: "oklch(0.205 0 0)",
-                    border: "none",
-                    borderRadius: 8,
-                    color: "oklch(0.985 0 0)",
-                    fontSize: 12,
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
-                  formatter={(value) => value === "value" ? "Cette semaine" : "Semaine dernière"}
-                />
+              <LineChart data={trendData} margin={{ top: 4, right: 4, bottom: 2 }}>
+                <defs>
+                  <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#0F766E" stopOpacity={0.12} />
+                    <stop offset="100%" stopColor="#0F766E" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="oklch(0.546 0.245 262.88)"
-                  strokeWidth={2}
-                  dot={{ fill: "oklch(0.546 0.245 262.88)", r: 4 }}
-                  activeDot={{ r: 6 }}
+                  stroke="#0F766E"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#0F766E", strokeWidth: 3, stroke: "#fff" }}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="previous"
-                  stroke="oklch(0.715 0.143 215.22)"
-                  strokeWidth={2}
-                  strokeDasharray="4 3"
-                  dot={{ fill: "oklch(0.715 0.143 215.22)", r: 3 }}
-                  activeDot={{ r: 5 }}
+                {trendData.some(d => d.previous > 0) && (
+                  <Line
+                    type="monotone"
+                    dataKey="previous"
+                    stroke="#94a3b8"
+                    strokeWidth={1.5}
+                    strokeDasharray="4 3"
+                    dot={false}
+                    activeDot={{ r: 4, fill: "#94a3b8", strokeWidth: 2, stroke: "#fff" }}
+                  />
+                )}
+                <XAxis
+                  dataKey="day"
+                  tick={{ fontSize: 11, fill: "#64748B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickMargin={8}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#fff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 12,
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                    fontSize: 12,
+                  }}
+                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                  formatter={(value, name) => [
+                    `${Number(value).toFixed(1)}k DH`,
+                    name === "value" ? "Cette semaine" : "Semaine dernière"
+                  ]}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </Card>
-        <div className="flex flex-col gap-4 sm:gap-gutter">
-          <Card className="p-4 flex flex-col">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="material-symbols-outlined text-primary text-lg">star</span>
-              <h4 className="text-sm font-bold text-on-surface">Meilleur Produit</h4>
-            </div>
-            {bestProduct ? (
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
-                  {bestProduct.img ? (
-                    <img src={bestProduct.img} alt={bestProduct.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="material-symbols-outlined text-2xl text-primary/40">inventory_2</span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestProduct.name}</p>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Ventes</p>
-                      <p className="text-sm font-bold text-primary leading-tight">{bestProduct.sales}</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Prix</p>
-                      <p className="text-sm font-bold text-on-surface leading-tight">{Number(bestProduct.price).toFixed(2)} DH</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Stock</p>
-                      <p className="text-sm font-bold text-on-surface leading-tight">{bestProduct.stock} u</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Revenu</p>
-                      <p className="text-sm font-bold text-secondary leading-tight">{(bestProduct.sales * Number(bestProduct.price)).toFixed(2)} DH</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              !loading && (
-                <p className="text-on-surface-variant text-xs text-center py-6">Aucune donnée produit</p>
-              )
-            )}
-          </Card>
-          <Card className="p-4 flex flex-col">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="material-symbols-outlined text-secondary text-lg">group</span>
-              <h4 className="text-sm font-bold text-on-surface">Meilleur Client</h4>
-            </div>
-            {bestCustomer ? (
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant/20">
-                  <span className="material-symbols-outlined text-2xl text-secondary/50">person</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestCustomer.name}</p>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Achats</p>
-                      <p className="text-sm font-bold text-secondary leading-tight">{bestCustomer.total_orders}</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Total</p>
-                      <p className="text-sm font-bold text-on-surface leading-tight">{Number(bestCustomer.total_spent).toFixed(2)} DH</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Dette</p>
-                      <p className="text-sm font-bold text-error leading-tight">{Number(bestCustomer.debt_balance).toFixed(2)} DH</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-on-surface-variant leading-tight">Contact</p>
-                      <p className="text-sm font-bold text-on-surface truncate leading-tight">{bestCustomer.phone || '-'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              !loading && (
-                <p className="text-on-surface-variant text-xs text-center py-6">Aucune donnée client</p>
-              )
-            )}
-          </Card>
         </div>
-        <Card className="lg:col-span-2 p-4 sm:p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-headline-sm font-headline-sm">Top Products</h4>
-            <a
-              href="/products"
-              className="text-primary font-bold text-label-md hover:underline"
-            >
-              View All
-            </a>
+
+        {/* Right Sidebar */}
+        <div className="lg:col-span-3 flex flex-col gap-4">
+          {/* Top Products */}
+          <div className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] border border-[#F1F5F9] p-3.5">
+            <h3 className="text-xs font-bold text-[#0f172a] mb-2.5">Top Produits</h3>
+            <div className="space-y-2.5">
+              {topProducts.slice(0, 2).map((p, i) => {
+                const pct = Math.round((Number(p.sales) / maxSales) * 100);
+                return (
+                  <div key={p.name} className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 bg-[#0F766E]/10 rounded-lg flex items-center justify-center text-[#0F766E] font-bold text-[11px] shrink-0">{i + 1}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-medium text-[#0f172a] truncate">{p.name}</p>
+                      <div className="w-full h-[3px] bg-[#f1f5f9] rounded-full mt-1 overflow-hidden">
+                        <div className="h-full bg-[#0F766E] rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-[#64748B] font-semibold shrink-0">{pct}%</span>
+                  </div>
+                );
+              })}
+              {topProducts.length === 0 && (
+                <p className="text-[#64748B] text-[11px] text-center py-2">Aucune donnée produit</p>
+              )}
+            </div>
           </div>
-          <div className="flex-1 space-y-3">
-            {topProducts.map((p) => (
-              <div
-                key={p.name}
-                className="flex items-center gap-3 p-1.5 hover:bg-surface-container rounded-lg transition-all"
-              >
-                <div className="w-8 h-8 bg-surface-container rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined text-lg">inventory_2</span>
+
+          {/* Best Client */}
+          <div className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] border border-[#F1F5F9] p-3.5 flex flex-col items-center text-center">
+            <span className="text-[9px] font-bold text-[#0F766E] bg-[#0F766E]/10 px-2 py-0.5 rounded-full mb-2 tracking-wider">MEILLEUR CLIENT</span>
+            <div className="w-10 h-10 rounded-full bg-[#0F766E]/10 flex items-center justify-center mb-1.5 ring-2 ring-[#0F766E]/5">
+              <span className="material-symbols-outlined text-lg text-[#0F766E]">person</span>
+            </div>
+            {topCustomer ? (
+              <>
+                <p className="text-xs font-bold text-[#0f172a]">{topCustomer.name}</p>
+                <p className="text-[11px] text-[#64748B] mt-0.5">
+                  Total: {formatPrice(topCustomer.total_spent)} DH
+                </p>
+                <div className="flex gap-2 mt-1 text-[10px] text-[#64748B]">
+                  <span>{topCustomer.total_orders} achats</span>
+                  <span>Dette: {formatPrice(topCustomer.debt_balance)} DH</span>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-sm text-on-surface truncate">
-                    {p.name}
-                  </p>
-                  <p className="text-xs text-on-surface-variant">
-                    {p.sales} sales
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="font-bold text-xs text-primary">
-                    {Number(p.price).toFixed(2)} DH
-                  </p>
-                </div>
-              </div>
-            ))}
-            {topProducts.length === 0 && !loading && (
-              <p className="text-on-surface-variant text-body-md text-center py-8">
-                No product data yet
-              </p>
+              </>
+            ) : (
+              <p className="text-[#64748B] text-[11px] mt-1">Aucune donnée client</p>
             )}
           </div>
-        </Card>
+
+          {/* Quick Actions */}
+          <div className="bg-[#0F766E] text-white rounded-[20px] shadow-[0_8px_32px_rgba(15,118,110,0.2)] p-3.5">
+            <h3 className="text-xs font-bold mb-2.5">Actions Rapides</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => navigate('/pos')}
+                className="flex flex-col items-center gap-1 p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+              >
+                <span className="material-symbols-outlined text-lg">add_shopping_cart</span>
+                <span className="text-[10px] font-semibold">Nouvelle Vente</span>
+              </button>
+              <button
+                onClick={() => navigate('/customers')}
+                className="flex flex-col items-center gap-1 p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+              >
+                <span className="material-symbols-outlined text-lg">person_add</span>
+                <span className="text-[10px] font-semibold">Nouveau Client</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <Card className="overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-outline-variant/30 flex justify-between items-center">
-          <h4 className="text-headline-sm font-headline-sm">
-            Recent Transactions
-          </h4>
-          <Button variant="outline" size="sm">
-            <span className="material-symbols-outlined text-sm">
-              filter_list
-            </span>{" "}
-            Filter
-          </Button>
+
+      {/* Recent Transactions */}
+      <section className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.04)] border border-[#F1F5F9] overflow-hidden">
+        <div className="p-4 border-b border-[#F1F5F9] flex justify-between items-center">
+          <h3 className="text-sm font-bold text-[#0f172a]">Dernières Ventes</h3>
+          <button
+            onClick={() => navigate('/sales')}
+            className="text-[#0F766E] font-semibold text-xs hover:underline flex items-center gap-1"
+          >
+            Voir tout <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </button>
         </div>
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Items</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentTx.map((tx) => (
-                <TableRow key={tx.id} className="cursor-pointer">
-                  <TableCell className="font-bold text-primary whitespace-nowrap">
-                    {tx.invoice}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {tx.customer}
-                  </TableCell>
-                  <TableCell className="text-on-surface-variant whitespace-nowrap">
-                    {tx.date}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {tx.items} Items
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        tx.status === "completed"
-                          ? "success"
-                          : tx.status === "held"
-                            ? "secondary"
-                            : "destructive"
-                      }
-                    >
-                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-bold whitespace-nowrap">
-                    {tx.total.toFixed(2)} DH
-                  </TableCell>
-                </TableRow>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#f8fafc]/50">
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] tracking-wider">RÉFÉRENCE</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] tracking-wider">CLIENT</th>
+                <th className="hidden sm:table-cell px-4 py-3 text-[10px] font-bold text-[#64748B] tracking-wider">DATE</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] tracking-wider">STATUT</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] tracking-wider text-right">MONTANT</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F1F5F9]">
+              {recentTx.map(tx => (
+                <tr key={tx.id} className="group hover:bg-[#f8fafc] transition-colors cursor-pointer" onClick={() => navigate(`/sales`)}>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a]">{tx.invoice}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 flex items-center justify-center text-[#0F766E] font-bold text-[10px] shrink-0">
+                        {(tx.customer || 'W')[0].toUpperCase()}
+                      </div>
+                      <span className="text-xs text-[#0f172a]">{tx.customer}</span>
+                    </div>
+                  </td>
+                  <td className="hidden sm:table-cell px-4 py-3 text-xs text-[#64748B]">{tx.date}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${statusBadge(tx.status)}`}>
+                      {statusLabel(tx.status)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold text-xs text-[#0f172a]">{formatPrice(tx.total)} DH</td>
+                </tr>
               ))}
-              {recentTx.length === 0 && !loading && (
-                <TableRow>
-                  <TableCell
-                    colSpan="6"
-                    className="text-center py-8 text-on-surface-variant"
-                  >
-                    No recent transactions
-                  </TableCell>
-                </TableRow>
+              {recentTx.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center py-8 text-[#64748B] text-xs">
+                    Aucune transaction récente
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
-      </Card>
+      </section>
     </div>
   );
 }

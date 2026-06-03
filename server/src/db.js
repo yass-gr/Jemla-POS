@@ -238,6 +238,31 @@ function createTables() {
   addColumnIfMissing('sale_items', 'original_price', 'REAL');
   addColumnIfMissing('sale_items', 'tax_rate', 'REAL DEFAULT 0.05');
   addColumnIfMissing('sale_items', 'tax_exempt', 'INTEGER DEFAULT 0');
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
+
+  const existingSettings = queryAll('SELECT key FROM settings');
+  if (existingSettings.length === 0) {
+    const defaults = [
+      ['language', 'fr'],
+      ['currency', 'MAD'],
+      ['tax_rate', '5'],
+      ['stock_threshold', '10'],
+      ['receipt_width', '48'],
+      ['receipt_show_logo', 'true'],
+      ['receipt_show_tax', 'true'],
+      ['pos_default_payment', 'cash'],
+      ['pos_default_customer', ''],
+    ];
+    const stmt = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
+    defaults.forEach(([k, v]) => { stmt.bind([k, v]); stmt.step(); stmt.reset(); });
+    stmt.free();
+  }
 }
 
 function seedAdmin() {

@@ -86,4 +86,22 @@ export const api = {
     add: (productId) => request('/favorites', { method: 'POST', body: JSON.stringify({ product_id: productId }) }),
     remove: (productId) => request(`/favorites/${productId}`, { method: 'DELETE' }),
   },
+
+  settings: {
+    get: () => request('/settings'),
+    update: (data) => request('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+  },
+
+  users: {
+    list: () => request('/users'),
+    create: (data) => request('/users', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => request(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => request(`/users/${id}`, { method: 'DELETE' }),
+    changePassword: (id, newPassword) => request(`/users/${id}/password`, { method: 'PUT', body: JSON.stringify({ newPassword }) }),
+    changeMyPassword: (currentPassword, newPassword) => request('/users/password/me', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }),
+  },
+
+  backup: {
+    download: () => `${BASE}/backup`,
+  },
 };

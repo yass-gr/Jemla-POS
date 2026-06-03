@@ -14,6 +14,9 @@ import returnRoutes from './routes/returns.js';
 import inventoryRoutes from './routes/inventory.js';
 import reportRoutes from './routes/reports.js';
 import favoriteRoutes from './routes/favorites.js';
+import settingsRoutes from './routes/settings.js';
+import usersRoutes from './routes/users.js';
+import backupRoutes from './routes/backup.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -47,6 +50,9 @@ app.use('/api/returns', returnRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/favorites', favoriteRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/backup', backupRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
