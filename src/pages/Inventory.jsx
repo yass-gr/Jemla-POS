@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
@@ -16,6 +17,8 @@ export default function Inventory() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     Promise.all([
@@ -43,6 +46,8 @@ export default function Inventory() {
 
   const totalStock = products.reduce((s, p) => s + p.stock, 0);
   const lowStock = products.filter(p => p.stock < 10).length;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="space-y-gutter pb-xl">
@@ -87,11 +92,11 @@ export default function Inventory() {
           <Input
             type="text" placeholder="Rechercher un produit..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="pl-10"
           />
         </div>
-        <Select value={filter} onValueChange={setFilter}>
+        <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
           <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous</SelectItem>
@@ -114,7 +119,7 @@ export default function Inventory() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map(p => (
+              {paginated.map(p => (
                 <TableRow key={p.id}>
                   <TableCell className="font-bold text-on-surface">{p.name}</TableCell>
                   <TableCell className="text-on-surface-variant">{p.category}</TableCell>
@@ -128,11 +133,34 @@ export default function Inventory() {
                   </TableCell>
                 </TableRow>
               ))}
-              {filtered.length === 0 && !loading && (
+              {paginated.length === 0 && !loading && (
                 <TableRow><TableCell colSpan="4" className="text-center py-8 text-on-surface-variant">Aucun produit trouvé</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
+          <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/20 flex items-center justify-between">
+            <p className="text-xs text-on-surface-variant">
+              {filtered.length > 0
+                ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} produits`
+                : 'Aucun produit'}
+            </p>
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                  <Button key={p} variant={p === page ? 'default' : 'ghost'} size="icon" onClick={() => setPage(p)}
+                    className={p === page ? '' : 'text-on-surface-variant'}>
+                    {p}
+                  </Button>
+                ))}
+                <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </Button>
+              </div>
+            )}
+          </div>
         </Card>
 
         <Card className="overflow-hidden">

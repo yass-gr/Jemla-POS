@@ -17,6 +17,8 @@ export default function Debts() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     api.customers.list().then(data => {
@@ -39,6 +41,8 @@ export default function Debts() {
   }
 
   const totalDebts = filtered.reduce((sum, c) => sum + c.debt_balance, 0);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="space-y-gutter pb-xl">
@@ -85,11 +89,11 @@ export default function Debts() {
           <Input
             type="text" placeholder="Rechercher un client..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="pl-10"
           />
         </div>
-        <Select value={filter} onValueChange={setFilter}>
+        <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
           <SelectTrigger className="w-[160px]"><SelectValue placeholder="Filtrer" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous</SelectItem>
@@ -111,7 +115,7 @@ export default function Debts() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((c) => {
+            {paginated.map((c) => {
               const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
               return (
                 <TableRow key={c.id}>
@@ -139,13 +143,33 @@ export default function Debts() {
                 </TableRow>
               );
             })}
-            {filtered.length === 0 && !loading && (
+            {paginated.length === 0 && !loading && (
               <TableRow><TableCell colSpan="4" className="text-center py-8 text-on-surface-variant">Aucune dette impayée</TableCell></TableRow>
             )}
           </TableBody>
         </Table>
-        <div className="px-4 py-3 border-t border-outline-variant/30 flex items-center justify-between">
-          <p className="text-xs text-on-surface-variant">{filtered.length} clients avec dettes</p>
+        <div className="px-4 py-3 bg-surface-container/30 border-t border-outline-variant/30 flex items-center justify-between">
+          <p className="text-xs text-on-surface-variant">
+            {filtered.length > 0
+              ? `Affichage ${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filtered.length)} sur ${filtered.length} clients`
+              : 'Aucun client'}
+          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+                <span className="material-symbols-outlined">chevron_left</span>
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <Button key={p} variant={p === page ? 'default' : 'ghost'} size="icon" onClick={() => setPage(p)}
+                  className={p === page ? '' : 'text-on-surface-variant'}>
+                  {p}
+                </Button>
+              ))}
+              <Button variant="ghost" size="icon" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+                <span className="material-symbols-outlined">chevron_right</span>
+              </Button>
+            </div>
+          )}
         </div>
       </Card>
     </div>
