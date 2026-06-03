@@ -353,7 +353,7 @@ export default function POS() {
       <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
         <div className="flex items-center justify-between mb-3 shrink-0">
           <h2 className="font-bold text-[18px] text-[#0f172a] dark:text-foreground">
-            {t('pos.products')} <span className="text-[#64748B] dark:text-muted-foreground font-normal text-sm ml-2">({filtered.length} {t('pos.articles')})</span>
+            {t('pos.products')} <span className="text-[#64748B] dark:text-muted-foreground font-normal text-sm ms-2">({filtered.length} {t('pos.articles')})</span>
           </h2>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-3 shrink-0">
@@ -373,14 +373,14 @@ export default function POS() {
               <span className="text-[11px] font-medium whitespace-nowrap">{cat}</span>
             </button>
           ))}
-          <div className="relative shrink-0 ml-auto sticky right-0">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#64748B] dark:text-muted-foreground">search</span>
+          <div className="relative shrink-0 ms-auto sticky end-0">
+            <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-sm text-[#64748B] dark:text-muted-foreground">search</span>
             <input
               type="text"
               placeholder={t('pos.search')}
               value={productSearch}
               onChange={e => setProductSearch(e.target.value)}
-              className="w-36 sm:w-48 pl-9 pr-3 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
+              className="w-36 sm:w-48 ps-9 pe-3 py-1.5 bg-[#f8fafc] dark:bg-background rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30 transition-all"
             />
           </div>
         </div>
@@ -391,7 +391,7 @@ export default function POS() {
           <button onClick={() => { loadHeldOrders(); setShowHeldOrders(prev => !prev); }} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors">
             <span className="material-symbols-outlined text-sm">pause_circle</span> {t('pos.suspended')} ({heldOrders.length})
           </button>
-          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors ml-auto">
+          <button onClick={() => setShowRecentSales(prev => !prev)} className="flex items-center gap-1 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors ms-auto">
             <span className="material-symbols-outlined text-sm">history</span> {t('pos.recent')}
           </button>
         </div>
@@ -421,7 +421,7 @@ export default function POS() {
                 <div key={s.id} className="flex items-center justify-between py-1.5 text-xs border-b border-amber-200/20 last:border-0">
                   <div>
                     <span className="text-amber-800 dark:text-amber-300 font-medium">{s.customer_name}</span>
-                    <span className="text-amber-600/60 ml-2">{s.items?.length || 0} {t('pos.items')}</span>
+                    <span className="text-amber-600/60 ms-2">{s.items?.length || 0} {t('pos.items')}</span>
                   </div>
                   <div className="flex gap-2">
                     <span className="text-amber-800 dark:text-amber-300 font-bold">{s.total.toFixed(2)} DH</span>
@@ -444,7 +444,7 @@ export default function POS() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3 pr-2 pb-6">
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-3 pe-2 pb-6">
             {filtered.map((p) => (
               <div
                 key={p.id}
@@ -458,7 +458,7 @@ export default function POS() {
                 )}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleFavorite(p.id); }}
-                  className={`absolute top-1.5 left-1.5 z-10 p-0.5 rounded-full transition-colors ${favorites.has(p.id) ? 'text-[#ef4444] dark:text-red-400' : 'text-[#64748B]/30 dark:text-muted-foreground/30 opacity-0 group-hover:opacity-100'}`}
+                  className={`absolute top-1.5 start-1.5 z-10 p-0.5 rounded-full transition-colors ${favorites.has(p.id) ? 'text-[#ef4444] dark:text-red-400' : 'text-[#64748B]/30 dark:text-muted-foreground/30 opacity-0 group-hover:opacity-100'}`}
                 >
                   <span className="material-symbols-outlined text-sm">{favorites.has(p.id) ? 'favorite' : 'favorite_border'}</span>
                 </button>
@@ -469,7 +469,7 @@ export default function POS() {
                     <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#0F766E]/30 dark:text-teal-400/30">inventory_2</span>
                   )}
                   {p.stock > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
                       <span className="text-white text-[11px] font-bold">{p.stock} {p.unit}</span>
                       {p.price_wholesale && p.wholesale_min_qty && (
                         <span className="text-white/80 text-[8px]">{p.wholesale_min_qty}+kg</span>
@@ -533,7 +533,7 @@ export default function POS() {
 
       {/* Mobile cart button + drawer */}
       {cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white dark:bg-card border-t border-[#F1F5F9] dark:border-border shadow-2xl">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white dark:bg-card border-t border-[#F1F5F9] dark:border-border shadow-2xl">
           <Button
             onClick={() => setShowCartMobile(true)}
             className="w-full h-auto py-2.5 rounded-xl text-sm"
@@ -575,7 +575,7 @@ export default function POS() {
                 </span>
               </div>
               {showCustomerDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+                <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
                   <div className="p-2">
                     <input
                       type="text"
@@ -589,7 +589,7 @@ export default function POS() {
                   <div className="max-h-40 overflow-y-auto">
                     <button
                       onClick={() => { setSelectedCustomer(null); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                      className="w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2"
+                      className="w-full text-start px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2"
                     >
                       <div className="w-6 h-6 rounded-full bg-[#f1f5f9] dark:bg-muted flex items-center justify-center">
                         <span className="material-symbols-outlined text-xs">person_off</span>
@@ -603,7 +603,7 @@ export default function POS() {
                       <button
                         key={c.id}
                         onClick={() => { setSelectedCustomer(c); setShowCustomerDropdown(false); setCustomerSearch(''); }}
-                        className={`w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${
+                        className={`w-full text-start px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${
                           selectedCustomer?.id === c.id ? 'bg-[#0F766E]/10 dark:bg-teal-500/20' : ''
                         }`}
                       >
@@ -653,7 +653,7 @@ export default function POS() {
                     <div className="min-w-0 flex-1">
                       <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-right">{item.price.toFixed(2)}</button>
+                        <button onClick={() => openNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
                         <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
                         {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
                       </div>
@@ -845,7 +845,7 @@ export default function POS() {
                   {t('pos.delivery')}
                 </button>
                 {showDelivery && (
-                  <div className="mt-2 space-y-2 pl-4">
+                  <div className="mt-2 space-y-2 ps-4">
                     <input type="text" placeholder={t('pos.delivery_address')} value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
                     <div className="flex gap-2">
                       <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} className="flex-1 bg-[#f8fafc] dark:bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/30 dark:focus:ring-teal-700/30" />
@@ -891,7 +891,7 @@ export default function POS() {
               <p className="text-sm text-[#64748B] dark:text-muted-foreground mb-2">#{`INV-${String(lastSale.id).padStart(4, '0')}`}</p>
               <p className="text-3xl font-extrabold text-[#0F766E] dark:text-teal-400 mb-4">{lastSale.total.toFixed(2)} DH</p>
 
-              <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 text-left space-y-2 mb-4 text-sm">
+              <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 text-start space-y-2 mb-4 text-sm">
                 <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.method')}</span><span className="font-semibold capitalize">{lastSale.payment_method}</span></div>
                 <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.status')}</span><span className="font-semibold capitalize">{lastSale.payment_status}</span></div>
                 {lastSale.amount_paid > 0 && <div className="flex justify-between"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.paid')}</span><span className="font-semibold">{lastSale.amount_paid.toFixed(2)} DH</span></div>}
@@ -965,7 +965,7 @@ function CartPanel({
             </span>
           </div>
           {showCustomerDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
+            <div className="absolute top-full inset-x-0 mt-1 z-40 bg-white dark:bg-card border border-[#F1F5F9] dark:border-border bg-gradient-to-br from-white via-white to-[#E2E8F0] dark:from-card dark:via-card dark:to-white/[0.07] rounded-xl shadow-xl overflow-hidden">
               <div className="p-2">
                 <input
                   type="text"
@@ -977,7 +977,7 @@ function CartPanel({
                 />
               </div>
               <div className="max-h-40 overflow-y-auto">
-                <button onClick={onClearCustomer} className="w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2">
+                <button onClick={onClearCustomer} className="w-full text-start px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-[#f1f5f9] dark:bg-muted flex items-center justify-center">
                     <span className="material-symbols-outlined text-xs">person_off</span>
                   </div>
@@ -990,7 +990,7 @@ function CartPanel({
                   <button
                     key={c.id}
                     onClick={() => onSelectCustomer(c)}
-                    className={`w-full text-left px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${selectedCustomer?.id === c.id ? 'bg-[#0F766E]/10 dark:bg-teal-500/20' : ''}`}
+                    className={`w-full text-start px-3 py-2 hover:bg-[#f8fafc] dark:hover:bg-accent flex items-center gap-2 ${selectedCustomer?.id === c.id ? 'bg-[#0F766E]/10 dark:bg-teal-500/20' : ''}`}
                   >
                     <div className="w-6 h-6 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
                       <span className="text-[10px] font-bold text-[#0F766E] dark:text-teal-400">{c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>
@@ -1023,7 +1023,7 @@ function CartPanel({
                 <div className="min-w-0 flex-1">
                   <h4 className="font-semibold text-xs text-[#0f172a] dark:text-foreground truncate">{item.product_name}</h4>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-right">{item.price.toFixed(2)}</button>
+                    <button onClick={() => onOpenNumpad('price', item.product_id)} className="w-14 bg-[#f1f5f9] dark:bg-muted rounded px-1 py-0.5 text-[10px] font-semibold text-[#0f172a] dark:text-foreground text-end">{item.price.toFixed(2)}</button>
                     <span className="text-[10px] text-[#64748B] dark:text-muted-foreground">DH / {item.unit}</span>
                     {item.discount > 0 && <Badge variant="destructive" className="text-[8px] px-1 py-0">-{item.discount} DH</Badge>}
                   </div>
@@ -1032,7 +1032,7 @@ function CartPanel({
                   <button onClick={() => onOpenNumpad('discount', item.product_id)} className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/10 dark:hover:bg-teal-500/20 p-0.5 rounded" title={t('pos.discount')}>
                     <span className="material-symbols-outlined text-sm">sell</span>
                   </button>
-                  <button onClick={() => onUpdateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded ml-1 shrink-0">
+                  <button onClick={() => onUpdateQty(item.product_id, -item.qty)} className="text-[#ef4444] dark:text-red-400 hover:bg-[#ef4444]/10 dark:hover:bg-red-950/30 p-0.5 rounded ms-1 shrink-0">
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
                 </div>

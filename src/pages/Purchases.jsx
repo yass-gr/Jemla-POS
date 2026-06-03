@@ -138,8 +138,8 @@ export default function Purchases() {
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
-          <input type="text" placeholder={t('purchases.search')} value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} className="w-full pl-10 pr-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all" />
+          <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
+          <input type="text" placeholder={t('purchases.search')} value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} className="w-full ps-10 pe-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all" />
         </div>
         <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
           <SelectTrigger className="w-[160px] h-10 rounded-[20px] border-[#F1F5F9] dark:border-border text-xs text-[#64748B] dark:text-muted-foreground font-medium">
@@ -158,12 +158,12 @@ export default function Purchases() {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('purchases.table.product')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('purchases.table.supplier')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right">{t('purchases.table.qty')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right">{t('purchases.table.unit_price')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right">{t('purchases.table.total')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('purchases.table.date')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('purchases.table.product')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('purchases.table.supplier')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('purchases.table.qty')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('purchases.table.unit_price')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('purchases.table.total')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('purchases.table.date')}</th>
               </tr>
             </thead>
             <tbody>
@@ -171,9 +171,9 @@ export default function Purchases() {
                 <tr key={p.id} className="group hover:bg-[#f8fafc] dark:hover:bg-accent transition-colors">
                   <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground">{p.product_name}</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{p.supplier || t('purchases.none')}</td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-right">{p.qty}</td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-right">{p.unit_price.toFixed(2)} DH</td>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-right">{p.total.toFixed(2)} DH</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.qty}</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.unit_price.toFixed(2)} DH</td>
+                  <td className="px-4 py-3 text-xs font-semibold text-[#0f172a] dark:text-foreground text-end">{p.total.toFixed(2)} DH</td>
                   <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}
@@ -234,14 +234,14 @@ export default function Purchases() {
             <div>
               <label className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-1 block">{t('purchases.form.qty')} *</label>
               <button type="button" onClick={() => openNumpad('qty', form.qty)}
-                className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-left text-sm text-[#0f172a] dark:text-foreground">
+                className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-start text-sm text-[#0f172a] dark:text-foreground">
                 {form.qty}
               </button>
             </div>
             <div>
               <label className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-1 block">{t('purchases.form.unit_price')} *</label>
               <button type="button" onClick={() => openNumpad('unit_price', form.unit_price)}
-                className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-left text-sm text-[#0f172a] dark:text-foreground">
+                className="w-full h-10 rounded-[20px] border border-[#F1F5F9] dark:border-border bg-white dark:bg-card px-3 text-start text-sm text-[#0f172a] dark:text-foreground">
                 {form.unit_price.toFixed(2)} DH
               </button>
             </div>

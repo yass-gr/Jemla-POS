@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 
 const Table = React.forwardRef(({ className, ...props }, ref) => (
   <div className="relative w-full overflow-auto">
-    <table ref={ref} className={cn("w-full text-left border-collapse", className)} {...props} />
+    <table ref={ref} className={cn("w-full text-start border-collapse", className)} {...props} />
   </div>
 ))
 Table.displayName = "Table"

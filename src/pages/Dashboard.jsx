@@ -376,14 +376,14 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-start border-collapse">
             <thead>
               <tr className="bg-muted/50">
                 <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('dashboard.ref_header')}</th>
                 <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('dashboard.client_header')}</th>
                 <th className="hidden sm:table-cell px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('dashboard.date_header')}</th>
                 <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('dashboard.status_header')}</th>
-                <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-right">{t('dashboard.amount_header')}</th>
+                <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-end">{t('dashboard.amount_header')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -404,7 +404,7 @@ export default function Dashboard() {
                       {statusLabel(tx.status)}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-right font-bold text-xs text-foreground">{formatPrice(tx.total)} DH</td>
+                  <td className="px-5 py-3.5 text-end font-bold text-xs text-foreground">{formatPrice(tx.total)} DH</td>
                 </tr>
               ))}
               {recentTx.length === 0 && (

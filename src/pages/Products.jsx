@@ -73,8 +73,8 @@ export default function Products() {
 
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
         <div className="relative flex-1 w-full md:max-w-xs">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
-          <input type="text" placeholder={t('products.search')} value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} className="w-full pl-10 pr-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all" />
+          <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
+          <input type="text" placeholder={t('products.search')} value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} className="w-full ps-10 pe-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all" />
         </div>
         <div className="flex bg-[#f1f5f9] dark:bg-muted p-0.5 rounded-lg flex-wrap">
           {categories.map(cat => (
@@ -89,7 +89,7 @@ export default function Products() {
         </div>
         <label className="flex items-center gap-2 cursor-pointer shrink-0">
           <input type="checkbox" className="sr-only peer" checked={filter === 'low'} onChange={() => setFilter(filter === 'low' ? 'all' : 'low')} />
-          <div className="w-9 h-5 bg-[#f1f5f9] dark:bg-muted peer-checked:bg-red-400 rounded-full relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-muted-foreground after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" />
+          <div className="w-9 h-5 bg-[#f1f5f9] dark:bg-muted peer-checked:bg-red-400 rounded-full relative after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white dark:after:bg-muted-foreground after:rounded-full after:h-4 after:w-4 after:transition-all ltr:peer-checked:after:translate-x-4 rtl:peer-checked:after:-translate-x-4" />
           <span className="text-[11px] font-medium text-[#64748B] dark:text-muted-foreground">{t('products.low_stock_only')}</span>
         </label>
       </div>
@@ -98,12 +98,12 @@ export default function Products() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#F1F5F9] dark:border-border">
-              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('products.table.product')}</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('products.table.category')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('products.table.product')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('products.table.category')}</th>
               <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-center">{t('products.table.unit')}</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right">{t('products.table.price')}</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('products.table.stock')}</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-right">{t('products.table.actions')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('products.table.price')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('products.table.stock')}</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-end">{t('products.table.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +125,7 @@ export default function Products() {
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${p.category === 'Fruits' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}`}>{p.category}</span>
                 </td>
                 <td className="px-4 py-3 text-xs text-[#64748B] dark:text-muted-foreground text-center">{p.unit}</td>
-                <td className="px-4 py-3 text-xs font-semibold text-[#0F766E] dark:text-teal-400 text-right">{p.price.toFixed(2)} DH</td>
+                <td className="px-4 py-3 text-xs font-semibold text-[#0F766E] dark:text-teal-400 text-end">{p.price.toFixed(2)} DH</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-col gap-1">
                     <div className="w-28 h-1.5 bg-[#f1f5f9] dark:bg-muted rounded-full overflow-hidden">
@@ -137,7 +137,7 @@ export default function Products() {
                     </p>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-end">
                   <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button className="text-[#0F766E] dark:text-teal-400 hover:bg-[#0F766E]/8 dark:hover:bg-teal-500/20 p-1.5 rounded-lg transition-colors">
                       <span className="material-symbols-outlined text-sm">edit</span>

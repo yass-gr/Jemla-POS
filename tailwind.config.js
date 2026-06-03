@@ -101,6 +101,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        arabic: ['Noto Sans Arabic', 'sans-serif'],
         'display-lg': ['Hanken Grotesk', 'sans-serif'],
         'title-lg': ['Inter', 'sans-serif'],
         'headline-lg': ['Hanken Grotesk', 'sans-serif'],

@@ -39,12 +39,12 @@ export default function Login() {
           <div>
             <label className="block text-xs font-bold text-[#64748B] dark:text-muted-foreground mb-2">{t('login.username')}</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground z-10">person</span>
+              <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground z-10">person</span>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full pl-12 pr-4 h-12 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
+                className="w-full ps-12 pe-4 h-12 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
                 placeholder="admin"
                 autoFocus
               />
@@ -54,12 +54,12 @@ export default function Login() {
           <div>
             <label className="block text-xs font-bold text-[#64748B] dark:text-muted-foreground mb-2">{t('login.password')}</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground z-10">lock</span>
+              <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground z-10">lock</span>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 h-12 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
+                className="w-full ps-12 pe-4 h-12 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] dark:placeholder:text-muted-foreground outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
                 placeholder="••••••••"
               />
             </div>

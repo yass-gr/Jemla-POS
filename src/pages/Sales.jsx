@@ -153,13 +153,13 @@ export default function Sales() {
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
+          <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-muted-foreground text-lg">search</span>
           <input
             type="text"
             placeholder={t('sales.search')}
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
+            className="w-full ps-10 pe-4 h-10 bg-white dark:bg-card rounded-[20px] border border-[#F1F5F9] dark:border-border text-sm text-[#0f172a] dark:text-foreground placeholder:text-[#94a3b8] outline-none focus:border-[#0F766E]/30 dark:focus:border-teal-700 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.1)] dark:focus:shadow-[0_0_0_3px_rgba(20,184,166,0.2)] transition-all"
           />
         </div>
         <Select value={filter} onValueChange={v => { setFilter(v); setPage(1); }}>
@@ -180,14 +180,14 @@ export default function Sales() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#F1F5F9] dark:border-border">
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.invoice')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.date')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.customer')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.items')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.method')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.total')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.status')}</th>
-                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-left">{t('sales.table.actions')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.invoice')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.date')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.customer')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.items')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.method')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.total')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.status')}</th>
+                <th className="px-4 py-3 text-[10px] font-bold text-[#64748B] dark:text-muted-foreground tracking-wider uppercase text-start">{t('sales.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -196,7 +196,7 @@ export default function Sales() {
                   <td className="px-4 py-3 text-xs font-semibold text-[#0F766E] dark:text-teal-400">{s.invoice}</td>
                   <td className="px-4 py-3">
                     <span className="text-xs font-semibold text-[#0f172a] dark:text-foreground">{s.date}</span>
-                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground ml-1">{s.time}</span>
+                    <span className="text-[10px] text-[#64748B] dark:text-muted-foreground ms-1">{s.time}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">

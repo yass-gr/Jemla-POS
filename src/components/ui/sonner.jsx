@@ -13,8 +13,8 @@ const Toaster = (props) => {
             "group-[.toast]:bg-primary group-[.toast]:text-on-primary",
           cancelButton:
             "group-[.toast]:bg-surface-container group-[.toast]:text-on-surface-variant dark:group-[.toast]:bg-muted dark:group-[.toast]:text-muted-foreground",
-          success: "group-[.toast]:!border-l-4 group-[.toast]:!border-l-primary",
-          error: "group-[.toast]:!border-l-4 group-[.toast]:!border-l-error",
+          success: "group-[.toast]:!border-s-4 group-[.toast]:!border-s-primary",
+          error: "group-[.toast]:!border-s-4 group-[.toast]:!border-s-error",
         },
       }}
       {...props}

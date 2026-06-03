@@ -36,15 +36,15 @@ export default function Header({ onMenuClick }) {
           <div className={`relative w-full max-w-sm transition-all duration-200 ${
             searchFocused ? 'lg:max-w-lg' : ''
           }`}>
-            <div className="flex items-center w-full h-9 pl-3 pr-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
-              <span className="material-symbols-outlined text-base text-muted-foreground mr-2">search</span>
+            <div className="flex items-center w-full h-9 ps-3 pe-8 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all">
+              <span className="material-symbols-outlined text-base text-muted-foreground me-2">search</span>
               <input
                 className="flex-1 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
                 placeholder={t('header.search')}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
-              <kbd className="absolute right-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
+              <kbd className="absolute end-2.5 hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-muted border border-border rounded-md">
                 ⌘K
               </kbd>
             </div>
@@ -67,7 +67,7 @@ export default function Header({ onMenuClick }) {
           </button>
           <button className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent transition-colors text-muted-foreground relative">
             <span className="material-symbols-outlined text-xl">notifications</span>
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full ring-2 ring-card" />
+            <span className="absolute top-2 end-2 w-1.5 h-1.5 bg-red-500 rounded-full ring-2 ring-card" />
           </button>
           <div className="relative" ref={menuRef}>
             <button
@@ -77,20 +77,20 @@ export default function Header({ onMenuClick }) {
               <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-teal-400 font-bold text-xs ring-1 ring-border group-hover:ring-teal-500/30 transition-all shrink-0">
                 {initials}
               </div>
-              <div className="text-left hidden sm:block">
+              <div className="text-start hidden sm:block">
                 <p className="text-sm font-semibold text-foreground leading-tight">{user?.name || t('header.user')}</p>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{user?.role || ''}</p>
               </div>
             </button>
             {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-1 z-50">
+              <div className="absolute end-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-1 z-50">
                 <div className="px-3 py-2 border-b border-border">
                   <p className="text-sm font-semibold text-foreground">{user?.name}</p>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{user?.role || ''}</p>
                 </div>
                 <button
                   onClick={logout}
-                  className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2"
+                  className="w-full text-start px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-base">logout</span>
                   {t('header.logout')}

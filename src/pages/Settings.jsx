@@ -315,7 +315,7 @@ export default function Settings() {
                 <TableHead>{t('settings.account.username')}</TableHead>
                 <TableHead>{t('settings.account.name')}</TableHead>
                 <TableHead>{t('settings.account.role')}</TableHead>
-                <TableHead className="text-right">{t('common.delete')}</TableHead>
+                <TableHead className="text-end">{t('common.delete')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -335,7 +335,7 @@ export default function Settings() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     <div className="flex items-center justify-end gap-2">
                       <Button variant="ghost" size="icon" className="text-primary" onClick={() => openEditUser(u)}>
                         <span className="material-symbols-outlined">edit</span>

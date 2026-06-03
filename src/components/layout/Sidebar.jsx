@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -18,9 +18,10 @@ const navItems = [
 
 export default function Sidebar({ open, onClose }) {
   const [expanded, setExpanded] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const showLabel = expanded || open;
+  const isRtl = i18n.language === 'ar';
 
   return (
     <>
@@ -32,8 +33,8 @@ export default function Sidebar({ open, onClose }) {
       />
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex flex-col h-screen bg-card border-r border-border transition-all duration-300 ease-out
-          ${open ? 'w-[240px] translate-x-0' : '-translate-x-full'}
+        className={`fixed start-0 top-0 z-50 flex flex-col h-screen bg-card border-e border-border transition-all duration-300 ease-out
+          ${open ? 'w-[240px] translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full'}
           ${expanded ? 'lg:w-[240px]' : 'lg:w-[60px]'}
           lg:translate-x-0`}
       >
@@ -51,8 +52,8 @@ export default function Sidebar({ open, onClose }) {
             className="hidden lg:flex w-8 h-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shrink-0"
           >
             <span className="material-symbols-outlined text-lg transition-transform duration-300" style={{
-              transform: expanded ? 'rotate(0deg)' : 'rotate(180deg)',
-            }}>{expanded ? 'chevron_left' : 'chevron_right'}</span>
+              transform: `rotate(${expanded !== isRtl ? 0 : 180}deg)`,
+            }}>{expanded !== isRtl ? 'chevron_left' : 'chevron_right'}</span>
           </button>
         </div>
 

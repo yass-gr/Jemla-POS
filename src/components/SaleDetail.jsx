@@ -77,7 +77,7 @@ export default function SaleDetail({ saleId, onClose }) {
               {sale.note && (
                 <div className="flex justify-between">
                   <span className="text-label-md text-on-surface-variant">Note</span>
-                  <span className="font-bold text-body-md text-right max-w-[200px]">{sale.note}</span>
+                  <span className="font-bold text-body-md text-end max-w-[200px]">{sale.note}</span>
                 </div>
               )}
             </div>
@@ -91,10 +91,10 @@ export default function SaleDetail({ saleId, onClose }) {
                       <p className="font-bold text-body-md text-on-surface truncate">{item.product_name}</p>
                       <p className="text-label-md text-on-surface-variant">
                         {item.price.toFixed(2)} DH × {item.qty} {item.unit}
-                        {item.discount > 0 && <span className="text-error ml-2">-{item.discount} DH</span>}
+                        {item.discount > 0 && <span className="text-error ms-2">-{item.discount} DH</span>}
                       </p>
                     </div>
-                    <p className="font-bold text-body-lg text-primary ml-4">
+                    <p className="font-bold text-body-lg text-primary ms-4">
                       {(item.price * item.qty).toFixed(2)} DH
                     </p>
                   </div>
