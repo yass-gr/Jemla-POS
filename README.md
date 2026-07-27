@@ -11,6 +11,30 @@
 
 ---
 
+## 🖼️ Screenshots
+
+| Dashboard (Light) | Dashboard (Dark) |
+|---|---|
+| ![Dashboard Light](screenshots/dashboard%20page%20.png) | ![Dashboard Dark](screenshots/dashboard%20page%20dark.png) |
+
+| POS Terminal (Light) | POS Terminal (Dark) |
+|---|---|
+| ![POS Light](screenshots/pos%20page.png) | ![POS Dark](screenshots/pos%20page%20dark.png) |
+
+| Products | Customers |
+|---|---|
+| ![Products](screenshots/products%20page%20.png) | ![Customers](screenshots/clients%20page.png) |
+
+| Reports (FR) | Reports (Dark) | Reports (AR) |
+|---|---|---|
+| ![Reports FR](screenshots/reports%20page.png) | ![Reports Dark](screenshots/reports%20page%20dark.png) | ![Reports AR](screenshots/reports%20page%20(ar).png) |
+
+| Settings | Notifications |
+|---|---|
+| ![Settings](screenshots/settings%20page.png) | ![Notifications](screenshots/notifications.png) |
+
+---
+
 ## 📖 The Story
 
 Jemla POS was born from a real problem faced by a local **Moroccan wholesale fruit & vegetable dealer** — a "Jemla" market trader who struggled to keep track of his business.
@@ -89,30 +113,6 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **GSAP animations** — smooth page transitions and card reveals
 - **Print-optimized CSS** — clean receipts and reports
 - **Responsive** — mobile-friendly with collapsible sidebar and cart drawer
-
----
-
-## 🖼️ Screenshots
-
-| Dashboard (Light) | Dashboard (Dark) |
-|---|---|
-| ![Dashboard Light](screenshots/dashboard%20page%20.png) | ![Dashboard Dark](screenshots/dashboard%20page%20dark.png) |
-
-| POS Terminal (Light) | POS Terminal (Dark) |
-|---|---|
-| ![POS Light](screenshots/pos%20page.png) | ![POS Dark](screenshots/pos%20page%20dark.png) |
-
-| Products | Customers |
-|---|---|
-| ![Products](screenshots/products%20page%20.png) | ![Customers](screenshots/clients%20page.png) |
-
-| Reports (FR) | Reports (Dark) | Reports (AR) |
-|---|---|---|
-| ![Reports FR](screenshots/reports%20page.png) | ![Reports Dark](screenshots/reports%20page%20dark.png) | ![Reports AR](screenshots/reports%20page%20(ar).png) |
-
-| Settings | Notifications |
-|---|---|
-| ![Settings](screenshots/settings%20page.png) | ![Notifications](screenshots/notifications.png) |
 
 ---
 
