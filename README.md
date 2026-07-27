@@ -1,4 +1,4 @@
-# جملة POS — Jemla POS
+# Jemla POS
 
 > **Point of Sale & Business Management System for Wholesale Fruit & Vegetable Distribution**
 
