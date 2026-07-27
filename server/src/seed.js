@@ -204,7 +204,6 @@ async function seed() {
     exec('INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)', [k, v]);
   }
 
-  console.log('Generating purchases...');
   const now = new Date();
   let purchaseCount = 0;
   const DAYS = 90;
@@ -230,9 +229,6 @@ async function seed() {
       }
     }
   }
-  console.log(`  ${purchaseCount} purchase records`);
-
-  console.log('Generating sales...');
   let salesCount = 0, returnCount = 0;
   for (let day = DAYS; day >= 0; day--) {
     const saleDate = new Date(now);
@@ -298,9 +294,6 @@ async function seed() {
       }
     }
   }
-  console.log(`  ${salesCount} sales records`);
-  console.log(`  ${returnCount} return records`);
-
   // Update debt_balance for customers with credit sales
   for (const cid of customerIds) {
     const debtTotal = one(`SELECT COALESCE(SUM(total - amount_paid), 0) as debt FROM sales WHERE customer_id = ? AND payment_status = 'unpaid'`, [cid]);
@@ -309,7 +302,7 @@ async function seed() {
     }
   }
 
-  // A few held sales for notification testing
+  // Held sales
   for (let h = 0; h < 3; h++) {
     const heldDate = new Date(now);
     heldDate.setDate(heldDate.getDate() - Math.floor(Math.random() * 7));
@@ -330,7 +323,7 @@ async function seed() {
     }
   }
 
-  // Some canceled sales
+  // Canceled sales
   for (let c = 0; c < 5; c++) {
     const cancelDate = new Date(now);
     cancelDate.setDate(cancelDate.getDate() - Math.floor(Math.random() * 30));
@@ -339,7 +332,7 @@ async function seed() {
       [pick(customerIds), 1, Math.round(rand(50, 500) * 100) / 100, 0, 'cancelled', 'unpaid', fmtDate(cancelDate)]);
   }
 
-  // Fix stock levels: reduce by sales quantity sold
+  // Fix stock levels
   for (const p of allProducts) {
     const sold = one(`SELECT COALESCE(SUM(si.qty), 0) as qty FROM sale_items si JOIN sales s ON si.sale_id = s.id WHERE si.product_id = ? AND s.status = 'completed'`, [p.id]);
     const returned = one(`SELECT COALESCE(SUM(qty), 0) as qty FROM returns WHERE product_id = ?`, [p.id]);
@@ -351,18 +344,6 @@ async function seed() {
   const data = db.export();
   fs.writeFileSync(DB_PATH, Buffer.from(data));
 
-  console.log('\n✅ Seed complete!');
-  console.log(`  - 2 users (admin/admin123, cashier/cashier123)`);
-  console.log(`  - ${products.length} products`);
-  console.log(`  - ${customers.length} customers`);
-  console.log(`  - ${suppliers.length} suppliers`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM purchases')[0].c} purchases`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM sales')[0].c} sales`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM returns')[0].c} returns`);
-  console.log(`  - ${all("SELECT COUNT(*) as c FROM sales WHERE status = 'held'")[0].c} held sales`);
-  console.log(`  - ${all("SELECT COUNT(*) as c FROM sales WHERE status = 'cancelled'")[0].c} cancelled sales`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM customers WHERE debt_balance > 0')[0].c} customers with debt`);
-  console.log(`  - ${all('SELECT COUNT(*) as c FROM products WHERE stock > 0 AND stock < 10')[0].c} low stock products`);
 }
 
 seed().catch(console.error);
