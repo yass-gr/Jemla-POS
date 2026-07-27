@@ -25,9 +25,17 @@
 |---|---|
 | ![Products](screenshots/products%20page%20.png) | ![Customers](screenshots/clients%20page.png) |
 
-| Reports (FR) | Reports (Dark) | Reports (AR) |
-|---|---|---|
-| ![Reports FR](screenshots/reports%20page.png) | ![Reports Dark](screenshots/reports%20page%20dark.png) | ![Reports AR](screenshots/reports%20page%20(ar).png) |
+| Reports (FR) |
+|---|
+| ![Reports FR](screenshots/reports%20page.png) |
+
+| Reports (Dark) |
+|---|
+| ![Reports Dark](screenshots/reports%20page%20dark.png) |
+
+| Reports (AR) |
+|---|
+| ![Reports AR](screenshots/reports%20page%20(ar).png) |
 
 | Settings | Notifications |
 |---|---|
