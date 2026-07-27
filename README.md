@@ -150,8 +150,8 @@ This application was built to bring order, clarity, and professionalism to a bus
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/jemla-pos.git
-cd jemla-pos
+git clone https://github.com/your-username/POS-Application-Jemla-Tracker-Wholesale-Fruit-Vegetable-Distribution.git
+cd POS-Application-Jemla-Tracker-Wholesale-Fruit-Vegetable-Distribution
 
 # 2. Install frontend dependencies
 npm install
