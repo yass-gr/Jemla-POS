@@ -127,7 +127,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 
 | Layer | Tech |
 |---|---|
-| **Frontend** | React 18, React Router 6, Tailwind CSS 3, shadcn/ui |
+| **Frontend** | React 19, React Router 6, Tailwind CSS 3, shadcn/ui |
 | **State & Data** | React Context, SQLite via sql.js |
 | **Charts** | Recharts |
 | **Internationalization** | i18next, react-i18next (FR / AR) |
@@ -247,8 +247,6 @@ Switch languages from the header dropdown or Settings page.
 
 ## 📄 License
 
-Private — All Rights Reserved.
+MIT
 
----
 
-*Built with ❤️ for the Moroccan Jemla market — because every business, big or small, deserves great tools.*
