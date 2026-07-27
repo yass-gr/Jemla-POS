@@ -31,7 +31,7 @@ export default function Login() {
           <div className="w-16 h-16 bg-[#0F766E] dark:bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#0F766E]/20 dark:shadow-teal-900/30">
             <span className="material-symbols-outlined text-3xl text-white">store</span>
           </div>
-          <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground">Jemla POS</h1>
+          <h1 className="text-[26px] font-extrabold text-[#0f172a] dark:text-foreground">Jemla</h1>
           <p className="text-sm text-[#64748B] dark:text-muted-foreground mt-1">{t('login.subtitle')}</p>
         </div>
 

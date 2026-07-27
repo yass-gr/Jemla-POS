@@ -50,7 +50,6 @@ export default function Purchases() {
 
   useEffect(() => { loadData(); }, []);
 
-  // Scroll to highlighted purchase
   useEffect(() => {
     if (highlightedId && purchases.length > 0) {
       setTimeout(() => {

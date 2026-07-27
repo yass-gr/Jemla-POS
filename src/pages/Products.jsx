@@ -43,14 +43,12 @@ export default function Products() {
     loadProducts();
   }, []);
 
-  // Scroll to and highlight the searched item
   useEffect(() => {
     if (highlightedId && products.length > 0) {
       setTimeout(() => {
         const element = document.getElementById(`product-${highlightedId}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Remove highlight after 3 seconds
           setTimeout(() => setHighlightedId(null), 3000);
         }
       }, 500);
@@ -101,7 +99,6 @@ export default function Products() {
   };
 
   const handleSave = async () => {
-    // Validate form and collect errors
     const errors = {};
     if (!form.name || form.name.trim() === '') errors.name = 'Le nom est requis';
     if (!form.category || form.category.trim() === '') errors.category = 'La catégorie est requise';
@@ -276,11 +273,11 @@ export default function Products() {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0 overflow-hidden">
-                          {p.image_url ? (
-                            <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                          ) : (
-                            <span className="material-symbols-outlined text-sm">inventory_2</span>
+                        <div className="w-7 h-7 rounded-full bg-[#0F766E]/10 dark:bg-teal-500/20 flex items-center justify-center text-[#0F766E] dark:text-teal-400 font-bold text-[10px] shrink-0 overflow-hidden relative">
+                          <span className="material-symbols-outlined text-sm">inventory_2</span>
+                          {p.image_url && (
+                            <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy"
+                              onError={(e) => e.target.remove()} />
                           )}
                         </div>
                         <div>

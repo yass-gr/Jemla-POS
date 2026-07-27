@@ -40,7 +40,7 @@ async function reprintSale(saleId) {
         .note { margin-top: 16px; font-size: 12px; color: #666; font-style: italic; }
         @media print { body { padding: 20px; } }
       </style></head><body>
-        <div class="header"><h1>Simi Shop</h1><p>Grossiste en fruits et légumes</p></div>
+        <div class="header"><h1>Jemla</h1><p>Grossiste en fruits et légumes</p></div>
         <div class="title">BON DE VENTE (Réimpression)</div>
         <div class="info">
           <span>N°: INV-${String(sale.id).padStart(4, '0')}</span>
@@ -104,7 +104,6 @@ export default function Sales() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  // Scroll to highlighted sale
   useEffect(() => {
     if (highlightedId && sales.length > 0) {
       setTimeout(() => {

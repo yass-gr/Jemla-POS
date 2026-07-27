@@ -48,7 +48,6 @@ export default function AppLayout({ children }) {
           {children}
         </main>
         
-        {/* Back to Top Button */}
         {showBackToTop && (
           <button
             onClick={scrollToTop}

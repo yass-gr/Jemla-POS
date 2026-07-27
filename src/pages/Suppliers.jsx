@@ -37,7 +37,6 @@ export default function Suppliers() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  // Scroll to highlighted supplier
   useEffect(() => {
     if (highlightedId && suppliers.length > 0) {
       setTimeout(() => {

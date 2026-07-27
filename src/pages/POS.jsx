@@ -94,25 +94,20 @@ export default function POS() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  // Keyboard shortcuts for POS
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // F1 - Show shortcuts help
       if (e.key === 'F1') {
         e.preventDefault();
         setShowShortcuts(prev => !prev);
       }
-      // F2 - Focus search
       if (e.key === 'F2') {
         e.preventDefault();
         document.getElementById('product-search-input')?.focus();
       }
-      // F4 - Show/hide cart on mobile
       if (e.key === 'F4') {
         e.preventDefault();
         setShowCartMobile(prev => !prev);
       }
-      // Escape - Close modals
       if (e.key === 'Escape') {
         setShowCustomerDropdown(false);
         setShowHeldOrders(false);
@@ -120,12 +115,10 @@ export default function POS() {
         setShowShortcuts(false);
         if (showPaymentModal) setShowPaymentModal(false);
       }
-      // Ctrl+H - Hold order
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
         if (cart.length > 0) handleHoldOrder();
       }
-      // Ctrl+P - Payment
       if (e.ctrlKey && e.key === 'p') {
         e.preventDefault();
         if (cart.length > 0) openPaymentModal();
@@ -429,7 +422,7 @@ export default function POS() {
     try {
       const orders = await api.sales.held();
       setHeldOrders(orders);
-    } catch (err) { /* ignore */ }
+    } catch (err) {}
   }
 
   async function toggleFavorite(productId) {
@@ -490,7 +483,6 @@ export default function POS() {
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-4 lg:gap-gutter h-full min-h-0 pb-20 lg:pb-0">
 
-      {/* Products */}
       <div className="lg:col-span-8 flex flex-col min-h-0 lg:overflow-y-auto">
         <div className="flex items-center justify-between mb-3 shrink-0">
           <h2 className="font-bold text-[18px] text-[#0f172a] dark:text-foreground">
@@ -544,7 +536,6 @@ export default function POS() {
           </div>
         </div>
 
-        {/* Stats bar */}
         <div className="flex items-center gap-4 mb-3 text-xs text-[#64748B] dark:text-muted-foreground shrink-0">
           <span className="flex items-center gap-1 font-semibold text-[#0f172a] dark:text-foreground"><span className="material-symbols-outlined text-sm text-[#64748B] dark:text-muted-foreground">schedule</span> {dateStr} | {timeStr}</span>
           <span className="w-px h-4 bg-border" />
@@ -557,7 +548,6 @@ export default function POS() {
           </button>
         </div>
 
-        {/* Recent sales panel */}
         {showRecentSales && (
           <div className="mb-3 bg-white dark:bg-card rounded-xl border border-[#F1F5F9] dark:border-border dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] p-3 shrink-0 max-h-48 overflow-y-auto">
             <h3 className="text-xs font-bold text-[#0f172a] dark:text-foreground mb-2">{t('pos.recent_sales')}</h3>
@@ -571,7 +561,6 @@ export default function POS() {
           </div>
         )}
 
-        {/* Held orders panel */}
         {showHeldOrders && (
           <div className="mb-3 bg-amber-50/80 dark:bg-amber-950/30 rounded-xl border border-amber-200/50 p-3 shrink-0 max-h-48 overflow-y-auto">
             <h3 className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-2">{t('pos.suspended')}</h3>
@@ -624,10 +613,10 @@ export default function POS() {
                   <span className="material-symbols-outlined text-sm">{favorites.has(p.id) ? 'favorite' : 'favorite_border'}</span>
                 </button>
                 <div className="aspect-square mb-1.5 rounded-xl overflow-hidden bg-[#f8fafc] dark:bg-background flex items-center justify-center relative">
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#0F766E]/30 dark:text-teal-400/30">inventory_2</span>
+                  <span className="material-symbols-outlined text-3xl sm:text-4xl text-[#0F766E]/30 dark:text-teal-400/30">inventory_2</span>
+                  {p.image_url && (
+                    <img src={p.image_url} alt={p.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy"
+                      onError={(e) => e.target.remove()} />
                   )}
                   {p.stock > 0 && (
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1 pt-4 flex items-end justify-between">
@@ -683,7 +672,6 @@ export default function POS() {
         )}
       </div>
 
-      {/* Desktop Cart */}
       <div className="hidden lg:flex lg:col-span-4 flex-col self-start sticky top-0">
         <CartPanel
           cart={cart}
@@ -718,7 +706,6 @@ export default function POS() {
         />
       </div>
 
-      {/* Mobile cart button - always fixed at bottom */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white/95 dark:bg-card/95 backdrop-blur-md border-t border-[#F1F5F9] dark:border-border shadow-2xl print:hidden">
         <Button
           onClick={() => setShowCartMobile(true)}
@@ -728,7 +715,6 @@ export default function POS() {
         </Button>
       </div>
 
-      {/* Mobile cart drawer */}
       {cart.length > 0 && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-white/80 dark:bg-card/80 backdrop-blur-md border-t border-[#F1F5F9] dark:border-border shadow-2xl">
           <Button
@@ -741,7 +727,6 @@ export default function POS() {
         </div>
       )}
 
-      {/* Mobile cart drawer */}
       {showCartMobile && (
         <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-white dark:bg-card">
           <div className="flex items-center justify-between p-4 border-b border-[#F1F5F9] dark:border-border">
@@ -906,7 +891,6 @@ export default function POS() {
           )))}
           </div>
 
-              {/* Amount received (only for cash) */}
               {paymentMethod === 'cash' && (
                 <div>
                   <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.amount_received')}</p>
@@ -937,7 +921,6 @@ export default function POS() {
                 </div>
               )}
 
-              {/* Credit payment: partial payment */}
               {paymentMethod === 'credit' && (
                 <div>
                   <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.deposit')}</p>
@@ -954,7 +937,6 @@ export default function POS() {
                 </div>
               )}
 
-              {/* Discount on total */}
               <div>
                 <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.discount_total')}</p>
                 <div className="flex gap-2">
@@ -976,7 +958,6 @@ export default function POS() {
                 </div>
               </div>
 
-              {/* Note */}
               <div>
                 <p className="text-xs font-semibold text-[#64748B] dark:text-muted-foreground mb-1">{t('pos.note')}</p>
                 <textarea
@@ -988,7 +969,6 @@ export default function POS() {
                 />
               </div>
 
-              {/* Delivery toggle */}
               <div>
                 <button onClick={() => setShowDelivery(prev => !prev)} className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-muted-foreground hover:text-[#0f172a] dark:hover:text-foreground transition-colors">
                   <span className="material-symbols-outlined text-sm">{showDelivery ? 'expand_less' : 'expand_more'}</span>
@@ -1005,7 +985,6 @@ export default function POS() {
                 )}
               </div>
 
-              {/* Summary */}
               <div className="bg-[#f8fafc] dark:bg-background rounded-xl p-4 space-y-1.5">
                 <div className="flex justify-between text-sm"><span className="text-[#64748B] dark:text-muted-foreground">{t('pos.subtotal')}</span><span className="font-semibold">{subtotal.toFixed(2)} DH</span></div>
                 {totalDiscount > 0 && <div className="flex justify-between text-sm"><span className="text-[#ef4444] dark:text-red-400">{t('pos.discount')}</span><span className="font-semibold text-[#ef4444] dark:text-red-400">-{totalDiscount.toFixed(2)} DH</span></div>}
@@ -1026,7 +1005,6 @@ export default function POS() {
           </div>
       )}
 
-      {/* Payment Modal (desktop) */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
@@ -1181,7 +1159,6 @@ export default function POS() {
         </div>
       )}
 
-      {/* Invoice Modal */}
       {showInvoiceModal && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-card rounded-[20px] dark:bg-gradient-to-br dark:from-card dark:via-card dark:to-white/[0.07] shadow-2xl w-full max-w-lg mx-4">
@@ -1220,7 +1197,6 @@ export default function POS() {
         onClose={handleNumpadClose}
       />
 
-      {/* Keyboard Shortcuts Help Modal */}
       {showShortcuts && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowShortcuts(false)}>
           <div className="bg-white dark:bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#F1F5F9] dark:border-border" onClick={e => e.stopPropagation()}>
@@ -1466,7 +1442,7 @@ function printBon(sale, settings = {}) {
 
   const taxHtml = showTax ? `<div><span>TVA (${taxRate}%)</span><span>${sale.tax.toFixed(2)} DH</span></div>` : '';
   const logoHtml = showLogo
-    ? `<div class="header"><h1>Simi Shop</h1><p>Grossiste en fruits et légumes</p></div>`
+    ? `<div class="header"><h1>Jemla</h1><p>Grossiste en fruits et légumes</p></div>`
     : `<div class="title">BON DE VENTE</div>`;
   const titleHtml = showLogo ? `<div class="title">BON DE VENTE</div>` : '';
 

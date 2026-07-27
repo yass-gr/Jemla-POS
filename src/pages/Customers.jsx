@@ -34,7 +34,6 @@ export default function Customers() {
   const [form, setForm] = useState(emptyForm);
   const [deleteTarget, setDeleteTarget] = useState(null);
   
-  // Handle highlighting a specific customer from URL params
   const [highlightedId, setHighlightedId] = useState(searchParams.get('highlight') ? parseInt(searchParams.get('highlight')) : null);
 
   useEffect(() => {
@@ -44,7 +43,6 @@ export default function Customers() {
     }
   }, [highlightedId]);
 
-  // Scroll to highlighted customer
   useEffect(() => {
     if (highlightedId && customers.length > 0) {
       setTimeout(() => {

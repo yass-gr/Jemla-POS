@@ -84,7 +84,6 @@ export default function Header({ onMenuClick }) {
         const query = searchQuery.toLowerCase();
         const results = [];
 
-        // Search products
         const products = await api.products.list();
         const matchedProducts = products.filter(p => 
           p.name.toLowerCase().includes(query) || 
@@ -102,7 +101,6 @@ export default function Header({ onMenuClick }) {
           });
         });
 
-        // Search customers
         const customers = await api.customers.list();
         const matchedCustomers = customers.filter(c => 
           c.name.toLowerCase().includes(query) || 
@@ -119,7 +117,6 @@ export default function Header({ onMenuClick }) {
           });
         });
 
-        // Search sales
         const sales = await api.sales.list();
         const matchedSales = sales.filter(s => 
           s.customer_name?.toLowerCase().includes(query) ||
@@ -147,7 +144,6 @@ export default function Header({ onMenuClick }) {
   }, [searchQuery, t]);
 
   const handleSearchSelect = (item) => {
-    // Navigate with search query parameter to filter and highlight the item
     navigate(`${item.path}?search=${encodeURIComponent(searchQuery)}&highlight=${item.id}`);
     setSearchQuery('');
     setShowSuggestions(false);
@@ -156,7 +152,6 @@ export default function Header({ onMenuClick }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to products page with search
       navigate('/products');
       setShowSuggestions(false);
     }
@@ -165,7 +160,7 @@ export default function Header({ onMenuClick }) {
   const initials = user ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??';
 
   return (
-    <header className="fixed top-0 inset-x-0 z-40 border-b border-border bg-background/95 backdrop-blur-md transition-all duration-200 print:hidden">
+    <header className="fixed top-0 right-0 left-0 lg:left-[60px] z-40 border-b border-border bg-background/95 backdrop-blur-md transition-all duration-200 print:hidden">
       <div className="flex items-center justify-between h-14 px-4 lg:px-6">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <button
@@ -178,7 +173,7 @@ export default function Header({ onMenuClick }) {
             searchFocused ? 'lg:max-w-lg' : ''
           }`} ref={searchRef}>
             <form onSubmit={handleSearchSubmit} className="relative">
-              <div className="flex items-center w-full h-9 ps-3 bg-muted border border-transparent rounded-xl text-sm text-foreground outline-none focus-within:border-border focus-within:bg-card transition-all overflow-hidden">
+              <div className="flex items-center w-full h-9 ps-3 bg-muted rounded-xl text-sm text-foreground outline-none focus-within:ring-2 focus-within:ring-ring focus-within:bg-card transition-all overflow-hidden">
                 <span className="material-symbols-outlined text-base text-muted-foreground me-2 shrink-0">search</span>
                 <input
                   type="text"
@@ -189,7 +184,7 @@ export default function Header({ onMenuClick }) {
                     if (searchQuery.trim()) setShowSuggestions(true);
                   }}
                   onBlur={() => setSearchFocused(false)}
-                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none focus:ring-0 focus-visible:outline-none text-sm text-foreground placeholder:text-muted-foreground"
                   placeholder={t('header.search')}
                 />
                 {searchQuery && (
@@ -209,7 +204,6 @@ export default function Header({ onMenuClick }) {
               </div>
             </form>
 
-            {/* Search Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full mt-2 left-0 right-0 bg-card border border-border rounded-xl shadow-xl z-50 max-h-[60vh] overflow-y-auto">
                 <div className="p-2 space-y-1">

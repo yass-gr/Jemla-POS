@@ -43,7 +43,6 @@ export default function Inventory() {
     loadData();
   }, []);
 
-  // Scroll to highlighted product
   useEffect(() => {
     if (highlightedId && products.length > 0) {
       setTimeout(() => {

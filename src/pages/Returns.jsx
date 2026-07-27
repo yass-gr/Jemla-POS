@@ -48,7 +48,6 @@ export default function Returns() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  // Scroll to highlighted return
   useEffect(() => {
     if (highlightedId && returns.length > 0) {
       setTimeout(() => {

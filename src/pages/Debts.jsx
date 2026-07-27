@@ -38,7 +38,6 @@ export default function Debts() {
     loadData();
   }, []);
 
-  // Scroll to highlighted customer with debt
   useEffect(() => {
     if (highlightedId && customers.length > 0) {
       setTimeout(() => {
@@ -287,7 +286,6 @@ export default function Debts() {
         </DialogContent>
       </Dialog>
 
-      {/* PRINT RECEIPT */}
       {receiptData && (
         <Dialog open={!!receiptData} onOpenChange={() => setReceiptData(null)}>
           <DialogContent className="sm:max-w-[400px]">

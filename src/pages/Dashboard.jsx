@@ -171,7 +171,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Hero */}
       <section className="pt-1 pb-2">
         <h1 className="text-[28px] font-extrabold text-foreground leading-tight tracking-tight">
           {t('dashboard.greeting', { name: user?.name || 'Admin' })} 👋
@@ -181,7 +180,6 @@ export default function Dashboard() {
         </p>
       </section>
 
-      {/* KPI Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {kpiCards.map((card, i) => (
           <div
@@ -207,9 +205,7 @@ export default function Dashboard() {
         ))}
       </section>
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-5">
-        {/* Vercel-style Chart */}
         <Card data-reveal className="lg:col-span-7 p-4 sm:p-5 min-h-[280px] sm:min-h-[300px] flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -273,9 +269,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        {/* Right Panel */}
         <div className="lg:col-span-3 flex flex-col gap-5">
-          {/* Top Products */}
           <Card data-reveal className="p-4">
             <h3 className="text-xs font-bold text-foreground mb-3 uppercase tracking-wider">{t('dashboard.top_products')}</h3>
             <div className="space-y-2">
@@ -301,7 +295,6 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Best Customer */}
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-[10px] font-bold text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{t('dashboard.best_customer')}</span>
@@ -327,7 +320,6 @@ export default function Dashboard() {
             )}
           </Card>
 
-          {/* Donut Chart */}
           <Card className="p-4">
             <h3 className="text-xs font-bold text-foreground mb-2 uppercase tracking-wider">{t('dashboard.payments_title')}</h3>
             <div className="flex items-center gap-3">
@@ -367,7 +359,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Transactions */}
       <Card className="overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <h3 className="text-sm font-bold text-foreground">{t('dashboard.recent_sales')}</h3>

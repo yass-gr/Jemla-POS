@@ -71,7 +71,6 @@
     font-family: 'Noto Kufi Arabic', sans-serif;
   }
 
-  /* Prevent horizontal scroll on mobile */
   html, body {
     max-width: 100vw;
     overflow-x: hidden;
@@ -112,21 +111,18 @@
     print-color-adjust: exact;
   }
 
-  /* Hide UI elements */
   nav, header, button, .no-print, 
   [role="dialog"], [role="alertdialog"],
   .fixed, .sticky {
     display: none !important;
   }
 
-  /* Show main content */
   main, .main-content {
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  /* Optimize tables for print - use black borders like Inventory */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
@@ -151,7 +147,6 @@
     font-size: 9pt !important;
   }
 
-  /* Page headers */
   h1 {
     font-size: 20pt !important;
     margin-bottom: 8px !important;
@@ -166,12 +161,10 @@
     color: #000 !important;
   }
 
-  /* Hide KPI cards and filters in print */
   .grid, .flex {
     display: none !important;
   }
 
-  /* Ensure proper page breaks */
   tr {
     page-break-inside: avoid;
   }
@@ -184,7 +177,6 @@
     display: table-footer-group;
   }
 
-  /* Print layout containers */
   .print\\:block {
     display: block !important;
   }
@@ -194,30 +186,24 @@
   }
 }
 
-/* UX Improvements - Smooth Transitions */
 @layer utilities {
-  /* Smooth scrolling for better UX */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Prevent horizontal overflow */
   body {
     overflow-x: hidden;
   }
 
-  /* Better focus states for accessibility */
   *:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
 
-  /* Smooth transitions for interactive elements */
   button, a, input, select, textarea {
     transition: all 0.2s ease-in-out;
   }
 
-  /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -227,7 +213,6 @@
     }
   }
 
-  /* Better touch targets for mobile */
   @media (max-width: 640px) {
     button, a, [role="button"] {
       min-height: 44px;
@@ -235,19 +220,16 @@
     }
   }
 
-  /* Improve text readability */
   body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Prevent content shift during loading */
   img {
     aspect-ratio: attr(width) / attr(height);
   }
 
-  /* Better selection color */
   ::selection {
     background-color: hsl(var(--primary) / 0.2);
     color: hsl(var(--foreground));

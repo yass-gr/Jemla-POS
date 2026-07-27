@@ -12,32 +12,32 @@
 
 ## 🖼️ Screenshots
 
-| Dashboard (Light) | Dashboard (Dark) |
-|---|---|
+| Dashboard (Light)                                       | Dashboard (Dark)                                           |
+| ------------------------------------------------------- | ---------------------------------------------------------- |
 | ![Dashboard Light](screenshots/dashboard%20page%20.png) | ![Dashboard Dark](screenshots/dashboard%20page%20dark.png) |
 
-| POS Terminal (Light) | POS Terminal (Dark) |
-|---|---|
+| POS Terminal (Light)                     | POS Terminal (Dark)                            |
+| ---------------------------------------- | ---------------------------------------------- |
 | ![POS Light](screenshots/pos%20page.png) | ![POS Dark](screenshots/pos%20page%20dark.png) |
 
-| Products | Customers |
-|---|---|
+| Products                                        | Customers                                    |
+| ----------------------------------------------- | -------------------------------------------- |
 | ![Products](screenshots/products%20page%20.png) | ![Customers](screenshots/clients%20page.png) |
 
-| Reports (FR) |
-|---|
+| Reports (FR)                                  |
+| --------------------------------------------- |
 | ![Reports FR](screenshots/reports%20page.png) |
 
-| Reports (Dark) |
-|---|
+| Reports (Dark)                                         |
+| ------------------------------------------------------ |
 | ![Reports Dark](screenshots/reports%20page%20dark.png) |
 
-| Reports (AR) |
-|---|
-| ![Reports AR](screenshots/reports%20page%20(ar).png) |
+| Reports (AR)                                           |
+| ------------------------------------------------------ |
+| ![Reports AR](<screenshots/reports%20page%20(ar).png>) |
 
-| Settings | Notifications |
-|---|---|
+| Settings                                     | Notifications                                   |
+| -------------------------------------------- | ----------------------------------------------- |
 | ![Settings](screenshots/settings%20page.png) | ![Notifications](screenshots/notifications.png) |
 
 ---
@@ -47,6 +47,7 @@
 Jemla POS was born from a real problem faced by a local **Moroccan wholesale fruit & vegetable dealer** — a "Jemla" market trader who struggled to keep track of his business.
 
 Before this application, everything was done **on paper and by memory**:
+
 - Sales recorded in notebooks, easily lost or misplaced
 - Customer debts tracked mentally or on loose scraps of paper
 - Inventory managed by walking through the warehouse
@@ -59,6 +60,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 ## ✨ Features
 
 ### 🏪 Point of Sale Terminal
+
 - Product grid with **category filtering**, **search**, and **barcode scanning**
 - **Favorites system** for quick-access products
 - Real-time cart with **quantity presets** (1/2/5/10 kg), increment/decrement, and direct numpad entry
@@ -74,6 +76,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **Invoice modal** with print-friendly layout after each sale
 
 ### 📊 Dashboard
+
 - **KPI cards**: today's sales, client debts, stock alerts, transaction count
 - **Sales trend chart** (daily/weekly) with previous-period comparison
 - **Top 3 products** and **best customer** highlights
@@ -81,31 +84,37 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **Recent transactions** table with status badges
 
 ### 📦 Products & Inventory
+
 - Full product management: name, category, barcode, retail/wholesale pricing, unit, minimum wholesale qty
 - **Real-time stock tracking** with low-stock thresholds
 - **Inventory adjustment log** with reasons
 - **Stock status indicators**: normal, low, out-of-stock
 
 ### 👥 Customers & Debts
+
 - Customer management with contact info, addresses, delivery address
 - **Debt tracking** per customer with running balance
 - **Payment collection** with method and notes
 - Purchase history per customer
 
 ### 🤝 Suppliers & Purchases
+
 - Supplier management (name, phone, email, address)
 - Purchase order recording — **auto-updates inventory**
 
 ### 🔄 Returns
+
 - Process returns with reasons: damaged, quality, overripe, order error, dissatisfaction
 - **Auto-restocks** inventory on return
 
 ### 📈 Reports
+
 - Period-based summaries: all-time, today, week, month, year
 - **Sales by category** breakdown
 - Export: **CSV** download, **PDF/Print** with optimized styles
 
 ### ⚙️ Settings
+
 - **General**: default payment method, default customer, stock threshold
 - **Appearance**: dark/light theme, language (Français / العربية), receipt customization
 - **Backup**: one-click full database download
@@ -113,6 +122,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **Account**: password change
 
 ### 🌍 Global Features
+
 - **Bilingual** — French (default) and Arabic with full **RTL support**
 - **Dark/Light theme** — system-aware with manual toggle
 - **Global search** — search products, customers, and sales from the header
@@ -143,6 +153,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** 18+ installed
 
 ### Installation
@@ -167,9 +178,9 @@ The backend automatically creates the SQLite database and seeds it with demo dat
 
 ### Default Credentials
 
-| Role | Username | Password |
-|---|---|---|
-| **Admin** | `admin` | `admin123` |
+| Role        | Username  | Password     |
+| ----------- | --------- | ------------ |
+| **Admin**   | `admin`   | `admin123`   |
 | **Cashier** | `cashier` | `cashier123` |
 
 ---
@@ -209,21 +220,21 @@ The backend automatically creates the SQLite database and seeds it with demo dat
 
 The backend exposes a RESTful JSON API at `http://localhost:3000/api/`:
 
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/auth/login` | Authenticate user |
-| `GET /api/dashboard` | Dashboard stats & charts |
-| `GET/POST /api/products` | Product CRUD |
-| `GET/POST /api/customers` | Customer CRUD |
-| `GET/POST /api/suppliers` | Supplier CRUD |
-| `GET/POST /api/sales` | Sales management |
-| `GET/POST /api/purchases` | Purchase management |
-| `GET/POST /api/returns` | Returns management |
-| `GET/POST /api/inventory` | Inventory tracking |
-| `GET /api/debts` | Debt monitoring |
-| `GET /api/reports` | Sales reports |
-| `GET /api/notifications` | Alerts (stock, debts, held) |
-| `GET/PUT /api/settings` | Application settings |
+| Endpoint                  | Purpose                     |
+| ------------------------- | --------------------------- |
+| `POST /api/auth/login`    | Authenticate user           |
+| `GET /api/dashboard`      | Dashboard stats & charts    |
+| `GET/POST /api/products`  | Product CRUD                |
+| `GET/POST /api/customers` | Customer CRUD               |
+| `GET/POST /api/suppliers` | Supplier CRUD               |
+| `GET/POST /api/sales`     | Sales management            |
+| `GET/POST /api/purchases` | Purchase management         |
+| `GET/POST /api/returns`   | Returns management          |
+| `GET/POST /api/inventory` | Inventory tracking          |
+| `GET /api/debts`          | Debt monitoring             |
+| `GET /api/reports`        | Sales reports               |
+| `GET /api/notifications`  | Alerts (stock, debts, held) |
+| `GET/PUT /api/settings`   | Application settings        |
 
 ---
 
@@ -249,4 +260,4 @@ Switch languages from the header dropdown or Settings page.
 
 MIT
 
-
+---
