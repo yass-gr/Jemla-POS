@@ -10,7 +10,7 @@
 
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 | Dashboard (Light)                                       | Dashboard (Dark)                                           |
 | ------------------------------------------------------- | ---------------------------------------------------------- |
@@ -42,9 +42,9 @@
 
 ---
 
-## 📖 The Story
+## The Story
 
-Jemla POS was born from a real problem faced by a local **Moroccan wholesale fruit & vegetable dealer** — a "Jemla" market trader who struggled to keep track of his business.
+Jemla POS was born from a real problem faced by a local **Moroccan wholesale fruit & vegetable dealer** - a "Jemla" market trader who struggled to keep track of his business.
 
 Before this application, everything was done **on paper and by memory**:
 
@@ -57,9 +57,9 @@ This application was built to bring order, clarity, and professionalism to a bus
 
 ---
 
-## ✨ Features
+## Features
 
-### 🏪 Point of Sale Terminal
+### Point of Sale Terminal
 
 - Product grid with **category filtering**, **search**, and **barcode scanning**
 - **Favorites system** for quick-access products
@@ -75,7 +75,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **Keyboard shortcuts**: F1 shortcuts, F2 search, F4 cart, Ctrl+H hold, Ctrl+P pay
 - **Invoice modal** with print-friendly layout after each sale
 
-### 📊 Dashboard
+### Dashboard
 
 - **KPI cards**: today's sales, client debts, stock alerts, transaction count
 - **Sales trend chart** (daily/weekly) with previous-period comparison
@@ -83,45 +83,45 @@ This application was built to bring order, clarity, and professionalism to a bus
 - **Payment distribution** donut chart (cash, card, transfer, credit)
 - **Recent transactions** table with status badges
 
-### 📦 Products & Inventory
+### Products & Inventory
 
 - Full product management: name, category, barcode, retail/wholesale pricing, unit, minimum wholesale qty
 - **Real-time stock tracking** with low-stock thresholds
 - **Inventory adjustment log** with reasons
 - **Stock status indicators**: normal, low, out-of-stock
 
-### 👥 Customers & Debts
+### Customers & Debts
 
 - Customer management with contact info, addresses, delivery address
 - **Debt tracking** per customer with running balance
 - **Payment collection** with method and notes
 - Purchase history per customer
 
-### 🤝 Suppliers & Purchases
+### Suppliers & Purchases
 
 - Supplier management (name, phone, email, address)
 - Purchase order recording — **auto-updates inventory**
 
-### 🔄 Returns
+### Returns
 
 - Process returns with reasons: damaged, quality, overripe, order error, dissatisfaction
 - **Auto-restocks** inventory on return
 
-### 📈 Reports
+### Reports
 
 - Period-based summaries: all-time, today, week, month, year
 - **Sales by category** breakdown
 - Export: **CSV** download, **PDF/Print** with optimized styles
 
-### ⚙️ Settings
+### Settings
 
 - **General**: default payment method, default customer, stock threshold
-- **Appearance**: dark/light theme, language (Français / العربية), receipt customization
+- **Appearance**: dark/light theme, language (Francais / العربية), receipt customization
 - **Backup**: one-click full database download
 - **User management**: add/edit/delete users (admin or cashier role)
 - **Account**: password change
 
-### 🌍 Global Features
+### Global Features
 
 - **Bilingual** — French (default) and Arabic with full **RTL support**
 - **Dark/Light theme** — system-aware with manual toggle
@@ -133,11 +133,11 @@ This application was built to bring order, clarity, and professionalism to a bus
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tech |
 |---|---|
-| **Frontend** | React 19, React Router 6, Tailwind CSS 3, shadcn/ui |
+| **Frontend** | React 18, React Router 6, Tailwind CSS 3, shadcn/ui |
 | **State & Data** | React Context, SQLite via sql.js |
 | **Charts** | Recharts |
 | **Internationalization** | i18next, react-i18next (FR / AR) |
@@ -150,7 +150,7 @@ This application was built to bring order, clarity, and professionalism to a bus
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -171,7 +171,7 @@ cd server && npm install && cd ..
 
 # 4. Run both frontend and backend in development mode
 npm run dev        # Frontend (Vite dev server on port 5173)
-npm run dev:server # Backend (Express API server on port 3000)
+npm run dev:server # Backend (Express API server on port 3001)
 ```
 
 The backend automatically creates the SQLite database and seeds it with demo data on first run.
@@ -185,7 +185,7 @@ The backend automatically creates the SQLite database and seeds it with demo dat
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── src/                    # React frontend
@@ -216,9 +216,9 @@ The backend automatically creates the SQLite database and seeds it with demo dat
 
 ---
 
-## 🔌 API Overview
+## API Overview
 
-The backend exposes a RESTful JSON API at `http://localhost:3000/api/`:
+The backend exposes a RESTful JSON API at `http://localhost:3001/api/`:
 
 | Endpoint                  | Purpose                     |
 | ------------------------- | --------------------------- |
@@ -238,7 +238,7 @@ The backend exposes a RESTful JSON API at `http://localhost:3000/api/`:
 
 ---
 
-## 🌐 Localization
+## Localization
 
 The interface is available in **French** (default) and **Arabic**. Arabic layout supports full **RTL** (right-to-left) text direction, mirrored sidebar, and proper Arabic number formatting.
 
@@ -246,7 +246,7 @@ Switch languages from the header dropdown or Settings page.
 
 ---
 
-## 🧠 Architecture Notes
+## Architecture Notes
 
 - **Self-contained**: No external database server. SQLite stores everything in a single file.
 - **Offline-capable**: All data lives locally — no cloud dependency.
@@ -256,7 +256,7 @@ Switch languages from the header dropdown or Settings page.
 
 ---
 
-## 📄 License
+## License
 
 MIT
 
